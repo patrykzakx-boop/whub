@@ -1,53 +1,81 @@
-import Link from "next/link";
-
-const services = [
-  "Balustrady",
-  "Bramy",
-  "Schody",
-  "Ogrodzenia",
-  "Aluminium",
-  "Rurociągi",
-];
+import Image from "next/image";
 
 export default function PopularServices() {
+  const services = [
+    {
+      name: "Bramy i ogrodzenia",
+      icon: "/icons/Gates.png",
+    },
+    {
+      name: "Balustrady",
+      icon: "/icons/Balustrades.png",
+    },
+    {
+      name: "Schody stalowe",
+      icon: "/icons/Stairs.png",
+    },
+    {
+      name: "Konstrukcje stalowe",
+      icon: "/icons/SteelStructures.png",
+    },
+    {
+      name: "Spawanie aluminium",
+      icon: "/icons/Aluminium.png",
+    },
+    {
+      name: "Mobilny spawacz",
+      icon: "/icons/MobileWelder.png",
+    },
+  ];
+
   return (
-    <section className="pt-6 pb-24">
-<div className="mx-auto max-w-screen-2xl px-4 pt-2 pb-2">       
-     <div className="mb-10 flex items-center justify-between">
-          <h2 className="mb-4 max-w-[580px] text-[32px] font-bold leading-[1.1] tracking-tight text-white">
-            Najczęściej wyszukiwane usługi
+<section className="bg-[#05070a] pt-40 pb-8">
+        <div className="mx-auto max-w-screen-2xl px-4">
+        <div className="mb-12">
+          <h2 className="text-4xl font-bold text-white">
+            Znajdź wykonawcę według specjalizacji
           </h2>
 
-          <Link
-            href="/uslugi"
-            className="text-lg font-medium text-orange-500 transition hover:text-orange-400"
-          >
-            Pokaż wszystkie →
-          </Link>
+          <p className="mt-2 text-gray-400">
+            Najczęściej wyszukiwane usługi spawalnicze i ślusarskie.
+          </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-5 md:grid-cols-3 xl:grid-cols-6">
+        <div className="grid grid-cols-6 gap-4">
           {services.map((service) => (
-            <Link
-              key={service}
-              href={`/uslugi/${service.toLowerCase()}`}
+            <button
+              key={service.name}
               className="
-                flex h-36 items-center justify-center
+                group
+                min-h-[140px]
                 rounded-3xl
                 border border-slate-800
-                bg-[#07111d]
-                px-6
-                text-center
+                bg-[#0d1218]
+                p-4
                 transition-all duration-200
                 hover:-translate-y-1
-                hover:border-blue-500
-                hover:shadow-[0_0_30px_rgba(59,130,246,0.15)]
+                hover:border-orange-500
+                hover:shadow-[0_0_30px_rgba(249,115,22,0.15)]
+
+                flex
+                flex-col
+                items-center
+                justify-center
+                text-center
               "
             >
-              <span className="text-xl font-semibold text-white">
-                {service}
-              </span>
-            </Link>
+              <Image
+                src={service.icon}
+                alt={service.name}
+                width={70}
+                height={70}
+                className="mb-3 object-contain"
+              />
+
+              <h3 className="text-base font-semibold text-white">
+                {service.name}
+              </h3>
+            </button>
           ))}
         </div>
       </div>

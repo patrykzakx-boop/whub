@@ -2,10 +2,9 @@ import Navbar from "@/components/layout/Navbar";
 import HeroSection from "@/components/home/HeroSection";
 import PopularServices from "@/components/home/PopularServices";
 import HowItWorks from "@/components/home/HowItWorks";
-import Certifications from "@/components/home/Certifications";
+import OtherServices from "@/components/home/OtherServices";
 import Contractor from "@/components/home/Contractor";
 import Footer from "@/components/layout/Footer";
-
 
 export default function Home() {
   return (
@@ -14,7 +13,7 @@ export default function Home() {
       <HeroSection />
       <PopularServices />
       <HowItWorks />
-      <Certifications />
+      <OtherServices />
       <Contractor />
       <Footer />
     </>
