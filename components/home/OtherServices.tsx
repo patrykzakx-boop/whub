@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function OtherServices() {
   const services = [
@@ -11,14 +12,6 @@ export default function OtherServices() {
       image: "/images/OtherServices/CarvingCNC.webp",
     },
     {
-      name: "Toczenie CNC",
-      image: "/images/OtherServices/LatheCNC.webp",
-    },
-    {
-      name: "Gięcie rur i profili",
-      image: "/images/OtherServices/Bending.webp",
-    },
-    {
       name: "Piaskowanie",
       image: "/images/OtherServices/Sanding.webp",
     },
@@ -26,32 +19,24 @@ export default function OtherServices() {
       name: "Malowanie proszkowe",
       image: "/images/OtherServices/Painting.webp",
     },
-    {
-      name: "Cynkowanie",
-      image: "/images/OtherServices/Zincing.webp",
-    },
-    {
-      name: "Grawerowanie",
-      image: "/images/OtherServices/Craving.webp",
-    },
   ];
 
   return (
-    <section className="bg-[#05070a] py-24">
+    <section className="bg-[#05070a] py-12 lg:py-20">
       <div className="mx-auto max-w-screen-2xl px-4">
         <div className="mb-8">
-          <h2 className="text-4xl font-bold text-white">
+          <h2 className="text-3xl font-bold text-white md:text-4xl">
             Potrzebujesz więcej niż spawania?
           </h2>
 
-          <p className="mt-2 max-w-3xl text-gray-400">
-            Na WeldingHub znajdziesz również firmy oferujące
-            usługi CNC, obróbkę metalu oraz zabezpieczenia
-            powierzchni dla klientów indywidualnych i przemysłu.
+          <p className="mt-2 max-w-3xl text-sm text-gray-400 md:text-base">
+            Na Weldhub znajdziesz również firmy oferujące usługi CNC,
+            obróbkę metalu oraz zabezpieczenia powierzchni dla klientów
+            indywidualnych i przemysłu.
           </p>
         </div>
 
-        <div className="grid grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           {services.map((service) => (
             <div
               key={service.name}
@@ -67,11 +52,12 @@ export default function OtherServices() {
                 hover:shadow-[0_0_30px_rgba(249,115,22,0.15)]
               "
             >
-              <div className="relative h-[220px] overflow-hidden">
+              <div className="relative h-[140px] overflow-hidden lg:h-[170px]">
                 <Image
                   src={service.image}
                   alt={service.name}
                   fill
+                  sizes="(max-width: 1024px) 50vw, 25vw"
                   className="
                     object-cover
                     transition-transform duration-500
@@ -79,16 +65,35 @@ export default function OtherServices() {
                   "
                 />
 
-                <div className="absolute inset-0 bg-gradient-to-t from-[#05070a] via-[#05070a]/30 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#05070a] via-[#05070a]/20 to-transparent" />
               </div>
 
-              <div className="p-5">
-                <h3 className="text-lg font-semibold text-white">
+              <div className="p-3 lg:p-4">
+                <h3 className="text-sm font-semibold text-white lg:text-base">
                   {service.name}
                 </h3>
               </div>
             </div>
           ))}
+        </div>
+
+        <div className="mt-8 flex justify-center">
+          <Link
+            href="/uslugi"
+            className="
+              rounded-xl
+              border border-orange-500
+              px-6
+              py-3
+              text-sm
+              font-medium
+              text-white
+              transition
+              hover:bg-orange-500
+            "
+          >
+            Zobacz wszystkie usługi
+          </Link>
         </div>
       </div>
     </section>

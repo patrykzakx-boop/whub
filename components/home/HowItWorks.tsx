@@ -27,27 +27,29 @@ export default function HowItWorks() {
   return (
     <section className="bg-[#05070a] pt-8 pb-0">
       <div className="mx-auto max-w-screen-2xl px-4">
-
         <div className="mb-8">
-          <h2 className="text-4xl font-bold text-white">
+          <h2 className="text-3xl font-bold text-white md:text-4xl">
             Jak to działa?
           </h2>
 
-          <p className="mt-2 text-gray-400">
+          <p className="mt-2 text-sm text-gray-400 md:text-base">
             Dodaj zlecenie i otrzymaj oferty od sprawdzonych wykonawców.
           </p>
         </div>
 
-        <div className="rounded-3xl border border-slate-800 bg-[#0d1218] p-8">
-          <div className="grid grid-cols-4 gap-6">
-            {steps.map((step, index) => (
-              <div key={step.title} className="flex items-center">
+        <div className="rounded-3xl border border-slate-800 bg-[#0d1218] p-4 md:p-6 lg:p-8">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {steps.map((step) => (
+              <div
+                key={step.title}
+                className="rounded-2xl border border-slate-800 bg-[#111827]/30 p-4"
+              >
                 <div className="flex items-center gap-4">
                   <Image
                     src={step.icon}
                     alt={step.title}
-                    width={72}
-                    height={72}
+                    width={64}
+                    height={64}
                     className="shrink-0 object-contain"
                   />
 
@@ -61,17 +63,10 @@ export default function HowItWorks() {
                     </p>
                   </div>
                 </div>
-
-                {index < steps.length - 1 && (
-                  <div className="ml-6 text-3xl text-orange-500">
-                    →
-                  </div>
-                )}
               </div>
             ))}
           </div>
         </div>
-
       </div>
     </section>
   );

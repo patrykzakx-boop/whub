@@ -47,7 +47,7 @@ export default function Navbar() {
           </button>
 
           <button className="rounded-xl bg-orange-500 px-5 py-2 text-sm font-semibold text-white transition hover:bg-orange-600">
-            Dodaj zlecenie
+            Zarejestruj się
           </button>
         </div>
       </div>

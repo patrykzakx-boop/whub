@@ -2,9 +2,10 @@ import Link from "next/link";
 
 export default function Contractor() {
   return (
-    <section className="px-4 py-2">
-      <div className="relative overflow-hidden rounded-2xl border border-orange-500">
-        {/* Background image */}
+    <section className="bg-[#05070a] px-4 py-8">
+      <div className="relative overflow-hidden rounded-3xl border border-orange-500/30">
+
+        {/* Background */}
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
@@ -12,48 +13,51 @@ export default function Contractor() {
           }}
         />
 
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-black/60" />
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-black/70" />
 
-        {/* Left gradient */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#020817] via-[#020817]/95 to-transparent" />
+        {/* Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#020817] via-[#020817]/90 to-transparent" />
 
         {/* Content */}
-        <div className="relative z-10 flex min-h-[170px] items-center justify-between px-6 py-4 md:px-8">
-          <div className="max-w-xl">
-            <h2 className="mb-2 text-3xl font-bold tracking-tight text-white md:text-4xl">
-              Jesteś wykonawcą?
+        <div className="relative z-10 flex min-h-[260px] flex-col justify-center gap-6 px-6 py-8 md:flex-row md:items-center md:justify-between md:px-10">
+
+          <div className="max-w-2xl">
+            <h2 className="mb-3 text-3xl font-bold text-white md:text-4xl">
+              Jesteś wykonawcą usług spawalniczych?
             </h2>
 
-            <p className="mb-4 text-sm text-gray-300 md:text-base">
-              Dołącz do Weldhub i zdobywaj nowe zlecenia od klientów
-              indywidualnych oraz firm z całej Polski.
+            <p className="mb-5 text-gray-300">
+              Pokaż swoją firmę tysiącom klientów poszukujących sprawdzonych
+              wykonawców. Otrzymuj nowe zapytania i buduj swoją markę
+              w największej społeczności spawalniczej w Polsce.
             </p>
 
-            <div className="space-y-1 text-sm text-white">
+            <div className="space-y-2 text-sm text-white">
               <div className="flex items-center gap-2">
                 <span className="text-orange-500">✓</span>
-                Dostęp do nowych projektów
+                Nowe zapytania od klientów
               </div>
 
               <div className="flex items-center gap-2">
                 <span className="text-orange-500">✓</span>
-                Stała współpraca B2B
+                Widoczność firmy w całej Polsce
               </div>
 
               <div className="flex items-center gap-2">
                 <span className="text-orange-500">✓</span>
-                Rozwijaj swoją firmę z nami
+                Budowanie zaufania poprzez realizacje
               </div>
             </div>
           </div>
 
           <Link
             href="/dla-wykonawcow"
-            className="ml-8 shrink-0 rounded-lg bg-orange-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-600"
+            className="inline-flex items-center justify-center rounded-xl bg-orange-500 px-6 py-3 font-semibold text-white transition hover:bg-orange-600"
           >
-            Dołącz jako firma →
+            Dodaj firmę →
           </Link>
+
         </div>
       </div>
     </section>

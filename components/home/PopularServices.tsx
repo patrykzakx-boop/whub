@@ -29,10 +29,11 @@ export default function PopularServices() {
   ];
 
   return (
-<section className="bg-[#05070a] pt-40 pb-8">
-        <div className="mx-auto max-w-screen-2xl px-4">
+    <section className="bg-[#05070a] pt-6 pb-8">
+      <div className="mx-auto max-w-screen-2xl px-4">
+
         <div className="mb-12">
-          <h2 className="text-4xl font-bold text-white">
+          <h2 className="text-3xl font-bold text-white">
             Znajdź wykonawcę według specjalizacji
           </h2>
 
@@ -41,22 +42,24 @@ export default function PopularServices() {
           </p>
         </div>
 
-        <div className="grid grid-cols-6 gap-4">
+        <div className="grid gap-4 grid-cols-2 md:grid-cols-3 xl:grid-cols-6">
+
           {services.map((service) => (
             <button
               key={service.name}
               className="
                 group
-                min-h-[140px]
+                min-h-[150px]
                 rounded-3xl
-                border border-slate-800
+                border
+                border-slate-800
                 bg-[#0d1218]
                 p-4
-                transition-all duration-200
+                transition-all
+                duration-200
                 hover:-translate-y-1
                 hover:border-orange-500
                 hover:shadow-[0_0_30px_rgba(249,115,22,0.15)]
-
                 flex
                 flex-col
                 items-center
@@ -69,7 +72,13 @@ export default function PopularServices() {
                 alt={service.name}
                 width={70}
                 height={70}
-                className="mb-3 object-contain"
+                className="
+                  mb-3
+                  object-contain
+                  transition-transform
+                  duration-200
+                  group-hover:scale-105
+                "
               />
 
               <h3 className="text-base font-semibold text-white">
@@ -77,6 +86,7 @@ export default function PopularServices() {
               </h3>
             </button>
           ))}
+
         </div>
       </div>
     </section>
