@@ -1,67 +1,63 @@
 import Image from "next/image";
+import Link from "next/link";
+import CompanySearchPanel from "./CompanySearchPanel";
 
 export default function HeroSection() {
   return (
-    <section className="bg-[#05070a]">
-      <div className="mx-auto max-w-screen-2xl px-4 pt-2 pb-10">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-stretch">
+    <section className="relative overflow-hidden bg-[#05070a]">
+      <Image
+        src="/images/hero-welding-v2.jpg"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover object-center opacity-70"
+      />
 
-          <div className="w-full pt-4 lg:w-[65%]">
-            <h1 className="mb-4 max-w-[680px] text-4xl font-bold leading-tight tracking-tight text-white md:text-5xl lg:text-[52px]">
-              Znajdź sprawdzonego
-              <br />
-              wykonawcę{" "}
-              <span className="text-orange-500">
-                spawalniczego
-              </span>
-              <br />
-              do swojego projektu
+      <div className="absolute inset-0 bg-gradient-to-r from-[#05070a] via-[#05070a]/70 to-[#05070a]/10" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#05070a] via-transparent to-[#05070a]/35" />
+
+      <div className="relative mx-auto max-w-7xl px-4 py-14 sm:py-16 lg:py-24">
+        <div className="max-w-[860px]">
+            <div className="mb-4 text-xs font-semibold uppercase tracking-[0.22em] text-orange-400">
+              Usługi spawalnicze i ślusarskie
+            </div>
+
+            <h1 className="max-w-[760px] text-4xl font-bold leading-[1.08] tracking-tight text-white md:text-5xl lg:text-[58px]">
+              Opisz zlecenie, a wykonawcy sami odpowiedzą
             </h1>
 
-            <p className="mb-6 max-w-[560px] text-base leading-7 text-gray-400">
-              Opisz projekt, dodaj zdjęcia lub szkic i otrzymaj odpowiedzi od
-              wykonawców z Twojej okolicy. Bez dziesiątek telefonów i
-              przypadkowych ogłoszeń.
+            <p className="mt-5 max-w-[680px] text-base leading-7 text-gray-400 md:text-lg">
+              Spawanie, bramy, balustrady, schody, konstrukcje stalowe i
+              nietypowe naprawy metalu w jednym miejscu.
             </p>
 
-            <div className="max-w-[600px] rounded-2xl border border-slate-800 bg-[#0d1218] p-2.5">
-              <div className="grid grid-cols-[1fr_160px_200px] gap-3 max-[750px]:grid-cols-1">
-
-                <input
-                  type="text"
-                  placeholder="Np. balustrada stalowa, brama przesuwna..."
-                  className="h-10 rounded-xl border border-slate-700 bg-[#05070a] px-4 text-sm text-white placeholder:text-gray-500 focus:border-orange-500 focus:outline-none"
-                />
-
-                <input
-                  type="text"
-                  placeholder="Lokalizacja"
-                  className="h-10 rounded-xl border border-slate-700 bg-[#05070a] px-4 text-sm text-white placeholder:text-gray-500 focus:border-orange-500 focus:outline-none"
-                />
-
-                <button className="h-10 w-full rounded-xl bg-orange-500 px-4 text-sm font-medium text-white transition hover:bg-orange-600">
-                  Szukaj wykonawców
-                </button>
-
-              </div>
+            <div className="mt-7 grid gap-3 sm:flex sm:flex-wrap">
+              <Link
+                href="/add-request"
+                className="inline-flex h-12 items-center justify-center rounded-xl bg-orange-500 px-6 text-sm font-semibold text-white transition hover:bg-orange-600"
+              >
+                Dodaj zapytanie
+              </Link>
             </div>
-          </div>
 
-          <div className="relative hidden lg:block lg:w-[35%]">
-            <div className="relative h-full min-h-[380px] overflow-hidden rounded-xl">
-              <Image
-                src="/images/hero-welding-v2.jpg"
-                alt="Spawacz podczas pracy"
-                fill
-                priority
-                sizes="35vw"
-                className="object-cover object-right"
-              />
+            <div className="mt-4 flex flex-col gap-2 text-sm text-gray-400 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
+              <Link
+                href="/add-company"
+                className="text-orange-400 transition hover:text-orange-300"
+              >
+                Jesteś wykonawcą? Dodaj firmę
+              </Link>
 
-              <div className="absolute inset-0 bg-gradient-to-r from-[#05070a] via-[#05070a]/60 to-transparent" />
+              <Link
+                href="/add-request?type=asap"
+                className="text-gray-300 transition hover:text-white"
+              >
+                Pilne? Zgłoś nagłą awarię
+              </Link>
             </div>
-          </div>
 
+            <CompanySearchPanel />
         </div>
       </div>
     </section>

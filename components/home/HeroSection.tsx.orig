@@ -1,0 +1,65 @@
+import Image from "next/image";
+import Link from "next/link";
+import CompanySearchPanel from "./CompanySearchPanel";
+
+export default function HeroSection() {
+  return (
+    <section className="relative overflow-hidden bg-[#05070a]">
+      <Image
+        src="/images/hero-welding-v2.jpg"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover object-center opacity-45"
+      />
+
+      <div className="absolute inset-0 bg-gradient-to-r from-[#05070a] via-[#05070a]/90 to-[#05070a]/35" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#05070a] via-transparent to-[#05070a]/75" />
+
+      <div className="relative mx-auto max-w-7xl px-4 py-14 sm:py-16 lg:py-24">
+        <div className="max-w-[860px]">
+            <div className="mb-4 text-xs font-semibold uppercase tracking-[0.22em] text-orange-400">
+              Usługi spawalnicze i ślusarskie
+            </div>
+
+            <h1 className="max-w-[760px] text-4xl font-bold leading-[1.08] tracking-tight text-white md:text-5xl lg:text-[58px]">
+              Opisz zlecenie, a wykonawcy sami odpowiedzą
+            </h1>
+
+            <p className="mt-5 max-w-[680px] text-base leading-7 text-gray-400 md:text-lg">
+              Spawanie, bramy, balustrady, schody, konstrukcje stalowe i
+              nietypowe naprawy metalu w jednym miejscu.
+            </p>
+
+            <div className="mt-7 grid gap-3 sm:flex sm:flex-wrap">
+              <Link
+                href="/add-request"
+                className="inline-flex h-12 items-center justify-center rounded-xl bg-orange-500 px-6 text-sm font-semibold text-white transition hover:bg-orange-600"
+              >
+                Dodaj zapytanie
+              </Link>
+            </div>
+
+            <div className="mt-4 flex flex-col gap-2 text-sm text-gray-400 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
+              <Link
+                href="/add-company"
+                className="text-orange-400 transition hover:text-orange-300"
+              >
+                Jesteś wykonawcą? Dodaj firmę
+              </Link>
+
+              <Link
+                href="/add-request?type=asap"
+                className="text-gray-300 transition hover:text-white"
+              >
+                Pilne? Zgłoś nagłą awarię
+              </Link>
+            </div>
+
+            <CompanySearchPanel />
+        </div>
+      </div>
+    </section>
+  );
+}

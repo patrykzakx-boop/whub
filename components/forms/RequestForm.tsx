@@ -1,3 +1,5 @@
+import { REQUEST_CATEGORIES } from "@/lib/requestCategories";
+
 export default function AddRequestPage() {
   return (
     <main className="min-h-screen bg-[#05070a]">
@@ -31,21 +33,12 @@ export default function AddRequestPage() {
               </h2>
 
               <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-                {[
-                  "Balustrady",
-                  "Bramy",
-                  "Schody",
-                  "Konstrukcje",
-                  "Aluminium",
-                  "Naprawa",
-                  "Mobilny spawacz",
-                  "Inne",
-                ].map((item) => (
+                {REQUEST_CATEGORIES.map((item) => (
                   <button
-                    key={item}
+                    key={item.value}
                     className="rounded-xl border border-slate-700 p-4 text-sm text-white hover:border-orange-500"
                   >
-                    {item}
+                    {item.label}
                   </button>
                 ))}
               </div>
@@ -118,23 +111,19 @@ export default function AddRequestPage() {
               />
             </div>
 
-            {/* Typ */}
+            {/* Priorytet */}
             <div className="rounded-3xl border border-slate-800 bg-[#0d1218] p-6">
               <h2 className="mb-4 text-xl font-semibold text-white">
-                6. Typ zlecenia
+                6. Priorytet
               </h2>
 
-              <div className="grid gap-4 md:grid-cols-3">
+              <div className="grid gap-4 md:grid-cols-2">
                 <div className="rounded-2xl border border-orange-500 p-4 text-white">
-                  Klient indywidualny
-                </div>
-
-                <div className="rounded-2xl border border-slate-700 p-4 text-white">
-                  Firma
+                  Standardowe
                 </div>
 
                 <div className="rounded-2xl border border-red-500 p-4 text-white">
-                  ASAP
+                  Pilne / awaria
                 </div>
               </div>
             </div>

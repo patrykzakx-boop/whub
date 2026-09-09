@@ -18,7 +18,7 @@ export default function TilesSection() {
 
               <div>
                 <h3 className="text-xl font-semibold text-white">
-                  Klient indywidualny
+                  Standardowe zlecenie
                 </h3>
 
                 <p className="mt-1 text-sm text-gray-400">
@@ -27,7 +27,7 @@ export default function TilesSection() {
               </div>
             </div>
 <Link
-  href="/add-request?type=individual"
+  href="/add-request"
   className="mt-6 block w-full rounded-xl bg-orange-500 py-3 text-center text-sm font-medium text-white transition hover:bg-orange-600"
 >
   Dodaj zlecenie
@@ -53,9 +53,12 @@ export default function TilesSection() {
               </div>
             </div>
 
-            <button className="mt-6 w-full rounded-xl border border-slate-600 py-3 text-sm font-medium text-white transition hover:border-orange-500">
+            <Link
+              href="/add-company"
+              className="mt-6 block w-full rounded-xl border border-slate-600 py-3 text-center text-sm font-medium text-white transition hover:border-orange-500"
+            >
               Dołącz
-            </button>
+            </Link>
           </div>
 
           {/* AWARIA */}

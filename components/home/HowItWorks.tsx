@@ -25,10 +25,14 @@ export default function HowItWorks() {
   ];
 
   return (
-    <section className="bg-[#05070a] pt-8 pb-0">
-      <div className="mx-auto max-w-screen-2xl px-4">
+    <section className="bg-[#05070a] py-10">
+      <div className="mx-auto max-w-7xl px-4">
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-white md:text-4xl">
+          <div className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">
+            Proces
+          </div>
+
+          <h2 className="text-2xl font-bold text-white md:text-3xl">
             Jak to działa?
           </h2>
 
@@ -37,12 +41,11 @@ export default function HowItWorks() {
           </p>
         </div>
 
-        <div className="rounded-3xl border border-slate-800 bg-[#0d1218] p-4 md:p-6 lg:p-8">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
             {steps.map((step) => (
               <div
                 key={step.title}
-                className="rounded-2xl border border-slate-800 bg-[#111827]/30 p-4"
+                className="rounded-2xl border border-slate-800 bg-[#0b1016] p-4"
               >
                 <div className="flex items-center gap-4">
                   <Image
@@ -50,7 +53,7 @@ export default function HowItWorks() {
                     alt={step.title}
                     width={64}
                     height={64}
-                    className="shrink-0 object-contain"
+                    className="h-12 w-12 shrink-0 object-contain opacity-90"
                   />
 
                   <div>
@@ -65,7 +68,6 @@ export default function HowItWorks() {
                 </div>
               </div>
             ))}
-          </div>
         </div>
       </div>
     </section>

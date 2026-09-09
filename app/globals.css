@@ -1,1 +1,19 @@
 @import "tailwindcss";
+
+.company-wizard-layout {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 260px 1fr 340px;
+}
+
+@media (max-width: 1279px) {
+  .company-wizard-layout {
+    grid-template-columns: 260px 1fr;
+  }
+}
+
+@media (max-width: 1023px) {
+  .company-wizard-layout {
+    grid-template-columns: 1fr;
+  }
+}

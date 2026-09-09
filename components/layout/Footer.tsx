@@ -1,12 +1,13 @@
+import Link from "next/link";
+
 export default function Footer() {
   return (
     <footer className="border-t border-slate-800 bg-[#05070a]">
-      <div className="mx-auto max-w-screen-2xl px-4 py-16">
+      <div className="mx-auto max-w-screen-2xl px-4 py-10">
 
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+        <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
 
-          {/* Logo */}
-          <div>
+          <div className="max-w-md">
             <h3 className="text-2xl font-bold text-white">
               WeldHub
             </h3>
@@ -17,75 +18,42 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Klienci */}
-          <div>
-            <h4 className="mb-4 font-semibold text-white">
-              Dla klientów
-            </h4>
+          <div className="grid gap-8 sm:grid-cols-2">
+            <div>
+              <h4 className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-gray-500">
+                Kontakt
+              </h4>
 
-            <ul className="space-y-3 text-sm text-gray-400">
-              <li>
-                <a href="#" className="hover:text-orange-500">
-                  Dodaj zlecenie
-                </a>
-              </li>
+              <ul className="space-y-3 text-sm text-gray-400">
+                <li>
+                  <a
+                    href="mailto:kontakt@weldhub.pl"
+                    className="transition hover:text-white"
+                  >
+                    kontakt@weldhub.pl
+                  </a>
+                </li>
+                <li>Polska</li>
+              </ul>
+            </div>
 
-              <li>
-                <a href="#" className="hover:text-orange-500">
-                  Znajdź wykonawcę
-                </a>
-              </li>
+            <div>
+              <h4 className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-gray-500">
+                Informacje
+              </h4>
 
-              <li>
-                <a href="#" className="hover:text-orange-500">
-                  Jak działa
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Firmy */}
-          <div>
-            <h4 className="mb-4 font-semibold text-white">
-              Dla wykonawców
-            </h4>
-
-            <ul className="space-y-3 text-sm text-gray-400">
-              <li>
-                <a href="#" className="hover:text-orange-500">
-                  Dodaj firmę
-                </a>
-              </li>
-
-              <li>
-                <a href="#" className="hover:text-orange-500">
-                  Pakiety
-                </a>
-              </li>
-
-              <li>
-                <a href="#" className="hover:text-orange-500">
-                  Regulamin
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Kontakt */}
-          <div>
-            <h4 className="mb-4 font-semibold text-white">
-              Kontakt
-            </h4>
-
-            <ul className="space-y-3 text-sm text-gray-400">
-              <li>kontakt@weldhub.pl</li>
-              <li>Polska</li>
-            </ul>
+              <Link
+                href="/regulamin"
+                className="text-sm text-gray-400 transition hover:text-white"
+              >
+                Regulamin
+              </Link>
+            </div>
           </div>
 
         </div>
 
-        <div className="mt-12 border-t border-slate-800 pt-6 text-sm text-gray-500">
+        <div className="mt-8 border-t border-slate-800 pt-6 text-sm text-gray-500">
           © 2026 WeldHub. Wszelkie prawa zastrzeżone.
         </div>
 

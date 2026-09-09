@@ -2,28 +2,32 @@ import Link from "next/link";
 
 export default function Contractor() {
   return (
-    <section className="bg-[#05070a] px-4 py-8">
-      <div className="relative overflow-hidden rounded-3xl border border-orange-500/30">
+    <section className="bg-[#05070a] px-4 py-14">
+      <div className="relative mx-auto max-w-7xl overflow-hidden rounded-3xl border border-slate-800">
 
         {/* Background */}
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: "url('/images/contractor-banner.jpg')",
+            backgroundImage: "url('/images/company.jpg')",
           }}
         />
 
         {/* Overlay */}
-        <div className="absolute inset-0 bg-black/70" />
+        <div className="absolute inset-0 bg-black/75" />
 
         {/* Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#020817] via-[#020817]/90 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#05070a] via-[#05070a]/90 to-transparent" />
 
         {/* Content */}
         <div className="relative z-10 flex min-h-[260px] flex-col justify-center gap-6 px-6 py-8 md:flex-row md:items-center md:justify-between md:px-10">
 
           <div className="max-w-2xl">
-            <h2 className="mb-3 text-3xl font-bold text-white md:text-4xl">
+            <div className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
+              Dla wykonawców
+            </div>
+
+            <h2 className="mb-3 text-2xl font-bold text-white md:text-4xl">
               Jesteś wykonawcą usług spawalniczych?
             </h2>
 
@@ -52,10 +56,10 @@ export default function Contractor() {
           </div>
 
           <Link
-            href="/dla-wykonawcow"
+            href="/add-company"
             className="inline-flex items-center justify-center rounded-xl bg-orange-500 px-6 py-3 font-semibold text-white transition hover:bg-orange-600"
           >
-            Dodaj firmę →
+            Dodaj firmę
           </Link>
 
         </div>
