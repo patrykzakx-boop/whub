@@ -17,21 +17,17 @@ type Offer = {
   availability: string | null;
   status: string | null;
   created_at: string | null;
-  companies?: {
-    name: string | null;
-  } | null;
-  requests?: {
-    title: string | null;
-    city: string | null;
-    category: string | null;
-    request_type: string | null;
-    created_at: string | null;
-    image_url: string | null;
-    customer_name: string | null;
-    customer_phone: string | null;
-    customer_email: string | null;
-    status: string | null;
-  } | null;
+  company_name: string | null;
+  request_title: string | null;
+  request_city: string | null;
+  request_category: string | null;
+  request_type: string | null;
+  request_created_at: string | null;
+  request_image_url: string | null;
+  request_status: string | null;
+  customer_name: string | null;
+  customer_phone: string | null;
+  customer_email: string | null;
 };
 
 export default function DashboardOffersPage() {
@@ -49,9 +45,8 @@ export default function DashboardOffersPage() {
       }
 
       const { data: offersData, error } = await supabase
-        .from("request_offers")
-        .select("*, companies(name), requests(title, city, category, request_type, created_at, image_url, customer_name, customer_phone, customer_email, status)")
-        .eq("owner_id", data.user.id)
+        .from("my_offer_details")
+        .select("*")
         .order("created_at", { ascending: false });
 
       if (error) {
@@ -119,31 +114,31 @@ export default function DashboardOffersPage() {
                   key={offer.id}
                   href={"/request/" + offer.request_id}
                   className={
-                    isUrgentRequest(offer.requests?.request_type)
+                    isUrgentRequest(offer.request_type)
                       ? "flex items-center gap-3 rounded-2xl border border-orange-500/50 bg-[#0d1218] px-3 py-3 transition hover:bg-[#101722] sm:gap-4 sm:px-4"
                       : "flex items-center gap-3 rounded-2xl border border-slate-800 bg-[#0d1218] px-3 py-3 transition hover:bg-[#101722] sm:gap-4 sm:px-4"
                   }
                 >
                   <RequestCategoryImage
-                    category={offer.requests?.category}
-                    title={offer.requests?.title}
+                    category={offer.request_category}
+                    title={offer.request_title}
                     className="h-14 w-20 sm:h-16 sm:w-20"
                   />
 
                   <div className="min-w-0 flex-1">
                     <h2 className="truncate text-base font-semibold text-white">
-                      {offer.requests?.title || "Zlecenie bez tytułu"}
+                      {offer.request_title || "Zlecenie bez tytułu"}
                     </h2>
 
                     <div className="mt-1 truncate text-sm font-medium text-gray-400">
-                      {getRequestCategoryLabel(offer.requests?.category)}
+                      {getRequestCategoryLabel(offer.request_category)}
                     </div>
 
                     <div className="mt-1 flex flex-wrap gap-x-2 gap-y-1 text-xs text-gray-500 sm:text-sm">
-                      <span>{offer.requests?.city || "Brak miejscowości"}</span>
+                      <span>{offer.request_city || "Brak miejscowości"}</span>
                       <span>•</span>
                       <span>{formatDate(offer.created_at)}</span>
-                      <RequestPriorityMeta type={offer.requests?.request_type} />
+                      <RequestPriorityMeta type={offer.request_type} />
                     </div>
 
                     {contactVisible && (

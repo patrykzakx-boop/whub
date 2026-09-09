@@ -195,79 +195,44 @@ export default function AddRequestPage() {
         return;
       }
 
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      const accessToken = crypto.randomUUID();
-
       if (images.length > 0) {
         imageUrls = await uploadImages();
       }
 
-      const requestData = {
-        title,
-        category,
-        description,
-        city,
-        customer_name: customerName,
-        customer_phone: customerPhone,
-        customer_email: customerEmail,
-        customer_id: user?.id ?? null,
-        access_token: accessToken,
-        request_type: requestType,
-        company_id: targetCompanyId ? Number(targetCompanyId) : null,
-        status: "new",
-        contractor_status: "new",
-        image_url: imageUrls[0] ?? null,
-      };
+      const { data: sessionData } = await supabase.auth.getSession();
+      const response = await fetch("/api/requests", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(sessionData.session?.access_token
+            ? { Authorization: `Bearer ${sessionData.session.access_token}` }
+            : {}),
+        },
+        body: JSON.stringify({
+          title,
+          category,
+          description,
+          city,
+          customerName,
+          customerPhone,
+          customerEmail,
+          requestType,
+          companyId: targetCompanyId || null,
+          imageUrls,
+        }),
+      });
+      const insertedRequest = (await response.json().catch(() => null)) as
+        | { id?: string | number; access_token?: string; error?: string }
+        | null;
 
-      const { data: insertedRequest, error } = await supabase
-        .from("requests")
-        .insert({
-          ...requestData,
-          image_urls: imageUrls,
-        })
-        .select("id, access_token")
-        .single();
-
-      if (
-        error &&
-        (error.message.includes("image_urls") ||
-          error.message.includes("customer_id") ||
-          error.message.includes("access_token") ||
-          error.message.includes("contractor_status") ||
-          error.message.includes("schema cache"))
-      ) {
-        const { data: fallbackRequest, error: fallbackError } = await supabase
-          .from("requests")
-          .insert({
-            ...requestData,
-            customer_id: undefined,
-            access_token: undefined,
-            contractor_status: undefined,
-          })
-          .select("id")
-          .single();
-
-        if (fallbackError) {
-          setErrorMessage(fallbackError.message || "Błąd podczas zapisu zapytania.");
-          return;
-        }
-
-        alert(
-          "Zapytanie zostało dodane, ale prywatny link będzie dostępny po dodaniu kolumny access_token w Supabase."
+      if (!response.ok || !insertedRequest?.id || !insertedRequest.access_token) {
+        setErrorMessage(
+          insertedRequest?.error || "Nie udało się zapisać zapytania."
         );
-        window.location.href = fallbackRequest?.id ? "/request/" + fallbackRequest.id : "/requests";
         return;
       }
 
-      if (error) {
-        setErrorMessage(error.message || "Błąd podczas zapisu zapytania.");
-        return;
-      }
-
-      const token = insertedRequest?.access_token || accessToken;
+      const token = insertedRequest.access_token;
       const nextAccessLink = "/request-access/" + token;
       const fullAccessLink = window.location.origin + nextAccessLink;
 

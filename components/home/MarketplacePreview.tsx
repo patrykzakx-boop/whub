@@ -36,7 +36,7 @@ type CompanyItem = {
 export default async function MarketplacePreview() {
   const [{ data: requests }, { data: companies }] = await Promise.all([
     supabase
-      .from("requests")
+      .from("public_request_listings")
       .select("id,title,city,category,request_type,created_at")
       .is("company_id", null)
       .neq("status", "deleted")

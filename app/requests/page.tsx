@@ -22,7 +22,7 @@ export default async function RequestsPage({ searchParams }: Props) {
   const selectedSort = filters.sort || "newest";
 
   const { data: locations } = await supabase
-    .from("requests")
+    .from("public_request_listings")
     .select("city")
     .is("company_id", null)
     .in("status", ["new", "contacting"])
@@ -37,7 +37,7 @@ export default async function RequestsPage({ searchParams }: Props) {
   ).sort((a, b) => a.localeCompare(b, "pl"));
 
   let query = supabase
-    .from("requests")
+    .from("public_request_listings")
     .select("*")
     .is("company_id", null)
     .in("status", ["new", "contacting"]);

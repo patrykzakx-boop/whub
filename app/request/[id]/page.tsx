@@ -15,7 +15,7 @@ export default async function RequestPage({
   const { id } = await params;
 
   const { data: request, error } = await supabase
-    .from("requests")
+    .from("public_request_listings")
     .select("*")
     .eq("id", id)
     .is("company_id", null)

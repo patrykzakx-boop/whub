@@ -23,6 +23,7 @@ export default async function CompanyPage({ params }: Props) {
     .from("companies")
     .select("*")
     .eq("id", id)
+    .eq("status", "published")
     .single();
 
   const { data: images } = await supabase
