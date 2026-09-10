@@ -9,6 +9,9 @@ Rollout jest celowo podzielony na trzy fazy:
    zapytania oraz panel ofert.
 3. Dopiero wtedy uruchom `migrations/20260909091000_rls.sql`, a po nim
    `verification/rls_audit.sql`.
+4. Po potwierdzeniu poprawnego działania RLS uruchom jednorazowo
+   `migrations/20260910090000_rotate_request_access_tokens.sql`. Migracja
+   unieważnia wszystkie linki dostępu utworzone przed uszczelnieniem systemu.
 
 Nie wykonuj wszystkich migracji jednym `db push` przed wdrożeniem kodu.
 Restrykcyjna migracja RLS odcina stary kod od bazowej tabeli `requests`.
