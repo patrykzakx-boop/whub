@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabaseAdmin";
-import { escapeHtml, sendResendEmail } from "@/lib/resendEmail";
+import { escapeHtml, sendEmail } from "@/lib/email";
 
 type RequestBody = {
   requestId?: string | number;
@@ -70,7 +70,7 @@ export async function POST(request: Request) {
 
     const dashboardLink = buildDashboardRequestLink(request, requestData.id);
 
-    await sendResendEmail({
+    await sendEmail({
       to: recipientEmail,
       subject: "Nowe prywatne zapytanie do Twojej firmy w WeldHub",
       html: buildCompanyRequestEmailHtml({

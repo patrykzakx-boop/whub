@@ -34,3 +34,11 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Email delivery
+
+Transactional messages use Fastmail SMTP when `FASTMAIL_SMTP_APP_PASSWORD` is
+configured. Set `FASTMAIL_SMTP_USER`, `EMAIL_FROM`, and `EMAIL_REPLY_TO` to
+`weldhub@fastmail.com`, and store the app password only as a secret environment
+variable. Until Fastmail is configured, the server can temporarily fall back to
+Resend when `RESEND_API_KEY` is present.

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CONTACT_EMAIL } from "@/lib/siteConfig";
 
 export default function Footer() {
   return (
@@ -27,10 +28,10 @@ export default function Footer() {
               <ul className="space-y-3 text-sm text-gray-400">
                 <li>
                   <a
-                    href="mailto:kontakt@weldhub.pl"
+                    href={`mailto:${CONTACT_EMAIL}`}
                     className="transition hover:text-white"
                   >
-                    kontakt@weldhub.pl
+                    {CONTACT_EMAIL}
                   </a>
                 </li>
                 <li>Polska</li>

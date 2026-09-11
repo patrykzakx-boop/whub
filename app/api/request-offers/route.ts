@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabaseAdmin";
-import { escapeHtml, sendResendEmail } from "@/lib/resendEmail";
+import { escapeHtml, sendEmail } from "@/lib/email";
 import { isRequestOpen } from "@/lib/statuses";
 
 type RequestBody = {
@@ -127,7 +127,7 @@ export async function POST(request: Request) {
       try {
         const accessLink = buildRequestAccessLink(request, requestData.access_token);
 
-        await sendResendEmail({
+        await sendEmail({
           to: requestData.customer_email,
           subject: "Masz nową ofertę do zlecenia w WeldHub",
           html: buildNewOfferEmailHtml({

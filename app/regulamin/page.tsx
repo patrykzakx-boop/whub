@@ -1,3 +1,5 @@
+import { CONTACT_EMAIL } from "@/lib/siteConfig";
+
 export default function RegulaminPage() {
   return (
     <main className="min-h-screen bg-[#05070a] px-4 py-10 text-white lg:py-14">
@@ -20,10 +22,10 @@ export default function RegulaminPage() {
             W sprawach związanych z działaniem serwisu skontaktuj się pod
             adresem{" "}
             <a
-              href="mailto:kontakt@weldhub.pl"
+              href={`mailto:${CONTACT_EMAIL}`}
               className="text-gray-300 underline underline-offset-4 transition hover:text-white"
             >
-              kontakt@weldhub.pl
+              {CONTACT_EMAIL}
             </a>
             .
           </p>

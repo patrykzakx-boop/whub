@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabaseAdmin";
-import { escapeHtml, sendResendEmail } from "@/lib/resendEmail";
+import { escapeHtml, sendEmail } from "@/lib/email";
 
 type Params = {
   params: Promise<{
@@ -274,7 +274,7 @@ async function sendContractorNotification({
   }
 
   try {
-    await sendResendEmail({
+    await sendEmail({
       to: contractorEmail,
       subject,
       html: buildContractorNotificationEmailHtml({
