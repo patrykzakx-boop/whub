@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { escapeHtml, sendEmail } from "@/lib/email";
+import {
+  consumeRateLimit,
+  RateLimitUnavailableError,
+} from "@/lib/rateLimit";
 
 type RequestBody = {
   requestId?: string | number;
@@ -9,6 +13,22 @@ type RequestBody = {
 
 export async function POST(request: Request) {
   try {
+    const ipRateLimit = await consumeRateLimit(request, {
+      scope: "company-request-email",
+      maxRequests: 10,
+      windowSeconds: 15 * 60,
+    });
+
+    if (!ipRateLimit.allowed) {
+      return NextResponse.json(
+        { error: "Wysłano zbyt wiele wiadomości. Spróbuj ponownie później." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(ipRateLimit.retryAfterSeconds) },
+        }
+      );
+    }
+
     const body = (await request.json()) as RequestBody;
     const requestId = body.requestId;
     const accessToken = body.accessToken?.trim();
@@ -17,6 +37,23 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: "Brakuje ID zapytania albo prywatnego tokenu." },
         { status: 400 }
+      );
+    }
+
+    const tokenRateLimit = await consumeRateLimit(request, {
+      scope: "company-request-email-token",
+      identifier: accessToken,
+      maxRequests: 3,
+      windowSeconds: 60 * 60,
+    });
+
+    if (!tokenRateLimit.allowed) {
+      return NextResponse.json(
+        { error: "Powiadomienie zostało już wysłane. Spróbuj ponownie później." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(tokenRateLimit.retryAfterSeconds) },
+        }
       );
     }
 
@@ -88,6 +125,10 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ ok: true });
   } catch (error) {
+    if (error instanceof RateLimitUnavailableError) {
+      return NextResponse.json({ error: error.message }, { status: 503 });
+    }
+
     return NextResponse.json(
       {
         error:

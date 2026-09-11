@@ -56,7 +56,8 @@ describe("validateRequestSubmission", () => {
 
   it("akceptuje wyłącznie zdjęcia z właściwego bucketu Supabase", () => {
     const validImage =
-      SUPABASE_URL + "/storage/v1/object/public/request_images/example.webp";
+      SUPABASE_URL +
+      "/storage/v1/object/public/request_images/requests/16f36b8a-1e06-4f96-81ea-fbb1243c0554.webp";
 
     expect(
       validateRequestSubmission(
@@ -71,18 +72,33 @@ describe("validateRequestSubmission", () => {
         SUPABASE_URL
       )
     ).toThrow("Adres jednego ze zdjęć jest nieprawidłowy.");
+
+    expect(() =>
+      validateRequestSubmission(
+        { ...validInput, imageUrls: [validImage + "?token=podmieniony"] },
+        SUPABASE_URL
+      )
+    ).toThrow("Adres jednego ze zdjęć jest nieprawidłowy.");
   });
 
   it("ogranicza liczbę zdjęć", () => {
     const images = Array.from(
       { length: 7 },
       (_, index) =>
-        `${SUPABASE_URL}/storage/v1/object/public/request_images/${index}.webp`
+        `${SUPABASE_URL}/storage/v1/object/public/request_images/requests/16f36b8a-1e06-4f96-81ea-fbb1243c05${String(index).padStart(2, "0")}.webp`
     );
 
     expect(() =>
       validateRequestSubmission({ ...validInput, imageUrls: images }, SUPABASE_URL)
     ).toThrow("Możesz dodać maksymalnie 6 zdjęć.");
   });
-});
 
+  it("odrzuca wypełnione pole-pułapkę na boty", () => {
+    expect(() =>
+      validateRequestSubmission(
+        { ...validInput, website: "https://spam.example" },
+        SUPABASE_URL
+      )
+    ).toThrow("Nie udało się wysłać formularza.");
+  });
+});

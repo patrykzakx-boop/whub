@@ -37,8 +37,15 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 ## Email delivery
 
-Transactional messages use Fastmail SMTP when `FASTMAIL_SMTP_APP_PASSWORD` is
-configured. Set `FASTMAIL_SMTP_USER`, `EMAIL_FROM`, and `EMAIL_REPLY_TO` to
-`weldhub@fastmail.com`, and store the app password only as a secret environment
-variable. Until Fastmail is configured, the server can temporarily fall back to
-Resend when `RESEND_API_KEY` is present.
+Transactional messages use Resend. Store `RESEND_API_KEY` only as a secret
+environment variable. `EMAIL_REPLY_TO` is set to `weldhub@fastmail.com`, so
+replies from customers and contractors reach the company inbox. A custom sender
+address can be enabled after a WeldHub domain is purchased and verified.
+
+## Public form security
+
+Public POST endpoints use a database-backed rate limiter. Set a long random
+`RATE_LIMIT_SECRET` on the server; if omitted, the Supabase service-role key is
+used as the HMAC secret. Request images are uploaded with short-lived signed
+tokens, so the `request_images` bucket does not allow unrestricted anonymous
+uploads.

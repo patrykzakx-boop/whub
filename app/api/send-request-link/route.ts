@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { escapeHtml, sendEmail } from "@/lib/email";
+import {
+  consumeRateLimit,
+  RateLimitUnavailableError,
+} from "@/lib/rateLimit";
 
 type RequestBody = {
   email?: string;
@@ -10,6 +14,22 @@ type RequestBody = {
 
 export async function POST(request: Request) {
   try {
+    const ipRateLimit = await consumeRateLimit(request, {
+      scope: "request-link-email",
+      maxRequests: 10,
+      windowSeconds: 15 * 60,
+    });
+
+    if (!ipRateLimit.allowed) {
+      return NextResponse.json(
+        { error: "Wysłano zbyt wiele wiadomości. Spróbuj ponownie później." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(ipRateLimit.retryAfterSeconds) },
+        }
+      );
+    }
+
     const body = (await request.json()) as RequestBody;
     const email = body.email?.trim();
     const title = body.title?.trim() || "Twoje zlecenie";
@@ -28,6 +48,23 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: "Prywatny link do zlecenia jest nieprawidłowy." },
         { status: 400 }
+      );
+    }
+
+    const tokenRateLimit = await consumeRateLimit(request, {
+      scope: "request-link-email-token",
+      identifier: accessToken,
+      maxRequests: 3,
+      windowSeconds: 60 * 60,
+    });
+
+    if (!tokenRateLimit.allowed) {
+      return NextResponse.json(
+        { error: "Link został już wysłany. Spróbuj ponownie później." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(tokenRateLimit.retryAfterSeconds) },
+        }
       );
     }
 
@@ -60,12 +97,16 @@ export async function POST(request: Request) {
       subject: "Prywatny link do Twojego zlecenia w WeldHub",
       html: buildEmailHtml({
         title: requestData.title || title,
-        accessLink,
+        accessLink: buildRequestAccessLink(request, accessToken),
       }),
     });
 
     return NextResponse.json({ ok: true, id: data?.id });
   } catch (error) {
+    if (error instanceof RateLimitUnavailableError) {
+      return NextResponse.json({ error: error.message }, { status: 503 });
+    }
+
     return NextResponse.json(
       {
         error:
@@ -76,6 +117,14 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
+}
+
+function buildRequestAccessLink(request: Request, accessToken: string) {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL;
+  const configuredOrigin = siteUrl?.endsWith("/") ? siteUrl.slice(0, -1) : siteUrl;
+  const origin = configuredOrigin || new URL(request.url).origin;
+
+  return origin + "/request-access/" + encodeURIComponent(accessToken);
 }
 
 function getAccessTokenFromLink(accessLink: string) {

@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { escapeHtml, sendEmail } from "@/lib/email";
 import { isRequestOpen } from "@/lib/statuses";
+import {
+  consumeRateLimit,
+  RateLimitUnavailableError,
+} from "@/lib/rateLimit";
 
 type RequestBody = {
   requestId?: string | number;
@@ -26,11 +30,11 @@ export async function POST(request: Request) {
     }
 
     const body = (await request.json()) as RequestBody;
-    const requestId = body.requestId;
-    const companyId = body.companyId;
-    const message = body.message?.trim() || "";
-    const priceEstimate = body.priceEstimate?.trim() || null;
-    const availability = body.availability?.trim() || null;
+    const requestId = parsePositiveId(body.requestId);
+    const companyId = parsePositiveId(body.companyId);
+    const message = cleanText(body.message, 5_000);
+    const priceEstimate = cleanText(body.priceEstimate, 120) || null;
+    const availability = cleanText(body.availability, 160) || null;
 
     if (!requestId || !companyId || !message) {
       return NextResponse.json(
@@ -46,6 +50,23 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: "Zaloguj się ponownie, aby wysłać odpowiedź." },
         { status: 401 }
+      );
+    }
+
+    const rateLimit = await consumeRateLimit(request, {
+      scope: "request-offer-create",
+      identifier: userData.user.id,
+      maxRequests: 30,
+      windowSeconds: 60 * 60,
+    });
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: "Wysłano zbyt wiele odpowiedzi. Spróbuj ponownie później." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(rateLimit.retryAfterSeconds) },
+        }
       );
     }
 
@@ -146,11 +167,25 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ ok: true, offer, mailWarning });
   } catch (error) {
+    if (error instanceof RateLimitUnavailableError) {
+      return NextResponse.json({ error: error.message }, { status: 503 });
+    }
+
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Nieoczekiwany błąd." },
       { status: 500 }
     );
   }
+}
+
+function parsePositiveId(value: string | number | undefined) {
+  const parsedValue = Number(value);
+
+  return Number.isSafeInteger(parsedValue) && parsedValue > 0 ? parsedValue : null;
+}
+
+function cleanText(value: string | undefined, maxLength: number) {
+  return (value || "").trim().slice(0, maxLength);
 }
 
 function buildRequestAccessLink(request: Request, token: string) {

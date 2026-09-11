@@ -3,6 +3,11 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { REQUEST_CATEGORIES } from "@/lib/requestCategories";
+import {
+  isAllowedRequestImageType,
+  MAX_REQUEST_IMAGE_BYTES,
+  MAX_REQUEST_IMAGES,
+} from "@/lib/requestImages";
 
 export default function AddRequestPage() {
   const [title, setTitle] = useState("");
@@ -21,8 +26,9 @@ export default function AddRequestPage() {
   const [targetCompanyName, setTargetCompanyName] = useState("");
   const [targetCompanyId, setTargetCompanyId] = useState("");
   const [accessLink, setAccessLink] = useState("");
+  const [website, setWebsite] = useState("");
 
-  const MAX_IMAGES = 6;
+  const MAX_IMAGES = MAX_REQUEST_IMAGES;
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
@@ -49,53 +55,57 @@ export default function AddRequestPage() {
   }, []);
 
   const compressImage = (file: File): Promise<File> => {
-  return new Promise((resolve) => {
-    const img = new Image();
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const objectUrl = URL.createObjectURL(file);
 
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
 
-      const MAX_WIDTH = 1600;
+        const MAX_WIDTH = 1600;
 
-      let width = img.width;
-      let height = img.height;
+        let width = img.width;
+        let height = img.height;
 
-      if (width > MAX_WIDTH) {
-        height = (height * MAX_WIDTH) / width;
-        width = MAX_WIDTH;
-      }
+        if (width > MAX_WIDTH) {
+          height = (height * MAX_WIDTH) / width;
+          width = MAX_WIDTH;
+        }
 
-      canvas.width = width;
-      canvas.height = height;
+        canvas.width = width;
+        canvas.height = height;
 
-      const ctx = canvas.getContext("2d");
-      ctx?.drawImage(img, 0, 0, width, height);
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0, width, height);
 
-      canvas.toBlob(
-        (blob) => {
-          if (!blob) {
-            resolve(file);
-            return;
-          }
+        canvas.toBlob(
+          (blob) => {
+            URL.revokeObjectURL(objectUrl);
 
-          resolve(
-            new File(
-              [blob],
-              file.name.replace(/\.[^/.]+$/, ".webp"),
-              {
+            if (!blob) {
+              reject(new Error("Nie udało się przygotować zdjęcia."));
+              return;
+            }
+
+            resolve(
+              new File([blob], file.name.replace(/\.[^/.]+$/, ".webp"), {
                 type: "image/webp",
-              }
-            )
-          );
-        },
-        "image/webp",
-        0.8
-      );
-    };
+              })
+            );
+          },
+          "image/webp",
+          0.8
+        );
+      };
 
-    img.src = URL.createObjectURL(file);
-  });
-};
+      img.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        reject(new Error("Nie udało się odczytać wybranego zdjęcia."));
+      };
+
+      img.src = objectUrl;
+    });
+  };
   const sendRequestLinkEmail = async ({
     email,
     title,
@@ -161,24 +171,48 @@ export default function AddRequestPage() {
 
     for (const image of images) {
       const compressedImage = await compressImage(image);
-      console.log("Original:", Math.round(image.size / 1024), "KB");
-      console.log("Compressed:", Math.round(compressedImage.size / 1024), "KB");
 
-      const fileName = `${Date.now()}-${crypto.randomUUID()}-${compressedImage.name}`;
+      if (compressedImage.size > MAX_REQUEST_IMAGE_BYTES) {
+        throw new Error("Po kompresji zdjęcie nadal ma więcej niż 5 MB.");
+      }
+
+      const signResponse = await fetch("/api/request-images/sign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contentType: compressedImage.type,
+          size: compressedImage.size,
+        }),
+      });
+      const signedUpload = (await signResponse.json().catch(() => null)) as
+        | { path?: string; token?: string; publicUrl?: string; error?: string }
+        | null;
+
+      if (
+        !signResponse.ok ||
+        !signedUpload?.path ||
+        !signedUpload.token ||
+        !signedUpload.publicUrl
+      ) {
+        throw new Error(
+          signedUpload?.error || "Nie udało się przygotować uploadu zdjęcia."
+        );
+      }
 
       const { error: uploadError } = await supabase.storage
         .from("request_images")
-        .upload(fileName, compressedImage);
+        .uploadToSignedUrl(
+          signedUpload.path,
+          signedUpload.token,
+          compressedImage,
+          { contentType: compressedImage.type, cacheControl: "3600" }
+        );
 
       if (uploadError) {
         throw new Error(uploadError.message || "Błąd uploadu zdjęcia");
       }
 
-      const { data } = supabase.storage
-        .from("request_images")
-        .getPublicUrl(fileName);
-
-      uploadedUrls.push(data.publicUrl);
+      uploadedUrls.push(signedUpload.publicUrl);
     }
 
     return uploadedUrls;
@@ -219,6 +253,7 @@ export default function AddRequestPage() {
           requestType,
           companyId: targetCompanyId || null,
           imageUrls,
+          website,
         }),
       });
       const insertedRequest = (await response.json().catch(() => null)) as
@@ -408,6 +443,22 @@ export default function AddRequestPage() {
     className="hidden"
     onChange={(e) => {
       const selectedImages = Array.from(e.target.files ?? []);
+
+      if (
+        selectedImages.some(
+          (image) =>
+            !isAllowedRequestImageType(image.type) ||
+            image.size > 20 * 1024 * 1024
+        )
+      ) {
+        setErrorMessage(
+          "Wybierz zdjęcia JPG, PNG lub WebP, każde o rozmiarze do 20 MB."
+        );
+        e.target.value = "";
+        return;
+      }
+
+      setErrorMessage("");
       setImages((currentImages) =>
         [...currentImages, ...selectedImages].slice(0, MAX_IMAGES)
       );
@@ -532,6 +583,18 @@ export default function AddRequestPage() {
           </div>
 
           {/* Submit */}
+          <div className="hidden" aria-hidden="true">
+            <label htmlFor="website">Strona internetowa</label>
+            <input
+              id="website"
+              name="website"
+              value={website}
+              onChange={(event) => setWebsite(event.target.value)}
+              tabIndex={-1}
+              autoComplete="off"
+            />
+          </div>
+
           <button
             onClick={handleSubmit}
             disabled={loading}

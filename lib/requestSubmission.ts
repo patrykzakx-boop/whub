@@ -11,6 +11,7 @@ export type CreateRequestInput = {
   requestType?: string;
   companyId?: string | number | null;
   imageUrls?: string[];
+  website?: string;
 };
 
 export type ValidatedRequestInput = {
@@ -33,6 +34,10 @@ export function validateRequestSubmission(
   input: CreateRequestInput,
   supabaseUrl: string
 ): ValidatedRequestInput {
+  if (input.website?.trim()) {
+    throw new Error("Nie udało się wysłać formularza.");
+  }
+
   const title = cleanRequiredText(input.title, 160);
   const description = cleanRequiredText(input.description, 10_000);
   const city = cleanRequiredText(input.city, 160);
@@ -92,14 +97,19 @@ function validateImageUrls(value: string[] | undefined, supabaseUrl: string) {
   }
 
   const allowedOrigin = new URL(supabaseUrl).origin;
-  const allowedPathPrefix = "/storage/v1/object/public/request_images/";
+  const allowedPathPattern =
+    /^\/storage\/v1\/object\/public\/request_images\/requests\/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\.(?:jpg|png|webp)$/i;
 
   return value.map((value) => {
     const imageUrl = new URL(value);
 
     if (
       imageUrl.origin !== allowedOrigin ||
-      !imageUrl.pathname.startsWith(allowedPathPrefix)
+      !allowedPathPattern.test(imageUrl.pathname) ||
+      imageUrl.search ||
+      imageUrl.hash ||
+      imageUrl.username ||
+      imageUrl.password
     ) {
       throw new Error("Adres jednego ze zdjęć jest nieprawidłowy.");
     }

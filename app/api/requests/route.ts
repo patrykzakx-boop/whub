@@ -4,9 +4,45 @@ import {
   type CreateRequestInput,
   validateRequestSubmission,
 } from "@/lib/requestSubmission";
+import {
+  consumeRateLimit,
+  RateLimitUnavailableError,
+} from "@/lib/rateLimit";
 
 export async function POST(request: Request) {
   try {
+    const rateLimit = await consumeRateLimit(request, {
+      scope: "request-create",
+      maxRequests: 5,
+      windowSeconds: 15 * 60,
+    });
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: "Wysłano zbyt wiele zapytań. Spróbuj ponownie później." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(rateLimit.retryAfterSeconds) },
+        }
+      );
+    }
+
+    const dailyRateLimit = await consumeRateLimit(request, {
+      scope: "request-create-daily",
+      maxRequests: 20,
+      windowSeconds: 24 * 60 * 60,
+    });
+
+    if (!dailyRateLimit.allowed) {
+      return NextResponse.json(
+        { error: "Osiągnięto dzienny limit zapytań. Spróbuj ponownie jutro." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(dailyRateLimit.retryAfterSeconds) },
+        }
+      );
+    }
+
     const body = (await request.json()) as CreateRequestInput;
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     if (!supabaseUrl) throw new Error("Brakuje konfiguracji Supabase.");
@@ -79,6 +115,10 @@ export async function POST(request: Request) {
 
     return NextResponse.json(createdRequest, { status: 201 });
   } catch (error) {
+    if (error instanceof RateLimitUnavailableError) {
+      return NextResponse.json({ error: error.message }, { status: 503 });
+    }
+
     return NextResponse.json(
       {
         error:
