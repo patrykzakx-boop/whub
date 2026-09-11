@@ -49,3 +49,8 @@ Public POST endpoints use a database-backed rate limiter. Set a long random
 used as the HMAC secret. Request images are uploaded with short-lived signed
 tokens, so the `request_images` bucket does not allow unrestricted anonymous
 uploads.
+
+Login attempts are limited to three failed attempts per email and client IP in
+a 30-minute window. A successful login clears the email-specific counter.
+Password-reset emails are limited to three requests per email and client IP in
+the same 30-minute window, with additional IP-wide abuse limits.

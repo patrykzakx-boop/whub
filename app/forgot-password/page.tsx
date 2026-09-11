@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -21,20 +20,30 @@ export default function ForgotPasswordPage() {
       return;
     }
 
-    const redirectTo = window.location.origin + "/reset-password";
+    try {
+      const response = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const result = (await response.json().catch(() => null)) as
+        | { message?: string; error?: string }
+        | null;
 
-    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-      redirectTo,
-    });
+      if (!response.ok) {
+        setErrorMessage(result?.error || "Nie udało się wysłać linku.");
+        return;
+      }
 
-    setLoading(false);
-
-    if (error) {
-      setErrorMessage(error.message);
-      return;
+      setMessage(
+        result?.message ||
+          "Jeśli konto istnieje, wysłaliśmy link do ustawienia nowego hasła."
+      );
+    } catch {
+      setErrorMessage("Nie udało się połączyć z serwerem. Spróbuj ponownie.");
+    } finally {
+      setLoading(false);
     }
-
-    setMessage("Jeśli konto istnieje, wysłaliśmy link do ustawienia nowego hasła.");
   };
 
   return (
@@ -50,6 +59,8 @@ export default function ForgotPasswordPage() {
 
         <div className="mt-6 space-y-4">
           <input
+            type="email"
+            autoComplete="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             placeholder="E-mail"

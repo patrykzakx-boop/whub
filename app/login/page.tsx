@@ -20,19 +20,41 @@ export default function LoginPage() {
 
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const result = (await response.json().catch(() => null)) as
+        | {
+            accessToken?: string;
+            refreshToken?: string;
+            error?: string;
+          }
+        | null;
 
-    setLoading(false);
+      if (!response.ok || !result?.accessToken || !result.refreshToken) {
+        setErrorMessage(result?.error || "Nie udało się zalogować.");
+        return;
+      }
 
-    if (error) {
-      setErrorMessage(getLoginErrorMessage(error.message));
-      return;
+      const { error } = await supabase.auth.setSession({
+        access_token: result.accessToken,
+        refresh_token: result.refreshToken,
+      });
+
+      if (error) {
+        setErrorMessage("Nie udało się zapisać sesji. Spróbuj ponownie.");
+        return;
+      }
+
+      window.location.href = "/dashboard";
+    } catch {
+      setErrorMessage("Nie udało się połączyć z serwerem. Spróbuj ponownie.");
+    } finally {
+      setLoading(false);
     }
-
-    window.location.href = "/dashboard";
   };
 
   return (
@@ -47,6 +69,8 @@ export default function LoginPage() {
         <div className="mt-6 space-y-4">
 
           <input
+            type="email"
+            autoComplete="email"
             value={email}
             onChange={(e) =>
               setEmail(e.target.value)
@@ -57,6 +81,7 @@ export default function LoginPage() {
 
           <input
             type="password"
+            autoComplete="current-password"
             value={password}
             onChange={(e) =>
               setPassword(e.target.value)
@@ -92,25 +117,4 @@ export default function LoginPage() {
 
     </main>
   );
-}
-
-function getLoginErrorMessage(message: string) {
-  const normalizedMessage = message.toLowerCase();
-
-  if (
-    normalizedMessage.includes("invalid login credentials") ||
-    normalizedMessage.includes("invalid credentials")
-  ) {
-    return "Nieprawidłowy e-mail lub hasło.";
-  }
-
-  if (normalizedMessage.includes("email not confirmed")) {
-    return "Adres e-mail nie został jeszcze potwierdzony.";
-  }
-
-  if (normalizedMessage.includes("rate limit")) {
-    return "Za dużo prób logowania. Spróbuj ponownie za chwilę.";
-  }
-
-  return "Nie udało się zalogować. Sprawdź dane i spróbuj ponownie.";
 }

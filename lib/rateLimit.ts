@@ -10,6 +10,8 @@ type RateLimitOptions = {
   identifier?: string | number | null;
 };
 
+type ResetRateLimitOptions = Pick<RateLimitOptions, "scope" | "identifier">;
+
 export type RateLimitResult = {
   allowed: boolean;
   retryAfterSeconds: number;
@@ -38,12 +40,7 @@ export async function consumeRateLimit(
     throw new RateLimitUnavailableError();
   }
 
-  const identity = [
-    options.scope,
-    getClientIp(request),
-    normalizeIdentifier(options.identifier),
-  ].join(":");
-  const bucketKey = createHmac("sha256", secret).update(identity).digest("hex");
+  const bucketKey = createBucketKey(request, options, secret);
   const supabase = createSupabaseAdmin();
   const { data, error } = await supabase.rpc("consume_api_rate_limit", {
     p_bucket_key: bucketKey,
@@ -67,6 +64,28 @@ export async function consumeRateLimit(
   };
 }
 
+export async function resetRateLimit(
+  request: Request,
+  options: ResetRateLimitOptions
+) {
+  const secret =
+    process.env.RATE_LIMIT_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!secret) {
+    throw new RateLimitUnavailableError();
+  }
+
+  const bucketKey = createBucketKey(request, options, secret);
+  const supabase = createSupabaseAdmin();
+  const { error } = await supabase.rpc("reset_api_rate_limit", {
+    p_bucket_key: bucketKey,
+  });
+
+  if (error) {
+    throw new RateLimitUnavailableError();
+  }
+}
+
 export function getClientIp(request: Request) {
   const forwardedFor = request.headers.get("x-forwarded-for");
   const address =
@@ -77,4 +96,18 @@ export function getClientIp(request: Request) {
 
 function normalizeIdentifier(value: RateLimitOptions["identifier"]) {
   return String(value ?? "").trim().toLowerCase().slice(0, 256);
+}
+
+function createBucketKey(
+  request: Request,
+  options: ResetRateLimitOptions,
+  secret: string
+) {
+  const identity = [
+    options.scope,
+    getClientIp(request),
+    normalizeIdentifier(options.identifier),
+  ].join(":");
+
+  return createHmac("sha256", secret).update(identity).digest("hex");
 }
