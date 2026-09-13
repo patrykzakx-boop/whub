@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import TurnstileWidget from "@/components/security/TurnstileWidget";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function LoginPage() {
@@ -9,6 +10,8 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState("");
+  const [captchaResetKey, setCaptchaResetKey] = useState(0);
 
   const handleLogin = async () => {
     setErrorMessage("");
@@ -18,13 +21,18 @@ export default function LoginPage() {
       return;
     }
 
+    if (!captchaToken) {
+      setErrorMessage("Potwierdź, że nie jesteś robotem.");
+      return;
+    }
+
     setLoading(true);
 
     try {
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, captchaToken }),
       });
       const result = (await response.json().catch(() => null)) as
         | {
@@ -53,6 +61,7 @@ export default function LoginPage() {
     } catch {
       setErrorMessage("Nie udało się połączyć z serwerem. Spróbuj ponownie.");
     } finally {
+      setCaptchaResetKey((current) => current + 1);
       setLoading(false);
     }
   };
@@ -96,9 +105,15 @@ export default function LoginPage() {
             </div>
           )}
 
+          <TurnstileWidget
+            action="login"
+            onTokenChange={setCaptchaToken}
+            resetKey={captchaResetKey}
+          />
+
           <button
             onClick={handleLogin}
-            disabled={loading}
+            disabled={loading || !captchaToken}
             className="w-full rounded-xl bg-orange-500 px-5 py-3 font-semibold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? "Logowanie..." : "Zaloguj się"}

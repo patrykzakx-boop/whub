@@ -2,12 +2,15 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import TurnstileWidget from "@/components/security/TurnstileWidget";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [captchaToken, setCaptchaToken] = useState("");
+  const [captchaResetKey, setCaptchaResetKey] = useState(0);
 
   const sendResetLink = async () => {
     setLoading(true);
@@ -20,11 +23,17 @@ export default function ForgotPasswordPage() {
       return;
     }
 
+    if (!captchaToken) {
+      setErrorMessage("Potwierdź, że nie jesteś robotem.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await fetch("/api/auth/forgot-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, captchaToken }),
       });
       const result = (await response.json().catch(() => null)) as
         | { message?: string; error?: string }
@@ -42,6 +51,7 @@ export default function ForgotPasswordPage() {
     } catch {
       setErrorMessage("Nie udało się połączyć z serwerem. Spróbuj ponownie.");
     } finally {
+      setCaptchaResetKey((current) => current + 1);
       setLoading(false);
     }
   };
@@ -79,9 +89,15 @@ export default function ForgotPasswordPage() {
             </div>
           )}
 
+          <TurnstileWidget
+            action="password_reset"
+            onTokenChange={setCaptchaToken}
+            resetKey={captchaResetKey}
+          />
+
           <button
             onClick={sendResetLink}
-            disabled={loading}
+            disabled={loading || !captchaToken}
             className="w-full rounded-xl bg-orange-500 px-5 py-3 font-semibold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? "Wysyłanie..." : "Wyślij link resetujący"}

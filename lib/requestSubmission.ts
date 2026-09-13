@@ -12,6 +12,7 @@ export type CreateRequestInput = {
   companyId?: string | number | null;
   imageUrls?: string[];
   website?: string;
+  captchaToken?: string;
 };
 
 export type ValidatedRequestInput = {

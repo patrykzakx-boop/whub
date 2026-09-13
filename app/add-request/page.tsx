@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import TurnstileWidget from "@/components/security/TurnstileWidget";
 import { supabase } from "@/lib/supabaseClient";
 import { REQUEST_CATEGORIES } from "@/lib/requestCategories";
 import {
@@ -27,6 +28,8 @@ export default function AddRequestPage() {
   const [targetCompanyId, setTargetCompanyId] = useState("");
   const [accessLink, setAccessLink] = useState("");
   const [website, setWebsite] = useState("");
+  const [captchaToken, setCaptchaToken] = useState("");
+  const [captchaResetKey, setCaptchaResetKey] = useState(0);
 
   const MAX_IMAGES = MAX_REQUEST_IMAGES;
 
@@ -229,6 +232,11 @@ export default function AddRequestPage() {
         return;
       }
 
+      if (!captchaToken) {
+        setErrorMessage("Potwierdź, że nie jesteś robotem.");
+        return;
+      }
+
       if (images.length > 0) {
         imageUrls = await uploadImages();
       }
@@ -254,8 +262,10 @@ export default function AddRequestPage() {
           companyId: targetCompanyId || null,
           imageUrls,
           website,
+          captchaToken,
         }),
       });
+      setCaptchaResetKey((current) => current + 1);
       const insertedRequest = (await response.json().catch(() => null)) as
         | { id?: string | number; access_token?: string; error?: string }
         | null;
@@ -595,9 +605,17 @@ export default function AddRequestPage() {
             />
           </div>
 
+          <div className="rounded-3xl border border-slate-800 bg-[#0d1218] p-6">
+            <TurnstileWidget
+              action="request_create"
+              onTokenChange={setCaptchaToken}
+              resetKey={captchaResetKey}
+            />
+          </div>
+
           <button
             onClick={handleSubmit}
-            disabled={loading}
+            disabled={loading || !captchaToken}
             className="w-full rounded-2xl bg-orange-500 py-4 text-lg font-semibold text-white transition hover:bg-orange-600 disabled:opacity-50"
           >
             {loading ? "Zapisywanie..." : "Opublikuj zapytanie"}

@@ -54,3 +54,9 @@ Login attempts are limited to three failed attempts per email and client IP in
 a 30-minute window. A successful login clears the email-specific counter.
 Password-reset emails are limited to three requests per email and client IP in
 the same 30-minute window, with additional IP-wide abuse limits.
+
+Login, registration, password-reset, and public request forms use Cloudflare
+Turnstile. Configure `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`,
+and `TURNSTILE_ALLOWED_HOSTNAMES`. Turnstile must also be enabled with the same
+secret in Supabase under Authentication > Bot and Abuse Protection, because
+Supabase verifies CAPTCHA tokens used by the authentication endpoints.

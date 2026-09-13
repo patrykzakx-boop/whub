@@ -3,6 +3,8 @@ export type LoginCredentialsInput = {
   password?: string;
 };
 
+export type RegistrationInput = LoginCredentialsInput;
+
 export type PasswordResetInput = {
   email?: string;
 };
@@ -24,6 +26,16 @@ export function validateLoginCredentials(input: LoginCredentialsInput) {
   }
 
   return { email, password };
+}
+
+export function validateRegistration(input: RegistrationInput) {
+  const credentials = validateLoginCredentials(input);
+
+  if (credentials.password.length < 8) {
+    throw new Error("Hasło musi mieć co najmniej 8 znaków.");
+  }
+
+  return credentials;
 }
 
 export function validatePasswordReset(input: PasswordResetInput) {

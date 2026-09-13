@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { validatePasswordReset } from "@/lib/authValidation";
+import { requireCaptchaToken } from "@/lib/captcha";
 import {
   consumeRateLimit,
   RateLimitUnavailableError,
@@ -15,6 +16,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { email } = validatePasswordReset(body);
+    const captchaToken = requireCaptchaToken(body.captchaToken);
     const emailRateLimit = await consumeRateLimit(request, {
       scope: "auth-password-reset-email",
       identifier: email,
@@ -40,6 +42,7 @@ export async function POST(request: Request) {
     const redirectTo = buildResetPasswordUrl(request);
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo,
+      captchaToken,
     });
 
     if (error && !isSupabaseRateLimitError(error.message)) {

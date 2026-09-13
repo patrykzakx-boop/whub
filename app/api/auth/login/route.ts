@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { validateLoginCredentials } from "@/lib/authValidation";
+import { requireCaptchaToken } from "@/lib/captcha";
 import {
   consumeRateLimit,
   RateLimitUnavailableError,
@@ -14,6 +15,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const credentials = validateLoginCredentials(body);
+    const captchaToken = requireCaptchaToken(body.captchaToken);
     const emailRateLimit = await consumeRateLimit(request, {
       scope: "auth-login-email",
       identifier: credentials.email,
@@ -36,7 +38,10 @@ export async function POST(request: Request) {
     }
 
     const supabase = createSupabaseAuthServer();
-    const { data, error } = await supabase.auth.signInWithPassword(credentials);
+    const { data, error } = await supabase.auth.signInWithPassword({
+      ...credentials,
+      options: { captchaToken },
+    });
 
     if (error || !data.session) {
       return NextResponse.json(
