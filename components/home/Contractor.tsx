@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export default function Contractor() {
@@ -6,11 +7,12 @@ export default function Contractor() {
       <div className="relative mx-auto max-w-7xl overflow-hidden rounded-3xl border border-slate-800">
 
         {/* Background */}
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: "url('/images/company.jpg')",
-          }}
+        <Image
+          src="/images/company.jpg"
+          alt=""
+          fill
+          sizes="(max-width: 1280px) 100vw, 1280px"
+          className="object-cover object-center"
         />
 
         {/* Overlay */}
@@ -32,9 +34,8 @@ export default function Contractor() {
             </h2>
 
             <p className="mb-5 text-gray-300">
-              Pokaż swoją firmę tysiącom klientów poszukujących sprawdzonych
-              wykonawców. Otrzymuj nowe zapytania i buduj swoją markę
-              w największej społeczności spawalniczej w Polsce.
+              Pokaż swoją firmę klientom poszukującym wykonawców. Otrzymuj nowe
+              zapytania i buduj swoją markę w branżowej społeczności WeldHub.
             </p>
 
             <div className="space-y-2 text-sm text-white">

@@ -1,8 +1,7 @@
 "use client";
 
-/* eslint-disable @next/next/no-img-element */
-
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 
 type RequestGalleryProps = {
@@ -37,11 +36,13 @@ export default function RequestGallery({
 
   return (
     <section className="mt-6">
-      <div className="relative overflow-hidden rounded-3xl border border-slate-800 bg-black">
-        <img
+      <div className="relative h-[300px] overflow-hidden rounded-3xl border border-slate-800 bg-black sm:h-[500px]">
+        <Image
           src={selectedImage}
           alt={`${title} - zdjęcie ${selectedIndex + 1}`}
-          className="h-[500px] w-full object-contain"
+          fill
+          sizes="(max-width: 1280px) 100vw, 1280px"
+          className="object-contain"
         />
 
         {hasMultipleImages && (
@@ -82,16 +83,18 @@ export default function RequestGallery({
                 type="button"
                 onClick={() => setSelectedIndex(index)}
                 aria-label={`Pokaż zdjęcie ${index + 1}`}
-                className={`flex h-24 items-center justify-center overflow-hidden rounded-2xl border bg-black transition ${
+                className={`relative flex h-24 items-center justify-center overflow-hidden rounded-2xl border bg-black transition ${
                   isSelected
                     ? "border-orange-500 ring-2 ring-orange-500/30"
                     : "border-slate-800 hover:border-orange-500"
                 }`}
               >
-                <img
+                <Image
                   src={imageUrl}
                   alt={`${title} - miniatura ${index + 1}`}
-                  className="max-h-full max-w-full object-contain"
+                  fill
+                  sizes="160px"
+                  className="object-contain"
                 />
               </button>
             );

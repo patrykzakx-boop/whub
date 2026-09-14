@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
@@ -222,12 +223,14 @@ export default function DashboardMessageDetailsPage({ params }: Props) {
                       href={imageUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="group overflow-hidden rounded-xl border border-slate-800 bg-black"
+                      className="group relative h-56 overflow-hidden rounded-xl border border-slate-800 bg-black"
                     >
-                      <img
+                      <Image
                         src={imageUrl}
                         alt={request.title || "Zdjęcie zapytania"}
-                        className="h-56 w-full object-cover transition duration-500 group-hover:scale-105"
+                        fill
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        className="object-cover transition duration-500 group-hover:scale-105"
                       />
                     </a>
                   ))}

@@ -37,7 +37,7 @@ export default function HowItWorks() {
           </h2>
 
           <p className="mt-2 text-sm text-gray-400 md:text-base">
-            Dodaj zlecenie i otrzymaj oferty od sprawdzonych wykonawców.
+            Dodaj zlecenie i otrzymaj oferty od wykonawców.
           </p>
         </div>
 

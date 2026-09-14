@@ -79,6 +79,7 @@ export default function LoginPage() {
 
           <input
             type="email"
+            aria-label="Adres e-mail"
             autoComplete="email"
             value={email}
             onChange={(e) =>
@@ -90,6 +91,7 @@ export default function LoginPage() {
 
           <input
             type="password"
+            aria-label="Hasło"
             autoComplete="current-password"
             value={password}
             onChange={(e) =>
@@ -100,7 +102,7 @@ export default function LoginPage() {
           />
 
           {errorMessage && (
-            <div className="rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+            <div role="alert" aria-live="assertive" className="rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
               {errorMessage}
             </div>
           )}

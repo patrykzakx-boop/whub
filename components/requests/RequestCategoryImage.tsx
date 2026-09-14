@@ -1,3 +1,4 @@
+import Image from "next/image";
 import {
   getRequestCategoryImage,
   getRequestCategoryLabel,
@@ -21,10 +22,12 @@ export default function RequestCategoryImage({
     <div
       className={`flex shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-800 bg-[#070b10] p-2 ${className}`}
     >
-      <img
+      <Image
         src={imageSrc}
         alt={category || title || label}
-        className="max-h-full max-w-full object-contain"
+        width={64}
+        height={64}
+        className="h-full w-full object-contain"
       />
     </div>
   );

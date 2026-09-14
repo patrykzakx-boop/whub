@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { SERVICES } from "@/components/company-form/constants/services";
@@ -139,10 +140,12 @@ function LatestRequestCard({ request }: { request: RequestItem }) {
       }
     >
       <div className="flex h-[52px] w-[52px] items-center justify-center overflow-hidden rounded-xl border border-slate-800 bg-[#070b10] p-2">
-        <img
+        <Image
           src={categoryImage}
           alt=""
-          className="max-h-full max-w-full object-contain"
+          width={44}
+          height={44}
+          className="h-full w-full object-contain"
         />
       </div>
 
@@ -181,12 +184,14 @@ function RecommendedCompanyCard({ company }: { company: CompanyItem }) {
 
   return (
     <article className="overflow-hidden rounded-2xl border border-slate-800 bg-[#0b1016] transition hover:border-slate-700">
-      <div className="flex h-28 items-center justify-center border-b border-slate-800 bg-black">
+      <div className="relative flex h-28 items-center justify-center border-b border-slate-800 bg-black">
         {company.logo_url ? (
-          <img
+          <Image
             src={company.logo_url}
             alt={company.name || "Logo firmy"}
-            className="h-full w-full object-cover"
+            fill
+            sizes="(max-width: 768px) 100vw, 33vw"
+            className="object-cover"
           />
         ) : (
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-slate-800 bg-[#05070a] text-lg font-bold text-gray-500">

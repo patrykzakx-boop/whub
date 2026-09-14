@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 import { SERVICES } from "@/components/company-form/constants/services";
@@ -16,6 +18,30 @@ type CompanyImage = {
   company_id: string;
   image_url: string;
 };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params;
+  const { data: company } = await supabase
+    .from("companies")
+    .select("name,description,city,region")
+    .eq("id", id)
+    .eq("status", "published")
+    .maybeSingle();
+
+  if (!company) return { title: "Firma nie istnieje", robots: { index: false } };
+
+  const location = [company.city, company.region].filter(Boolean).join(", ");
+  const description = company.description
+    ? String(company.description).slice(0, 155)
+    : `Profil firmy ${company.name}${location ? ` z lokalizacji ${location}` : ""} w WeldHub.`;
+
+  return {
+    title: company.name,
+    description,
+    alternates: { canonical: `/company/${id}` },
+    openGraph: { title: company.name, description, url: `/company/${id}` },
+  };
+}
 
 export default async function CompanyPage({ params }: Props) {
   const { id } = await params;
@@ -57,12 +83,14 @@ export default async function CompanyPage({ params }: Props) {
 
           <div className="relative p-6 sm:p-8 lg:p-10">
             <div className="flex flex-col gap-7 lg:flex-row lg:items-center">
-              <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-slate-700 bg-black/70 shadow-xl shadow-black/25 sm:h-28 sm:w-28 lg:h-32 lg:w-32">
+              <div className="relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-slate-700 bg-black/70 shadow-xl shadow-black/25 sm:h-28 sm:w-28 lg:h-32 lg:w-32">
                 {company.logo_url ? (
-                  <img
+                  <Image
                     src={company.logo_url}
                     alt={company.name}
-                    className="h-full w-full object-cover"
+                    fill
+                    sizes="(max-width: 640px) 96px, (max-width: 1024px) 112px, 128px"
+                    className="object-cover"
                   />
                 ) : (
                   <div className="text-center">
@@ -205,12 +233,14 @@ export default async function CompanyPage({ params }: Props) {
                       {images.slice(0, 6).map((image: CompanyImage) => (
                         <div
                           key={image.id}
-                          className="group overflow-hidden rounded-2xl border border-slate-800/80 bg-black"
+                          className="group relative h-56 overflow-hidden rounded-2xl border border-slate-800/80 bg-black"
                         >
-                          <img
+                          <Image
                             src={image.image_url}
                             alt={company.name}
-                            className="h-56 w-full object-cover opacity-90 transition duration-500 group-hover:scale-105 group-hover:opacity-100"
+                            fill
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            className="object-cover opacity-90 transition duration-500 group-hover:scale-105 group-hover:opacity-100"
                           />
                         </div>
                       ))}

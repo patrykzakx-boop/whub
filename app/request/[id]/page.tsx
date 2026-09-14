@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { supabase } from "@/lib/supabaseClient";
 import { notFound } from "next/navigation";
 import RequestGallery from "@/components/requests/RequestGallery";
@@ -6,13 +7,36 @@ import { getRequestStatusLabel } from "@/lib/statuses";
 import { getRequestCategoryLabel } from "@/lib/requestCategories";
 import ReportButton from "@/components/moderation/ReportButton";
 
+type Props = { params: Promise<{ id: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params;
+  const { data: request } = await supabase
+    .from("public_request_listings")
+    .select("title,description,city")
+    .eq("id", id)
+    .is("company_id", null)
+    .maybeSingle();
+
+  if (!request) return { title: "Zlecenie nie istnieje", robots: { index: false } };
+
+  const title = request.title || "Zlecenie spawalnicze";
+  const description = request.description
+    ? String(request.description).slice(0, 155)
+    : `${title}${request.city ? ` — ${request.city}` : ""}. Zobacz szczegóły w WeldHub.`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `/request/${id}` },
+    openGraph: { title, description, url: `/request/${id}` },
+  };
+}
 
 
 export default async function RequestPage({
   params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+}: Props) {
   const { id } = await params;
 
   const { data: request, error } = await supabase
@@ -54,7 +78,7 @@ export default async function RequestPage({
 
       </div>
 
-      <h1 className="text-4xl font-bold text-white">
+      <h1 className="text-3xl font-bold text-white sm:text-4xl">
         {request.title}
       </h1>
 

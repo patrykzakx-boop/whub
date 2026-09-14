@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
@@ -576,12 +577,14 @@ function ContractorDashboard({
                 >
                   <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                     <div className="flex min-w-0 items-center gap-3">
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-slate-800 bg-black">
+                      <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-slate-800 bg-black">
                         {company.logo_url ? (
-                          <img
+                          <Image
                             src={company.logo_url}
                             alt={company.name}
-                            className="h-full w-full object-cover"
+                            fill
+                            sizes="44px"
+                            className="object-cover"
                           />
                         ) : (
                           <span className="text-xs text-gray-500">Logo</span>

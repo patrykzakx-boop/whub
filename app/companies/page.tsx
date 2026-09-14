@@ -1,9 +1,18 @@
+import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 
 import { SERVICES } from "@/components/company-form/constants/services";
 import { MATERIALS } from "@/components/company-form/constants/materials";
 import { METHODS } from "@/components/company-form/constants/methods";
+
+export const metadata: Metadata = {
+  title: "Firmy spawalnicze i obróbka metali",
+  description:
+    "Przeglądaj firmy spawalnicze i zakłady obróbki metali. Filtruj wykonawców według lokalizacji, usług, materiałów i metod spawania.",
+  alternates: { canonical: "/companies" },
+};
 
 type SearchParams = {
   q?: string | string[];
@@ -122,8 +131,8 @@ export default async function CompaniesPage({ searchParams }: Props) {
               </h1>
 
               <p className="mt-4 max-w-2xl text-sm leading-6 text-gray-400 sm:text-base">
-                Znajdź sprawdzone firmy spawalnicze w swojej okolicy. Porównuj
-                usługi, technologie i doświadczenie.
+                Znajdź firmy spawalnicze w swojej okolicy. Porównuj usługi,
+                technologie i doświadczenie.
               </p>
             </div>
 
@@ -144,6 +153,7 @@ export default async function CompaniesPage({ searchParams }: Props) {
           <div className="grid gap-3 lg:grid-cols-[1fr_220px_auto]">
             <input
               name="q"
+              aria-label="Szukaj firmy lub usługi"
               defaultValue={getFirstParam(filters.q)}
               placeholder="Szukaj firmy, usługi, miasta..."
               className="rounded-xl border border-slate-800 bg-[#05070a] px-5 py-3.5 text-sm text-white outline-none placeholder:text-gray-500 focus:border-slate-600"
@@ -151,6 +161,7 @@ export default async function CompaniesPage({ searchParams }: Props) {
 
             <input
               name="location"
+              aria-label="Lokalizacja firmy"
               defaultValue={getFirstParam(filters.location)}
               placeholder="Lokalizacja"
               className="rounded-xl border border-slate-800 bg-[#05070a] px-5 py-3.5 text-sm text-white outline-none placeholder:text-gray-500 focus:border-slate-600 lg:max-w-[220px]"
@@ -167,6 +178,7 @@ export default async function CompaniesPage({ searchParams }: Props) {
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
             <select
               name="region"
+              aria-label="Województwo"
               defaultValue={selectedRegion}
               className="rounded-xl border border-slate-800 bg-[#05070a] px-4 py-3 text-sm text-gray-300 outline-none focus:border-slate-600"
             >
@@ -181,6 +193,7 @@ export default async function CompaniesPage({ searchParams }: Props) {
 
             <select
               name="service"
+              aria-label="Rodzaj usługi"
               defaultValue={selectedServices[0] || ""}
               className="rounded-xl border border-slate-800 bg-[#05070a] px-4 py-3 text-sm text-gray-300 outline-none focus:border-slate-600"
             >
@@ -195,6 +208,7 @@ export default async function CompaniesPage({ searchParams }: Props) {
 
             <select
               name="material"
+              aria-label="Materiał"
               defaultValue={selectedMaterials[0] || ""}
               className="rounded-xl border border-slate-800 bg-[#05070a] px-4 py-3 text-sm text-gray-300 outline-none focus:border-slate-600"
             >
@@ -209,6 +223,7 @@ export default async function CompaniesPage({ searchParams }: Props) {
 
             <select
               name="method"
+              aria-label="Metoda spawania"
               defaultValue={selectedMethods[0] || ""}
               className="rounded-xl border border-slate-800 bg-[#05070a] px-4 py-3 text-sm text-gray-300 outline-none focus:border-slate-600"
             >
@@ -258,12 +273,14 @@ export default async function CompaniesPage({ searchParams }: Props) {
                 >
                   <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
                     <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-center">
-                      <div className="flex h-[72px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-800 bg-black sm:h-20 sm:w-20">
+                      <div className="relative flex h-[72px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-800 bg-black sm:h-20 sm:w-20">
                         {company.logo_url ? (
-                          <img
+                          <Image
                             src={company.logo_url}
                             alt={company.name}
-                            className="h-full w-full object-cover"
+                            fill
+                            sizes="80px"
+                            className="object-cover"
                           />
                         ) : (
                           <span className="text-sm text-gray-500">Logo</span>

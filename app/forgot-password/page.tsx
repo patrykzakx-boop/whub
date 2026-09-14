@@ -70,6 +70,7 @@ export default function ForgotPasswordPage() {
         <div className="mt-6 space-y-4">
           <input
             type="email"
+            aria-label="Adres e-mail"
             autoComplete="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
@@ -78,13 +79,13 @@ export default function ForgotPasswordPage() {
           />
 
           {message && (
-            <div className="rounded-xl border border-slate-700 bg-[#05070a] px-4 py-3 text-sm text-gray-300">
+            <div role="status" aria-live="polite" className="rounded-xl border border-slate-700 bg-[#05070a] px-4 py-3 text-sm text-gray-300">
               {message}
             </div>
           )}
 
           {errorMessage && (
-            <div className="rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+            <div role="alert" aria-live="assertive" className="rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
               {errorMessage}
             </div>
           )}

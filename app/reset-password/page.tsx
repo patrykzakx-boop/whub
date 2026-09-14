@@ -56,6 +56,8 @@ export default function ResetPasswordPage() {
         <div className="mt-6 space-y-4">
           <input
             type="password"
+            aria-label="Nowe hasło"
+            autoComplete="new-password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             placeholder="Nowe hasło"
@@ -64,6 +66,8 @@ export default function ResetPasswordPage() {
 
           <input
             type="password"
+            aria-label="Powtórz nowe hasło"
+            autoComplete="new-password"
             value={repeatPassword}
             onChange={(event) => setRepeatPassword(event.target.value)}
             placeholder="Powtórz nowe hasło"
@@ -71,13 +75,13 @@ export default function ResetPasswordPage() {
           />
 
           {message && (
-            <div className="rounded-xl border border-slate-700 bg-[#05070a] px-4 py-3 text-sm text-gray-300">
+            <div role="status" aria-live="polite" className="rounded-xl border border-slate-700 bg-[#05070a] px-4 py-3 text-sm text-gray-300">
               {message}
             </div>
           )}
 
           {errorMessage && (
-            <div className="rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+            <div role="alert" aria-live="assertive" className="rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
               {errorMessage}
             </div>
           )}

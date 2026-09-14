@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 import RequestCategoryImage from "@/components/requests/RequestCategoryImage";
@@ -6,6 +7,13 @@ import {
   REQUEST_CATEGORIES,
   getRequestCategoryLabel,
 } from "@/lib/requestCategories";
+
+export const metadata: Metadata = {
+  title: "Aktualne zlecenia spawalnicze",
+  description:
+    "Przeglądaj aktualne zlecenia spawalnicze i ślusarskie z całej Polski.",
+  alternates: { canonical: "/requests" },
+};
 
 type SearchParams = {
   category?: string;
@@ -83,7 +91,7 @@ export default async function RequestsPage({ searchParams }: Props) {
 
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white">
+          <h1 className="text-3xl font-bold text-white sm:text-4xl">
             Aktywne zlecenia
           </h1>
 
@@ -99,6 +107,7 @@ export default async function RequestsPage({ searchParams }: Props) {
         >
           <select
             name="category"
+            aria-label="Kategoria zlecenia"
             defaultValue={filters.category || ""}
             className="rounded-xl border border-slate-700 bg-[#05070a] px-4 py-3 text-sm text-white outline-none transition focus:border-orange-500"
           >
@@ -113,6 +122,7 @@ export default async function RequestsPage({ searchParams }: Props) {
 
           <select
             name="city"
+            aria-label="Lokalizacja zlecenia"
             defaultValue={filters.city || ""}
             className="rounded-xl border border-slate-700 bg-[#05070a] px-4 py-3 text-sm text-white outline-none transition focus:border-orange-500"
           >
@@ -127,6 +137,7 @@ export default async function RequestsPage({ searchParams }: Props) {
 
           <select
             name="sort"
+            aria-label="Kolejność zleceń"
             defaultValue={selectedSort}
             className="rounded-xl border border-slate-700 bg-[#05070a] px-4 py-3 text-sm text-white outline-none transition focus:border-orange-500"
           >

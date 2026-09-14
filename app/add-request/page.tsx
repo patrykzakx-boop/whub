@@ -337,13 +337,13 @@ export default function AddRequestPage() {
         )}
 
         {errorMessage && (
-          <div className="mb-6 rounded-3xl border border-red-500/40 bg-red-500/10 p-5 text-sm text-red-200">
+          <div role="alert" aria-live="assertive" className="mb-6 rounded-3xl border border-red-500/40 bg-red-500/10 p-5 text-sm text-red-200">
             {errorMessage}
           </div>
         )}
 
         {accessLink && (
-          <div className="mb-6 rounded-3xl border border-slate-800 bg-[#0d1218] p-5 text-sm text-gray-300">
+          <div role="status" aria-live="polite" className="mb-6 rounded-3xl border border-slate-800 bg-[#0d1218] p-5 text-sm text-gray-300">
             Prywatny link do zlecenia: <span className="text-orange-400">{accessLink}</span>
           </div>
         )}
@@ -372,6 +372,7 @@ export default function AddRequestPage() {
             </label>
 
             <input
+              aria-label="Tytuł zlecenia"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Np. Balustrada balkonowa 8m"
@@ -386,6 +387,7 @@ export default function AddRequestPage() {
             </label>
 
             <select
+              aria-label="Kategoria zlecenia"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               className="w-full rounded-xl border border-slate-700 bg-[#05070a] p-3 text-white outline-none focus:border-orange-500"
@@ -409,6 +411,7 @@ export default function AddRequestPage() {
             </label>
 
             <textarea
+              aria-label="Opis projektu"
               rows={8}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -511,6 +514,7 @@ export default function AddRequestPage() {
             </label>
 
             <input
+              aria-label="Lokalizacja zlecenia"
               value={city}
               onChange={(e) => setCity(e.target.value)}
               placeholder="Np. Kraków"
@@ -527,6 +531,7 @@ export default function AddRequestPage() {
             <div className="grid gap-4">
 
               <input
+                aria-label="Imię i nazwisko"
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
                 placeholder="Imię i nazwisko"
@@ -536,6 +541,7 @@ export default function AddRequestPage() {
               <div className="grid gap-4 md:grid-cols-2">
 
                 <input
+                  aria-label="Numer telefonu"
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value)}
                   placeholder="Telefon"
@@ -543,6 +549,7 @@ export default function AddRequestPage() {
                 />
 
                 <input
+                  aria-label="Adres e-mail"
                   value={customerEmail}
                   onChange={(e) => setCustomerEmail(e.target.value)}
                   placeholder="Email"
@@ -567,6 +574,7 @@ export default function AddRequestPage() {
             <div className="grid gap-3 md:grid-cols-2">
               <button
                 type="button"
+                aria-pressed={requestType === "individual"}
                 onClick={() => setRequestType("individual")}
                 className={`rounded-2xl p-4 text-center text-white transition ${
                   requestType === "individual"
@@ -579,6 +587,7 @@ export default function AddRequestPage() {
 
               <button
                 type="button"
+                aria-pressed={requestType === "asap"}
                 onClick={() => setRequestType("asap")}
                 className={`rounded-2xl p-4 text-center text-white transition ${
                   requestType === "asap"
@@ -616,6 +625,7 @@ export default function AddRequestPage() {
           <button
             onClick={handleSubmit}
             disabled={loading || !captchaToken}
+            aria-busy={loading}
             className="w-full rounded-2xl bg-orange-500 py-4 text-lg font-semibold text-white transition hover:bg-orange-600 disabled:opacity-50"
           >
             {loading ? "Zapisywanie..." : "Opublikuj zapytanie"}

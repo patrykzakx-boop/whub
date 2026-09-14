@@ -99,6 +99,8 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={() => setAccountMenuOpen((isOpen) => !isOpen)}
+                aria-expanded={accountMenuOpen}
+                aria-haspopup="menu"
                 className="hidden max-w-[180px] truncate rounded-lg px-3 py-2 text-sm text-gray-300 transition hover:bg-[#0d1218] hover:text-white md:block"
                 title={email}
               >
@@ -108,6 +110,8 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={() => setAccountMenuOpen((isOpen) => !isOpen)}
+                aria-expanded={accountMenuOpen}
+                aria-haspopup="menu"
                 className="rounded-lg bg-orange-500 px-3 py-2 text-sm font-semibold text-white transition hover:bg-orange-600 md:hidden"
               >
                 Konto
@@ -121,7 +125,7 @@ export default function Navbar() {
               </Link>
 
               {accountMenuOpen && (
-                <div className="absolute right-0 top-full mt-2 w-56 overflow-hidden rounded-xl border border-slate-800 bg-[#0d1218] shadow-2xl shadow-black/40">
+                <div role="menu" className="absolute right-0 top-full mt-2 w-56 overflow-hidden rounded-xl border border-slate-800 bg-[#0d1218] shadow-2xl shadow-black/40">
                   <div className="border-b border-slate-800 px-4 py-3 text-xs text-gray-500">
                     <div className="mb-1 text-gray-400">Zalogowano jako</div>
                     <div className="truncate text-gray-200">{email}</div>
@@ -213,6 +217,7 @@ function NavLink({
   return (
     <Link
       href={href}
+      aria-current={active ? "page" : undefined}
       className={
         active
           ? "shrink-0 rounded-lg bg-white/[0.06] px-3 py-2 font-medium text-white"

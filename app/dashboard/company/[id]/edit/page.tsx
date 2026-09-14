@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -422,12 +423,15 @@ export default function EditCompanyPage() {
               <div>
                 <span className="mb-2 block text-sm text-gray-500">Logo firmy</span>
 
-                <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-xl border border-slate-800 bg-[#05070a]">
+                <div className="relative flex h-28 w-28 items-center justify-center overflow-hidden rounded-xl border border-slate-800 bg-[#05070a]">
                   {logoPreview ? (
-                    <img
+                    <Image
                       src={logoPreview}
                       alt={form.name || "Logo firmy"}
-                      className="h-full w-full object-cover"
+                      fill
+                      sizes="112px"
+                      unoptimized={logoPreview.startsWith("blob:") || logoPreview.startsWith("data:")}
+                      className="object-cover"
                     />
                   ) : (
                     <span className="text-sm text-gray-500">Logo</span>

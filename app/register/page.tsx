@@ -67,6 +67,7 @@ export default function RegisterPage() {
 
           <input
             type="email"
+            aria-label="Adres e-mail"
             autoComplete="email"
             value={email}
             onChange={(e) =>
@@ -78,6 +79,7 @@ export default function RegisterPage() {
 
           <input
             type="password"
+            aria-label="Hasło"
             autoComplete="new-password"
             value={password}
             onChange={(e) =>
@@ -88,13 +90,13 @@ export default function RegisterPage() {
           />
 
           {message && (
-            <div className="rounded-xl border border-green-500/40 bg-green-500/10 px-4 py-3 text-sm text-green-200">
+            <div role="status" aria-live="polite" className="rounded-xl border border-green-500/40 bg-green-500/10 px-4 py-3 text-sm text-green-200">
               {message}
             </div>
           )}
 
           {errorMessage && (
-            <div className="rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+            <div role="alert" aria-live="assertive" className="rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
               {errorMessage}
             </div>
           )}

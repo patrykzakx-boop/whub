@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -336,12 +337,14 @@ export default function CompanyGalleryPage() {
               {images.map((image) => (
                 <div
                   key={image.id}
-                  className="group relative overflow-hidden rounded-2xl border border-slate-800 bg-black"
+                  className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-slate-800 bg-black"
                 >
-                  <img
+                  <Image
                     src={image.image_url}
                     alt={company.name}
-                    className="aspect-[4/3] w-full object-cover transition duration-300 group-hover:scale-105 group-hover:opacity-85"
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover transition duration-300 group-hover:scale-105 group-hover:opacity-85"
                   />
 
                   <button

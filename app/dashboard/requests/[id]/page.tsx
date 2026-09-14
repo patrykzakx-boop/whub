@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -385,14 +386,16 @@ export default function DashboardRequestDetailsPage() {
                             <div className="flex items-start gap-3">
                               <Link
                                 href={profileHref}
-                                className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-slate-800 bg-black transition hover:border-orange-500"
+                                className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-slate-800 bg-black transition hover:border-orange-500"
                                 aria-label={"Profil firmy " + (offer.companies?.name || "")}
                               >
                                 {offer.companies?.logo_url ? (
-                                  <img
+                                  <Image
                                     src={offer.companies.logo_url}
                                     alt={offer.companies.name || "Firma"}
-                                    className="h-full w-full object-cover"
+                                    fill
+                                    sizes="40px"
+                                    className="object-cover"
                                   />
                                 ) : (
                                   <span className="text-[10px] text-gray-500">Logo</span>
