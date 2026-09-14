@@ -4,6 +4,7 @@ import RequestGallery from "@/components/requests/RequestGallery";
 import RequestOfferForm from "@/components/requests/RequestOfferForm";
 import { getRequestStatusLabel } from "@/lib/statuses";
 import { getRequestCategoryLabel } from "@/lib/requestCategories";
+import ReportButton from "@/components/moderation/ReportButton";
 
 
 
@@ -123,6 +124,8 @@ export default async function RequestPage({
     </div>
 
     <RequestOfferForm requestId={request.id} requestStatus={request.status} />
+
+    <ReportButton targetType="request" targetId={request.id} />
 
     {/* KONTAKT */}
     <div className="mt-6 rounded-3xl border border-slate-800 bg-[#0d1218] p-8">

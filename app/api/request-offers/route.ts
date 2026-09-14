@@ -10,6 +10,7 @@ import {
   isOwnRequestOffer,
   OWN_REQUEST_OFFER_ERROR,
 } from "@/lib/requestOffers";
+import { isBlockedUser } from "@/lib/adminAuth";
 
 type RequestBody = {
   requestId?: string | number;
@@ -57,6 +58,10 @@ export async function POST(request: Request) {
       );
     }
 
+    if (await isBlockedUser(userData.user.id)) {
+      return NextResponse.json({ error: "To konto jest zablokowane." }, { status: 403 });
+    }
+
     const rateLimit = await consumeRateLimit(request, {
       scope: "request-offer-create",
       identifier: userData.user.id,
@@ -76,7 +81,7 @@ export async function POST(request: Request) {
 
     const { data: company, error: companyError } = await supabase
       .from("companies")
-      .select("id, name, owner_id")
+      .select("id, name, owner_id, status, moderation_status")
       .eq("id", companyId)
       .single();
 
@@ -94,9 +99,17 @@ export async function POST(request: Request) {
       );
     }
 
+
+    if (company.status !== "published" || company.moderation_status !== "approved") {
+      return NextResponse.json(
+        { error: "Firma musi zostać zatwierdzona przed wysyłaniem ofert." },
+        { status: 403 }
+      );
+    }
+
     const { data: requestData, error: requestError } = await supabase
       .from("requests")
-      .select("id, title, city, category, status, customer_id, customer_email, access_token, company_id")
+      .select("id, title, city, category, status, moderation_status, customer_id, customer_email, access_token, company_id")
       .eq("id", requestId)
       .single();
 
@@ -111,6 +124,14 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: "To nie jest publiczne zlecenie do odpowiedzi." },
         { status: 400 }
+      );
+    }
+
+
+    if (requestData.moderation_status === "hidden") {
+      return NextResponse.json(
+        { error: "To zlecenie zostało ukryte przez moderatora." },
+        { status: 403 }
       );
     }
 

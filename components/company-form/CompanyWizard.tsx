@@ -93,7 +93,7 @@ export default function CompanyWizard() {
       return;
     }
 
-    alert("Firma została opublikowana");
+    alert("Firma została zapisana i czeka na zatwierdzenie przez administratora.");
   } catch (err) {
     console.error(err);
     alert("Wystąpił nieoczekiwany błąd");
@@ -112,8 +112,8 @@ export default function CompanyWizard() {
         </h1>
 
         <p className="mt-3 max-w-2xl text-gray-400">
-          Uzupełnij dane firmy, zakres usług oraz lokalizację. Po publikacji
-          profil pojawi się w katalogu WeldingHub.
+          Uzupełnij dane firmy, zakres usług oraz lokalizację. Po zatwierdzeniu
+          przez administratora profil pojawi się w katalogu WeldHub.
         </p>
       </div>
 

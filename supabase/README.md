@@ -37,3 +37,23 @@ Po wdrożeniu uruchom `verification/rls_audit.sql`. Wynik powinien pokazać:
   `NOT VALID`, ale chroni wszystkie nowe i zmieniane rekordy.
 - Tworzenie zlecenia przechodzi przez `/api/requests`, więc role `anon` i
   `authenticated` nie otrzymują bezpośredniego `INSERT` do `requests`.
+
+## Moderacja
+
+Po wdrożeniu powyższych migracji uruchom
+`migrations/20260914090000_moderation.sql`. Migracja zachowuje jako zatwierdzone
+profile, które były już publiczne, a każdą nową firmę kieruje do kolejki
+moderacji. Istotna edycja opublikowanego profilu również wymaga ponownej
+akceptacji.
+
+Migracja próbuje nadać rolę administratora użytkownikowi o adresie
+`weldhub@fastmail.com`. Jeśli konto logowania ma inny adres, wykonaj w SQL
+Editorze po migracji:
+
+```sql
+insert into public.admin_users (user_id)
+select id from auth.users where lower(email) = lower('ADRES-LOGOWANIA')
+on conflict (user_id) do nothing;
+```
+
+Panel jest dostępny pod `/admin`; po nadaniu roli pojawi się też w menu konta.

@@ -8,6 +8,7 @@ import {
 } from "@/lib/rateLimit";
 import { createSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { createSupabaseAuthServer } from "@/lib/supabaseAuthServer";
+import { isBlockedUser } from "@/lib/adminAuth";
 
 const CHANGE_ATTEMPTS = 3;
 const CHANGE_WINDOW_SECONDS = 30 * 60;
@@ -37,6 +38,11 @@ export async function POST(request: Request) {
         { error: "Sesja wygasła. Zaloguj się ponownie." },
         { status: 401, headers: { "Cache-Control": "no-store" } }
       );
+    }
+
+
+    if (await isBlockedUser(user.id)) {
+      return NextResponse.json({ error: "To konto jest zablokowane." }, { status: 403 });
     }
 
     const userLimit = await consumeRateLimit(request, {

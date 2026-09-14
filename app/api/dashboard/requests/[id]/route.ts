@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabaseAdmin";
+import { isBlockedUser } from "@/lib/adminAuth";
 
 type Params = {
   params: Promise<{
@@ -31,6 +32,11 @@ export async function DELETE(request: Request, { params }: Params) {
         { error: "Zaloguj się ponownie, aby usunąć ogłoszenie." },
         { status: 401 }
       );
+    }
+
+
+    if (await isBlockedUser(userData.user.id)) {
+      return NextResponse.json({ error: "To konto jest zablokowane." }, { status: 403 });
     }
 
     const { data: requestData, error: requestError } = await supabase

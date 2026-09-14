@@ -20,6 +20,7 @@ type DashboardCompany = {
   city: string | null;
   region: string | null;
   status: string | null;
+  moderation_status: string | null;
 };
 
 type PrivateRequest = {
@@ -168,11 +169,11 @@ export default function DashboardPage() {
   };
 
   const publishedCompanies = companies.filter(
-    (company) => company.status === "published"
+    (company) => company.status === "published" && company.moderation_status === "approved"
   ).length;
 
   const draftCompanies = companies.filter(
-    (company) => company.status !== "published"
+    (company) => company.status !== "published" || company.moderation_status !== "approved"
   ).length;
 
   const newPrivateRequests = privateRequests.filter((request) =>
@@ -243,7 +244,7 @@ export default function DashboardPage() {
 
     setMessage(
       status === "published"
-        ? "Firma została opublikowana."
+        ? "Firma będzie publiczna po zatwierdzeniu przez administratora."
         : "Firma została ukryta z katalogu."
     );
   };
@@ -592,7 +593,7 @@ function ContractorDashboard({
                           <h3 className="truncate text-[15px] font-semibold text-white">
                             {company.name}
                           </h3>
-                          <CompanyStatusBadge status={company.status} />
+                          <CompanyStatusBadge status={company.status} moderationStatus={company.moderation_status} />
                         </div>
 
                         <p className="mt-1 text-sm text-gray-500">
@@ -602,12 +603,14 @@ function ContractorDashboard({
                     </div>
 
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm lg:justify-end">
-                      <Link
-                        href={"/company/" + company.id}
-                        className="text-gray-400 transition hover:text-white"
-                      >
-                        Profil
-                      </Link>
+                      {company.status === "published" && company.moderation_status === "approved" && (
+                        <Link
+                          href={"/company/" + company.id}
+                          className="text-gray-400 transition hover:text-white"
+                        >
+                          Profil
+                        </Link>
+                      )}
 
                       <Link
                         href={"/dashboard/company/" + company.id + "/edit"}
@@ -832,18 +835,21 @@ function RequestStatusBadge({ status }: { status: string | null }) {
   );
 }
 
-function CompanyStatusBadge({ status }: { status: string | null }) {
+function CompanyStatusBadge({ status, moderationStatus }: { status: string | null; moderationStatus: string | null }) {
   const published = status === "published";
+  const approved = moderationStatus === "approved";
+  const rejected = moderationStatus === "rejected";
+  const label = !published ? "Ukryta" : approved ? "Opublikowana" : rejected ? "Odrzucona" : "Oczekuje na akceptację";
 
   return (
     <span
       className={
-        published
+        published && approved
           ? "inline-flex rounded-full bg-slate-800 px-2.5 py-1 text-xs font-medium text-gray-300"
           : "inline-flex rounded-full bg-slate-900 px-2.5 py-1 text-xs font-medium text-gray-500"
       }
     >
-      {published ? "Opublikowana" : "Ukryta"}
+      {label}
     </span>
   );
 }

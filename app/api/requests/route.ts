@@ -14,6 +14,7 @@ import {
   requireCaptchaToken,
   verifyTurnstile,
 } from "@/lib/captcha";
+import { isBlockedUser } from "@/lib/adminAuth";
 
 export async function POST(request: Request) {
   try {
@@ -73,6 +74,10 @@ export async function POST(request: Request) {
       }
 
       customerId = data.user.id;
+
+      if (await isBlockedUser(customerId)) {
+        return NextResponse.json({ error: "To konto jest zablokowane." }, { status: 403 });
+      }
     }
 
     if (input.companyId !== null) {
@@ -81,6 +86,7 @@ export async function POST(request: Request) {
         .select("id")
         .eq("id", input.companyId)
         .eq("status", "published")
+        .eq("moderation_status", "approved")
         .maybeSingle();
 
       if (!company) {

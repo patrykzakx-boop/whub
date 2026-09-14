@@ -12,6 +12,7 @@ export default function Navbar() {
   const [email, setEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -21,9 +22,12 @@ export default function Navbar() {
         } = await supabase.auth.getUser();
 
         setEmail(user?.email || null);
+        const { data: sessionData } = await supabase.auth.getSession();
+        setIsAdmin(await checkAdmin(sessionData.session?.access_token));
       } catch (error) {
         console.error("Nie udało się pobrać użytkownika:", error);
         setEmail(null);
+        setIsAdmin(false);
       } finally {
         setLoading(false);
       }
@@ -34,6 +38,7 @@ export default function Navbar() {
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setEmail(session?.user?.email || null);
+        void checkAdmin(session?.access_token).then(setIsAdmin);
         setLoading(false);
       }
     );
@@ -51,6 +56,7 @@ export default function Navbar() {
   const logout = async () => {
     await supabase.auth.signOut();
     setAccountMenuOpen(false);
+    setIsAdmin(false);
     router.push("/");
   };
 
@@ -137,6 +143,16 @@ export default function Navbar() {
                     Konto i hasło
                   </Link>
 
+                  {isAdmin && (
+                    <Link
+                      href="/admin"
+                      onClick={() => setAccountMenuOpen(false)}
+                      className="block border-t border-slate-800 px-4 py-3 text-sm font-medium text-orange-400 transition hover:bg-[#070b10] hover:text-orange-300"
+                    >
+                      Panel administratora
+                    </Link>
+                  )}
+
                   <button
                     type="button"
                     onClick={logout}
@@ -168,6 +184,19 @@ export default function Navbar() {
       </div>
     </header>
   );
+}
+
+async function checkAdmin(accessToken?: string) {
+  if (!accessToken) return false;
+  try {
+    const response = await fetch("/api/admin/me", {
+      headers: { Authorization: "Bearer " + accessToken },
+      cache: "no-store",
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
 }
 
 function NavLink({

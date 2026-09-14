@@ -7,6 +7,7 @@ import {
   resetRateLimit,
 } from "@/lib/rateLimit";
 import { createSupabaseAuthServer } from "@/lib/supabaseAuthServer";
+import { isBlockedUser } from "@/lib/adminAuth";
 
 const LOGIN_ATTEMPTS = 3;
 const LOGIN_WINDOW_SECONDS = 30 * 60;
@@ -47,6 +48,13 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: "Nieprawidłowy e-mail lub hasło." },
         { status: 401, headers: { "Cache-Control": "no-store" } }
+      );
+    }
+
+    if (await isBlockedUser(data.session.user.id)) {
+      return NextResponse.json(
+        { error: "To konto zostało zablokowane. Skontaktuj się z administratorem WeldHub." },
+        { status: 403, headers: { "Cache-Control": "no-store" } }
       );
     }
 

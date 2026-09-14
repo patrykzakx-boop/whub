@@ -334,6 +334,7 @@ export default function EditCompanyPage() {
     updateField("logoUrl", logoUrl);
     setLogoFile(null);
     setLogoPreview(logoUrl);
+    window.alert("Zmiany zapisano. Istotne zmiany profilu wymagają ponownej akceptacji administratora.");
     router.push("/dashboard#companies");
   };
 

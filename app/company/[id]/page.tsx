@@ -3,6 +3,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { SERVICES } from "@/components/company-form/constants/services";
 import { MATERIALS } from "@/components/company-form/constants/materials";
 import { METHODS } from "@/components/company-form/constants/methods";
+import ReportButton from "@/components/moderation/ReportButton";
 
 type Props = {
   params: Promise<{
@@ -222,6 +223,9 @@ export default async function CompanyPage({ params }: Props) {
                 </div>
               </section>
           </div>
+        </div>
+        <div className="px-6 pb-6 sm:px-8 lg:px-10">
+          <ReportButton targetType="company" targetId={company.id} />
         </div>
       </article>
     </main>
