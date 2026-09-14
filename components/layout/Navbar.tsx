@@ -129,6 +129,14 @@ export default function Navbar() {
                     Panel klienta
                   </Link>
 
+                  <Link
+                    href="/dashboard/account"
+                    onClick={() => setAccountMenuOpen(false)}
+                    className="block px-4 py-3 text-sm text-gray-300 transition hover:bg-[#070b10] hover:text-white"
+                  >
+                    Konto i hasło
+                  </Link>
+
                   <button
                     type="button"
                     onClick={logout}

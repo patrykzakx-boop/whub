@@ -354,6 +354,7 @@ export default function DashboardPage() {
               <DashboardLink href="/dashboard" label="Moje zlecenia" active />
               <DashboardLink href="/dashboard/requests" label="Wszystkie zlecenia" />
               <DashboardLink href="/add-request" label="Dodaj zlecenie" />
+              <DashboardLink href="/dashboard/account" label="Konto i hasło" />
             </>
           ) : (
             <>
@@ -365,6 +366,7 @@ export default function DashboardPage() {
                 count={newPrivateRequests.length}
               />
               <DashboardLink href="/dashboard/offers" label="Odpowiedzi" />
+              <DashboardLink href="/dashboard/account" label="Konto i hasło" />
             </>
           )}
         </nav>

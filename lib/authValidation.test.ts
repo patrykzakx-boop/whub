@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  validatePasswordChange,
   validateLoginCredentials,
   validatePasswordReset,
   validateRegistration,
@@ -55,5 +56,35 @@ describe("auth input validation", () => {
         password: "12345678",
       })
     ).toEqual({ email: "test@example.com", password: "12345678" });
+  });
+
+  it("sprawdza dane zmiany hasła", () => {
+    expect(() =>
+      validatePasswordChange({ currentPassword: "", newPassword: "nowehaslo" })
+    ).toThrow("Wpisz bieżące hasło.");
+
+    expect(() =>
+      validatePasswordChange({
+        currentPassword: "starehaslo",
+        newPassword: "1234567",
+      })
+    ).toThrow("Nowe hasło musi mieć co najmniej 8 znaków.");
+
+    expect(() =>
+      validatePasswordChange({
+        currentPassword: "takiesamo",
+        newPassword: "takiesamo",
+      })
+    ).toThrow("Nowe hasło musi być inne niż bieżące.");
+
+    expect(
+      validatePasswordChange({
+        currentPassword: "stare hasło",
+        newPassword: "nowe hasło",
+      })
+    ).toEqual({
+      currentPassword: "stare hasło",
+      newPassword: "nowe hasło",
+    });
   });
 });

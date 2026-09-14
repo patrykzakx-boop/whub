@@ -9,6 +9,11 @@ export type PasswordResetInput = {
   email?: string;
 };
 
+export type PasswordChangeInput = {
+  currentPassword?: string;
+  newPassword?: string;
+};
+
 export function validateLoginCredentials(input: LoginCredentialsInput) {
   const email = normalizeEmail(input.email);
   const password = input.password || "";
@@ -50,6 +55,29 @@ export function validatePasswordReset(input: PasswordResetInput) {
   }
 
   return { email };
+}
+
+export function validatePasswordChange(input: PasswordChangeInput) {
+  const currentPassword = input.currentPassword || "";
+  const newPassword = input.newPassword || "";
+
+  if (!currentPassword.trim()) {
+    throw new Error("Wpisz bieżące hasło.");
+  }
+
+  if (currentPassword.length > 1_024 || newPassword.length > 1_024) {
+    throw new Error("Hasło jest zbyt długie.");
+  }
+
+  if (newPassword.length < 8) {
+    throw new Error("Nowe hasło musi mieć co najmniej 8 znaków.");
+  }
+
+  if (currentPassword === newPassword) {
+    throw new Error("Nowe hasło musi być inne niż bieżące.");
+  }
+
+  return { currentPassword, newPassword };
 }
 
 function normalizeEmail(value: string | undefined) {
