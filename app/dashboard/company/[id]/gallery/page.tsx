@@ -57,7 +57,7 @@ export default function CompanyGalleryPage() {
         .select("id,name,owner_id")
         .eq("id", id)
         .eq("owner_id", user.id)
-        .single();
+        .maybeSingle();
 
       if (companyError || !companyData) {
         setErrorMessage(
@@ -375,16 +375,6 @@ function getStoragePath(publicUrl: string) {
 }
 
 function getSupabaseErrorMessage(error: unknown, fallback: string) {
-  if (!error || typeof error !== "object") return fallback;
-
-  const maybeError = error as {
-    message?: string;
-    details?: string;
-    hint?: string;
-    code?: string;
-  };
-
-  return [maybeError.message || fallback, maybeError.details, maybeError.hint]
-    .filter(Boolean)
-    .join(" ");
+  if (error) console.error(error);
+  return fallback;
 }

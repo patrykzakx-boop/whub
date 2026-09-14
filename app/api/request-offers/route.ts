@@ -6,6 +6,10 @@ import {
   consumeRateLimit,
   RateLimitUnavailableError,
 } from "@/lib/rateLimit";
+import {
+  isOwnRequestOffer,
+  OWN_REQUEST_OFFER_ERROR,
+} from "@/lib/requestOffers";
 
 type RequestBody = {
   requestId?: string | number;
@@ -92,7 +96,7 @@ export async function POST(request: Request) {
 
     const { data: requestData, error: requestError } = await supabase
       .from("requests")
-      .select("id, title, city, category, status, customer_email, access_token, company_id")
+      .select("id, title, city, category, status, customer_id, customer_email, access_token, company_id")
       .eq("id", requestId)
       .single();
 
@@ -107,6 +111,13 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: "To nie jest publiczne zlecenie do odpowiedzi." },
         { status: 400 }
+      );
+    }
+
+    if (isOwnRequestOffer(requestData.customer_id, userData.user.id)) {
+      return NextResponse.json(
+        { error: OWN_REQUEST_OFFER_ERROR },
+        { status: 403 }
       );
     }
 

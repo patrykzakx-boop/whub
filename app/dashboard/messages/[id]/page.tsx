@@ -60,10 +60,11 @@ export default function DashboardMessageDetailsPage({ params }: Props) {
         .select("*, companies!inner(name, owner_id)")
         .eq("id", id)
         .eq("companies.owner_id", user.id)
-        .single();
+        .maybeSingle();
 
       if (error || !data) {
-        setErrorMessage(error?.message || "Nie znaleziono zapytania.");
+        if (error) console.error(error);
+        setErrorMessage("Nie znaleziono zapytania albo nie masz do niego dostępu.");
         setLoading(false);
         return;
       }

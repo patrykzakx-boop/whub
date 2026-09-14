@@ -4,6 +4,7 @@ import Link from "next/link";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { getRequestStatusLabel, isRequestOpen } from "@/lib/statuses";
+import { OWN_REQUEST_OFFER_ERROR } from "@/lib/requestOffers";
 
 type Company = {
   id: string | number;
@@ -31,6 +32,7 @@ export default function RequestOfferForm({ requestId, requestStatus }: Props) {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isOwnRequest, setIsOwnRequest] = useState(false);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [companyId, setCompanyId] = useState("");
@@ -59,6 +61,26 @@ export default function RequestOfferForm({ requestId, requestStatus }: Props) {
       }
 
       setIsLoggedIn(true);
+
+      const { data: ownedRequest, error: ownedRequestError } = await supabase
+        .from("requests")
+        .select("id")
+        .eq("id", requestId)
+        .eq("customer_id", user.id)
+        .maybeSingle();
+
+      if (ownedRequestError) {
+        console.error(ownedRequestError);
+        setErrorMessage("Nie udało się sprawdzić dostępu do tego zlecenia.");
+        setLoading(false);
+        return;
+      }
+
+      if (ownedRequest) {
+        setIsOwnRequest(true);
+        setLoading(false);
+        return;
+      }
 
       const { data: companiesData, error: companiesError } = await supabase
         .from("companies")
@@ -214,6 +236,25 @@ export default function RequestOfferForm({ requestId, requestStatus }: Props) {
             Załóż konto
           </Link>
         </div>
+      </section>
+    );
+  }
+
+  if (isOwnRequest) {
+    return (
+      <section className="mt-6 rounded-3xl border border-slate-800 bg-[#0d1218] p-8">
+        <h2 className="text-2xl font-semibold text-white">
+          Odpowiedz na zlecenie
+        </h2>
+        <p className="mt-3 max-w-2xl text-gray-400">
+          {OWN_REQUEST_OFFER_ERROR}
+        </p>
+        <Link
+          href="/dashboard/requests"
+          className="mt-6 inline-flex rounded-xl border border-slate-700 px-5 py-3 text-sm font-medium text-gray-300 transition hover:border-orange-500 hover:text-white"
+        >
+          Przejdź do moich zleceń
+        </Link>
       </section>
     );
   }

@@ -7,6 +7,7 @@ import { normalizeOfferStatus } from "@/lib/statuses";
 import RequestCategoryImage from "@/components/requests/RequestCategoryImage";
 import { RequestPriorityMeta, isUrgentRequest } from "@/lib/requestPriority";
 import { getRequestCategoryLabel } from "@/lib/requestCategories";
+import { getDashboardOfferHref } from "@/lib/requestOffers";
 
 type Offer = {
   id: string | number;
@@ -112,7 +113,7 @@ export default function DashboardOffersPage() {
                 return (
                 <Link
                   key={offer.id}
-                  href={"/request/" + offer.request_id}
+                  href={getDashboardOfferHref(offer.id)}
                   className={
                     isUrgentRequest(offer.request_type)
                       ? "flex items-center gap-3 rounded-2xl border border-orange-500/50 bg-[#0d1218] px-3 py-3 transition hover:bg-[#101722] sm:gap-4 sm:px-4"

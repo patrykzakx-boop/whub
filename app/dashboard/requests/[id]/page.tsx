@@ -71,10 +71,11 @@ export default function DashboardRequestDetailsPage() {
         .select("id, title, city, category, description, status, created_at, access_token")
         .eq("id", requestId)
         .eq("customer_id", data.user.id)
-        .single();
+        .maybeSingle();
 
       if (error || !requestData) {
-        setErrorMessage(error?.message || "Nie znaleziono zlecenia.");
+        if (error) console.error(error);
+        setErrorMessage("Nie znaleziono zlecenia albo nie masz do niego dostępu.");
         setLoading(false);
         return;
       }
@@ -88,7 +89,8 @@ export default function DashboardRequestDetailsPage() {
         .order("created_at", { ascending: false });
 
       if (offersError) {
-        setErrorMessage(offersError.message);
+        console.error(offersError);
+        setErrorMessage("Nie udało się pobrać odpowiedzi do tego zlecenia.");
       } else {
         setOffers(offersData || []);
       }
