@@ -46,8 +46,8 @@ profile, które były już publiczne, a każdą nową firmę kieruje do kolejki
 moderacji. Istotna edycja opublikowanego profilu również wymaga ponownej
 akceptacji.
 
-Migracja próbuje nadać rolę administratora użytkownikowi o adresie
-`weldhub@fastmail.com`. Jeśli konto logowania ma inny adres, wykonaj w SQL
+Migracja próbuje nadać rolę administratora firmowemu kontu WeldHub oraz
+aktualnemu kontu testowemu. Jeśli konto logowania ma inny adres, wykonaj w SQL
 Editorze po migracji:
 
 ```sql

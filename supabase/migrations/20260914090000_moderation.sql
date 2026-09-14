@@ -76,7 +76,11 @@ create index if not exists moderation_audit_log_created_at_idx
 
 -- Bootstrap the WeldHub operator if this account already exists.
 insert into public.admin_users (user_id)
-select id from auth.users where lower(email) = 'weldhub@fastmail.com'
+select id from auth.users
+where lower(email) in (
+  'weldhub@fastmail.com',
+  'weldhub+test-20260914@fastmail.com'
+)
 on conflict (user_id) do nothing;
 
 create or replace function private.is_admin()
