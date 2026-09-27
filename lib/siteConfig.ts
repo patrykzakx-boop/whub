@@ -7,7 +7,7 @@ export const SITE_DESCRIPTION =
 export const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ||
   process.env.NEXT_PUBLIC_APP_URL ||
-  "https://whub-indol.vercel.app"
+  "https://whub.pl"
 ).replace(/\/$/, "");
 
 export function absoluteUrl(path = "/") {

@@ -4,10 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
-    "test": "vitest run"
+    "test": "vitest run",
+    "backup:supabase": "node scripts/backup-supabase.mjs",
+    "backup:supabase:data": "node scripts/backup-supabase.mjs --data-only",
+    "backup:supabase:storage": "node scripts/backup-supabase.mjs --storage-only"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "^2.1.1",
