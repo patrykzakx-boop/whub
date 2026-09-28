@@ -25,6 +25,22 @@ type AuditItem = {
   id: number; action: string; target_type: string; target_id: string;
   note: string | null; created_at: string;
 };
+type AdminUserItem = {
+  id: string;
+  email: string | null;
+  createdAt: string;
+  lastSignInAt: string | null;
+  emailConfirmedAt: string | null;
+  isBlocked: boolean;
+  isAdmin: boolean;
+  companies: { id: number; name: string | null }[];
+  requestCount: number;
+};
+type UsersData = {
+  users: AdminUserItem[];
+  total: number;
+  truncated: boolean;
+};
 type ModerationData = {
   admin: { id: string; email: string | null };
   companies: CompanyItem[];
@@ -37,9 +53,13 @@ type ModerationData = {
 
 export default function AdminPage() {
   const [data, setData] = useState<ModerationData | null>(null);
+  const [usersData, setUsersData] = useState<UsersData | null>(null);
+  const [userQuery, setUserQuery] = useState("");
   const [loading, setLoading] = useState(true);
+  const [usersLoading, setUsersLoading] = useState(true);
   const [working, setWorking] = useState("");
   const [error, setError] = useState("");
+  const [usersError, setUsersError] = useState("");
 
   const authorizedFetch = useCallback(async (url: string, init?: RequestInit) => {
     const { data: sessionData } = await supabase.auth.getSession();
@@ -66,10 +86,27 @@ export default function AdminPage() {
     }
   }, [authorizedFetch]);
 
+  const loadUsers = useCallback(async () => {
+    setUsersError("");
+    try {
+      const response = await authorizedFetch("/api/admin/users");
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Nie udało się pobrać użytkowników.");
+      setUsersData(result);
+    } catch (loadError) {
+      setUsersError(loadError instanceof Error ? loadError.message : "Nie udało się pobrać użytkowników.");
+    } finally {
+      setUsersLoading(false);
+    }
+  }, [authorizedFetch]);
+
   useEffect(() => {
-    const timeoutId = window.setTimeout(() => void loadData(), 0);
+    const timeoutId = window.setTimeout(() => {
+      void loadData();
+      void loadUsers();
+    }, 0);
     return () => window.clearTimeout(timeoutId);
-  }, [loadData]);
+  }, [loadData, loadUsers]);
 
   const act = async (
     action: string,
@@ -91,7 +128,7 @@ export default function AdminPage() {
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "Operacja nie powiodła się.");
-      await loadData();
+      await Promise.all([loadData(), loadUsers()]);
     } catch (actionError) {
       setError(actionError instanceof Error ? actionError.message : "Operacja nie powiodła się.");
     } finally {
@@ -103,6 +140,15 @@ export default function AdminPage() {
   if (!data) return <AdminMessage error={error}>{error || "Brak dostępu."}</AdminMessage>;
 
   const emailFor = (id: string | null) => id ? data.userEmails[id] || id : "konto gościa";
+  const normalizedQuery = userQuery.trim().toLocaleLowerCase("pl-PL");
+  const visibleUsers = (usersData?.users || []).filter((user) => {
+    if (!normalizedQuery) return true;
+    return [
+      user.email || "",
+      user.id,
+      ...user.companies.map((company) => company.name || ""),
+    ].some((value) => value.toLocaleLowerCase("pl-PL").includes(normalizedQuery));
+  });
 
   return (
     <main className="min-h-screen bg-[#05070a] px-4 py-8 text-white">
@@ -115,19 +161,81 @@ export default function AdminPage() {
             <h1 className="mt-2 text-3xl font-bold sm:text-4xl">Centrum moderacji</h1>
             <p className="mt-2 text-sm text-gray-400">Zalogowano jako {data.admin.email}</p>
           </div>
-          <button onClick={() => void loadData()} className="rounded-xl border border-slate-700 px-4 py-2 text-sm hover:border-orange-500">
+          <button onClick={() => void Promise.all([loadData(), loadUsers()])} className="rounded-xl border border-slate-700 px-4 py-2 text-sm hover:border-orange-500">
             Odśwież dane
           </button>
         </div>
 
         {error && <div className="mb-6 rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-sm text-red-200">{error}</div>}
 
-        <div className="mb-8 grid gap-3 sm:grid-cols-4">
+        <div className="mb-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+          <Stat label="Użytkownicy" value={usersData?.total ?? 0} />
           <Stat label="Firmy do akceptacji" value={data.companies.length} />
           <Stat label="Otwarte zgłoszenia" value={data.reports.length} />
           <Stat label="Ukryte zlecenia" value={data.requests.filter((item) => item.moderation_status === "hidden").length} />
           <Stat label="Zablokowane konta" value={data.blockedUsers.length} />
         </div>
+
+        <section className="mb-8 overflow-hidden rounded-2xl border border-slate-800 bg-[#0d1218]">
+          <div className="flex flex-col gap-3 border-b border-slate-800 px-5 py-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h2 className="text-lg font-semibold">Zarejestrowani użytkownicy</h2>
+              <p className="mt-1 text-xs text-gray-500">
+                {usersLoading ? "Pobieranie kont…" : `${visibleUsers.length} z ${usersData?.total ?? 0} kont`}
+              </p>
+            </div>
+            <label className="sr-only" htmlFor="admin-user-search">Szukaj użytkownika</label>
+            <input
+              id="admin-user-search"
+              type="search"
+              value={userQuery}
+              onChange={(event) => setUserQuery(event.target.value)}
+              placeholder="Szukaj po e-mailu, ID lub firmie"
+              className="w-full rounded-xl border border-slate-700 bg-[#080b0f] px-4 py-2.5 text-sm text-white outline-none placeholder:text-gray-600 focus:border-orange-500 md:max-w-sm"
+            />
+          </div>
+
+          {usersError ? (
+            <p className="p-5 text-sm text-red-300">{usersError}</p>
+          ) : usersLoading ? (
+            <p className="p-5 text-sm text-gray-500">Ładowanie listy użytkowników…</p>
+          ) : !visibleUsers.length ? (
+            <p className="p-5 text-sm text-gray-500">Nie znaleziono użytkowników.</p>
+          ) : (
+            <div className="divide-y divide-slate-800">
+              {visibleUsers.map((user) => {
+                const companyNames = user.companies.map((company) => company.name || `Firma #${company.id}`);
+                const details = [
+                  `${user.companies.length} ${pluralize(user.companies.length, "firma", "firmy", "firm")}`,
+                  `${user.requestCount} ${pluralize(user.requestCount, "zlecenie", "zlecenia", "zleceń")}`,
+                  user.emailConfirmedAt ? "e-mail potwierdzony" : "e-mail niepotwierdzony",
+                ].join(" · ");
+
+                return (
+                  <Row
+                    key={user.id}
+                    title={user.email || "Konto bez adresu e-mail"}
+                    subtitle={`Rejestracja: ${formatDate(user.createdAt)} · Ostatnie logowanie: ${user.lastSignInAt ? formatDate(user.lastSignInAt) : "brak"}`}
+                    description={`${details}${companyNames.length ? ` · ${companyNames.join(", ")}` : ""}`}
+                  >
+                    {user.isAdmin && <span className="rounded-lg border border-orange-500/40 px-3 py-1.5 text-xs font-semibold text-orange-300">Administrator</span>}
+                    {user.isBlocked ? (
+                      <button disabled={Boolean(working)} onClick={() => void act("unblock_user", "user", user.id, true)} className="admin-success">Odblokuj</button>
+                    ) : !user.isAdmin ? (
+                      <button disabled={Boolean(working)} onClick={() => void act("block_user", "user", user.id, true)} className="admin-secondary">Zablokuj konto</button>
+                    ) : null}
+                  </Row>
+                );
+              })}
+            </div>
+          )}
+
+          {usersData?.truncated && (
+            <p className="border-t border-slate-800 p-4 text-xs text-amber-300">
+              Wyświetlono pierwsze 1000 kont. Dla większej liczby dodamy stronicowanie.
+            </p>
+          )}
+        </section>
 
         <Section title="Firmy oczekujące na zatwierdzenie" empty={!data.companies.length}>
           {data.companies.map((company) => (
@@ -198,6 +306,13 @@ function AdminMessage({ children, error = "" }: { children: React.ReactNode; err
   return <main className="flex min-h-screen items-center justify-center bg-[#05070a] px-4"><div className={`max-w-lg rounded-2xl border p-7 text-center ${error ? "border-red-500/40 bg-red-500/10 text-red-100" : "border-slate-800 bg-[#0d1218] text-gray-300"}`}>{children}</div></main>;
 }
 function formatDate(value: string) { return new Date(value).toLocaleString("pl-PL"); }
+function pluralize(value: number, singular: string, few: string, many: string) {
+  if (value === 1) return singular;
+  const lastTwo = value % 100;
+  const last = value % 10;
+  if (last >= 2 && last <= 4 && (lastTwo < 12 || lastTwo > 14)) return few;
+  return many;
+}
 function actionLabel(action: string) {
   return ({ approve_company: "Zatwierdzono firmę", reject_company: "Odrzucono firmę", hide_request: "Ukryto zlecenie", restore_request: "Przywrócono zlecenie", block_user: "Zablokowano konto", unblock_user: "Odblokowano konto", resolve_report: "Rozpatrzono zgłoszenie", dismiss_report: "Odrzucono zgłoszenie" } as Record<string, string>)[action] || action;
 }
