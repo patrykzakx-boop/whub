@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import TurnstileWidget from "@/components/security/TurnstileWidget";
 
@@ -11,6 +12,7 @@ export default function RegisterPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [captchaToken, setCaptchaToken] = useState("");
   const [captchaResetKey, setCaptchaResetKey] = useState(0);
+  const [legalAccepted, setLegalAccepted] = useState(false);
 
   const handleRegister = async () => {
     setMessage("");
@@ -26,13 +28,18 @@ export default function RegisterPage() {
       return;
     }
 
+    if (!legalAccepted) {
+      setErrorMessage("Zaakceptuj Regulamin i potwierdź zapoznanie się z Polityką prywatności.");
+      return;
+    }
+
     setLoading(true);
 
     try {
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, captchaToken }),
+        body: JSON.stringify({ email, password, captchaToken, legalAccepted }),
       });
       const result = (await response.json().catch(() => null)) as
         | { message?: string; error?: string }
@@ -107,9 +114,23 @@ export default function RegisterPage() {
             resetKey={captchaResetKey}
           />
 
+          <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-800 bg-[#080b0f] p-4 text-sm leading-6 text-gray-400">
+            <input
+              type="checkbox"
+              checked={legalAccepted}
+              onChange={(event) => setLegalAccepted(event.target.checked)}
+              className="mt-1 h-4 w-4 shrink-0 accent-orange-500"
+            />
+            <span>
+              Akceptuję <Link href="/regulamin" target="_blank" className="text-orange-300 underline underline-offset-4">Regulamin</Link>
+              {" "}i potwierdzam zapoznanie się z{" "}
+              <Link href="/polityka-prywatnosci" target="_blank" className="text-orange-300 underline underline-offset-4">Polityką prywatności</Link>.
+            </span>
+          </label>
+
           <button
             onClick={handleRegister}
-            disabled={loading || !captchaToken}
+            disabled={loading || !captchaToken || !legalAccepted}
             className="w-full rounded-xl bg-orange-500 px-5 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? "Tworzenie konta…" : "Utwórz konto"}

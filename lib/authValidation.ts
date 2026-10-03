@@ -3,7 +3,9 @@ export type LoginCredentialsInput = {
   password?: string;
 };
 
-export type RegistrationInput = LoginCredentialsInput;
+export type RegistrationInput = LoginCredentialsInput & {
+  legalAccepted?: boolean;
+};
 
 export type PasswordResetInput = {
   email?: string;
@@ -38,6 +40,10 @@ export function validateRegistration(input: RegistrationInput) {
 
   if (credentials.password.length < 8) {
     throw new Error("Hasło musi mieć co najmniej 8 znaków.");
+  }
+
+  if (input.legalAccepted !== true) {
+    throw new Error("Zaakceptuj Regulamin i potwierdź zapoznanie się z Polityką prywatności.");
   }
 
   return credentials;

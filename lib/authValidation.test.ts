@@ -54,8 +54,21 @@ describe("auth input validation", () => {
       validateRegistration({
         email: "TEST@example.com",
         password: "12345678",
+        legalAccepted: true,
       })
     ).toEqual({ email: "test@example.com", password: "12345678" });
+  });
+
+  it("wymaga akceptacji dokumentów prawnych przy rejestracji", () => {
+    expect(() =>
+      validateRegistration({
+        email: "test@example.com",
+        password: "12345678",
+        legalAccepted: false,
+      })
+    ).toThrow(
+      "Zaakceptuj Regulamin i potwierdź zapoznanie się z Polityką prywatności."
+    );
   });
 
   it("sprawdza dane zmiany hasła", () => {

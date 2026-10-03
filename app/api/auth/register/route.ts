@@ -6,6 +6,7 @@ import {
   RateLimitUnavailableError,
 } from "@/lib/rateLimit";
 import { createSupabaseAuthServer } from "@/lib/supabaseAuthServer";
+import { LEGAL_VERSION } from "@/lib/legal";
 
 const REGISTRATION_WINDOW_SECONDS = 60 * 60;
 
@@ -57,7 +58,13 @@ export async function POST(request: Request) {
     const supabase = createSupabaseAuthServer();
     const { error } = await supabase.auth.signUp({
       ...credentials,
-      options: { captchaToken },
+      options: {
+        captchaToken,
+        data: {
+          legal_accepted_at: new Date().toISOString(),
+          legal_version: LEGAL_VERSION,
+        },
+      },
     });
 
     if (error) {

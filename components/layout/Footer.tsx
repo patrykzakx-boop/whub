@@ -43,12 +43,18 @@ export default function Footer() {
                 Informacje
               </h4>
 
-              <Link
-                href="/regulamin"
-                className="text-sm text-gray-400 transition hover:text-white"
-              >
-                Regulamin
-              </Link>
+              <ul className="space-y-3 text-sm text-gray-400">
+                <li>
+                  <Link href="/regulamin" className="transition hover:text-white">
+                    Regulamin
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/polityka-prywatnosci" className="transition hover:text-white">
+                    Polityka prywatności
+                  </Link>
+                </li>
+              </ul>
             </div>
           </div>
 
