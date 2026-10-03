@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import {
   installCaptchaMock,
+  installSupabaseAuthFetchMock,
   mockEmptySupabaseRest,
   mockJwt,
 } from "./helpers";
@@ -58,22 +59,24 @@ test("poprawne logowanie otwiera panel klienta", async ({ page }) => {
       json: { accessToken, refreshToken: "e2e-refresh-token" },
     })
   );
-  await page.route("**/auth/v1/user", (route) =>
-    route.fulfill({ status: 200, json: user })
-  );
-  await page.route("**/auth/v1/token**", (route) =>
-    route.fulfill({
+  const session = {
+    access_token: accessToken,
+    refresh_token: "e2e-refresh-token",
+    expires_in: 3600,
+    expires_at: Math.floor(Date.now() / 1000) + 3600,
+    token_type: "bearer",
+    user,
+  };
+  await installSupabaseAuthFetchMock(page, user, session);
+  await page.route("**/auth/v1/**", (route) => {
+    const isUserRequest = new URL(route.request().url()).pathname.endsWith(
+      "/user"
+    );
+    return route.fulfill({
       status: 200,
-      json: {
-        access_token: accessToken,
-        refresh_token: "e2e-refresh-token",
-        expires_in: 3600,
-        expires_at: Math.floor(Date.now() / 1000) + 3600,
-        token_type: "bearer",
-        user,
-      },
-    })
-  );
+      json: isUserRequest ? user : session,
+    });
+  });
   await mockEmptySupabaseRest(page);
 
   await page.goto("/login");

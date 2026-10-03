@@ -46,6 +46,39 @@ export async function installCaptchaMock(page: Page) {
   });
 }
 
+export async function installSupabaseAuthFetchMock(
+  page: Page,
+  user: object,
+  session: object
+) {
+  await page.addInitScript(
+    ({ mockedUser, mockedSession }) => {
+      const originalFetch = window.fetch.bind(window);
+      window.fetch = async (input, init) => {
+        const requestUrl =
+          typeof input === "string"
+            ? input
+            : input instanceof Request
+              ? input.url
+              : input.toString();
+
+        if (requestUrl.includes("/auth/v1/")) {
+          const responseBody = requestUrl.includes("/user")
+            ? mockedUser
+            : mockedSession;
+          return new Response(JSON.stringify(responseBody), {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+
+        return originalFetch(input, init);
+      };
+    },
+    { mockedUser: user, mockedSession: session }
+  );
+}
+
 export async function installAuthenticatedSupabaseMock(page: Page) {
   const accessToken = mockJwt();
   const session = {
@@ -66,12 +99,16 @@ export async function installAuthenticatedSupabaseMock(page: Page) {
     },
     { storedSession: session }
   );
+  await installSupabaseAuthFetchMock(page, mockUser, session);
 
-  await page.route("**/auth/v1/user", async (route) => {
-    await route.fulfill({ status: 200, json: mockUser });
-  });
-  await page.route("**/auth/v1/token**", async (route) => {
-    await route.fulfill({ status: 200, json: session });
+  await page.route("**/auth/v1/**", async (route) => {
+    const isUserRequest = new URL(route.request().url()).pathname.endsWith(
+      "/user"
+    );
+    await route.fulfill({
+      status: 200,
+      json: isUserRequest ? mockUser : session,
+    });
   });
 
   return { accessToken, session, user: mockUser };

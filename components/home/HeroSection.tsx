@@ -10,6 +10,7 @@ export default function HeroSection() {
         alt=""
         fill
         fetchPriority="high"
+        loading="eager"
         sizes="100vw"
         className="object-cover object-center opacity-70"
       />
