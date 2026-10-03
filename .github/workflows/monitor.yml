@@ -1,0 +1,67 @@
+name: Production health monitor
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-health-monitor
+  cancel-in-progress: true
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check application and database
+        id: health_check
+        continue-on-error: true
+        env:
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: |
+          headers=()
+          if [ -n "$VERCEL_AUTOMATION_BYPASS_SECRET" ]; then
+            headers=(-H "x-vercel-protection-bypass: $VERCEL_AUTOMATION_BYPASS_SECRET")
+          fi
+
+          response=$(curl --fail --silent --show-error --retry 2 --max-time 20 \
+            "${headers[@]}" https://whub.pl/api/health)
+          node -e 'const result=JSON.parse(process.argv[1]); if(result.status!=="ok") process.exit(1)' "$response"
+
+      - name: Send failure notification
+        if: steps.health_check.outcome == 'failure'
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          MONITOR_FROM_EMAIL: ${{ secrets.MONITOR_FROM_EMAIL }}
+          MONITOR_ALERT_EMAIL: ${{ secrets.MONITOR_ALERT_EMAIL }}
+        run: |
+          if [ -z "$RESEND_API_KEY" ] || [ -z "$MONITOR_FROM_EMAIL" ] || [ -z "$MONITOR_ALERT_EMAIL" ]; then
+            echo "Email alert secrets are not configured; GitHub will still report this failed run."
+            exit 0
+          fi
+
+          node -e '
+            fetch("https://api.resend.com/emails", {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                from: process.env.MONITOR_FROM_EMAIL,
+                to: [process.env.MONITOR_ALERT_EMAIL],
+                subject: "[WeldHub] Awaria monitoringu produkcji",
+                text: "Kontrola https://whub.pl/api/health zakończyła się błędem. Sprawdź logi Vercel i Supabase.",
+              }),
+            }).then((response) => {
+              if (!response.ok) process.exit(1);
+            }).catch(() => process.exit(1));
+          '
+
+      - name: Mark monitor as failed
+        if: steps.health_check.outcome == 'failure'
+        run: exit 1

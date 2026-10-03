@@ -7,6 +7,10 @@ import {
 } from "@/lib/rateLimit";
 import { createSupabaseAuthServer } from "@/lib/supabaseAuthServer";
 import { LEGAL_VERSION } from "@/lib/legal";
+import {
+  assertPasswordNotPwned,
+  PwnedPasswordCheckUnavailableError,
+} from "@/lib/pwnedPasswords";
 
 const REGISTRATION_WINDOW_SECONDS = 60 * 60;
 
@@ -55,6 +59,8 @@ export async function POST(request: Request) {
       );
     }
 
+    await assertPasswordNotPwned(credentials.password);
+
     const supabase = createSupabaseAuthServer();
     const { error } = await supabase.auth.signUp({
       ...credentials,
@@ -80,7 +86,17 @@ export async function POST(request: Request) {
     );
   } catch (error) {
     if (error instanceof RateLimitUnavailableError) {
-      return NextResponse.json({ error: error.message }, { status: 503 });
+      return NextResponse.json(
+        { error: error.message },
+        { status: 503, headers: { "Cache-Control": "no-store" } }
+      );
+    }
+
+    if (error instanceof PwnedPasswordCheckUnavailableError) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: 503, headers: { "Cache-Control": "no-store" } }
+      );
     }
 
     return NextResponse.json(

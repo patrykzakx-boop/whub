@@ -13,8 +13,10 @@ const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, "..");
 
 const CODEX_DIR = path.join(os.homedir(), "Documents", "Codex");
-const DATA_ROOT = path.join(CODEX_DIR, "dane supabase");
-const STORAGE_ROOT = path.join(CODEX_DIR, "zdjecia supabase");
+const DATA_ROOT =
+  process.env.BACKUP_DATA_ROOT || path.join(CODEX_DIR, "dane supabase");
+const STORAGE_ROOT =
+  process.env.BACKUP_STORAGE_ROOT || path.join(CODEX_DIR, "zdjecia supabase");
 const PAGE_SIZE = 1000;
 
 const args = new Set(process.argv.slice(2));
@@ -48,7 +50,10 @@ const runData = !args.has("--storage-only");
 const runStorage = !args.has("--data-only");
 const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
 
-const env = await loadEnv(path.join(projectRoot, ".env.local"));
+const env = {
+  ...(await loadEnv(path.join(projectRoot, ".env.local"))),
+  ...process.env,
+};
 const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceRoleKey = env.SUPABASE_SERVICE_ROLE_KEY;
 const dbUrl = env.SUPABASE_DB_URL || env.DATABASE_URL;
@@ -371,7 +376,7 @@ function runCommand(command, args, options = {}) {
 
 async function loadEnv(envPath) {
   if (!existsSync(envPath)) {
-    fail(`Nie znaleziono pliku ${envPath}`);
+    return {};
   }
 
   const raw = await fs.readFile(envPath, "utf8");

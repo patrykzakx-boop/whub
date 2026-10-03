@@ -1,0 +1,80 @@
+name: Encrypted Supabase backup
+
+on:
+  schedule:
+    - cron: "23 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: supabase-backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      BACKUP_ENCRYPTION_PASSWORD: ${{ secrets.BACKUP_ENCRYPTION_PASSWORD }}
+      BACKUP_DATA_ROOT: ${{ runner.temp }}/whub-backup/data
+      BACKUP_STORAGE_ROOT: ${{ runner.temp }}/whub-backup/storage
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate backup secrets
+        run: |
+          test -n "$NEXT_PUBLIC_SUPABASE_URL"
+          test -n "$SUPABASE_SERVICE_ROLE_KEY"
+          test -n "$SUPABASE_DB_URL"
+          test -n "$BACKUP_ENCRYPTION_PASSWORD"
+
+      - name: Export database, users and Storage
+        env:
+          SUPABASE_DB_URL: ""
+        run: npm run backup:supabase
+
+      - name: Create full PostgreSQL dump
+        run: |
+          mkdir -p "$BACKUP_DATA_ROOT/full-sql"
+          docker run --rm \
+            -e SUPABASE_DB_URL \
+            -v "$BACKUP_DATA_ROOT/full-sql:/backup" \
+            postgres:17-alpine \
+            sh -c 'pg_dump --clean --if-exists --no-owner --no-acl --file /backup/full-database.sql "$SUPABASE_DB_URL"'
+
+      - name: Verify backup manifests
+        run: |
+          find "${{ runner.temp }}/whub-backup" -name manifest.json -type f | grep -q .
+          test -s "$BACKUP_DATA_ROOT/full-sql/full-database.sql"
+
+      - name: Encrypt backup
+        run: |
+          tar -C "${{ runner.temp }}" -czf "${{ runner.temp }}/whub-backup.tar.gz" whub-backup
+          openssl enc -aes-256-cbc -salt -pbkdf2 -iter 200000 \
+            -in "${{ runner.temp }}/whub-backup.tar.gz" \
+            -out "${{ runner.temp }}/whub-backup-${GITHUB_RUN_ID}.tar.gz.enc" \
+            -pass env:BACKUP_ENCRYPTION_PASSWORD
+          rm -f "${{ runner.temp }}/whub-backup.tar.gz"
+
+      - name: Store encrypted backup for 30 days
+        uses: actions/upload-artifact@v4
+        with:
+          name: whub-backup-${{ github.run_id }}
+          path: ${{ runner.temp }}/whub-backup-${{ github.run_id }}.tar.gz.enc
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0

@@ -9,6 +9,10 @@ import {
 import { createSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { createSupabaseAuthServer } from "@/lib/supabaseAuthServer";
 import { isBlockedUser } from "@/lib/adminAuth";
+import {
+  assertPasswordNotPwned,
+  PwnedPasswordCheckUnavailableError,
+} from "@/lib/pwnedPasswords";
 
 const CHANGE_ATTEMPTS = 3;
 const CHANGE_WINDOW_SECONDS = 30 * 60;
@@ -71,6 +75,8 @@ export async function POST(request: Request) {
       );
     }
 
+    await assertPasswordNotPwned(passwords.newPassword);
+
     const admin = createSupabaseAdmin();
     const { error: updateError } = await admin.auth.admin.updateUserById(
       user.id,
@@ -104,7 +110,17 @@ export async function POST(request: Request) {
     );
   } catch (error) {
     if (error instanceof RateLimitUnavailableError) {
-      return NextResponse.json({ error: error.message }, { status: 503 });
+      return NextResponse.json(
+        { error: error.message },
+        { status: 503, headers: { "Cache-Control": "no-store" } }
+      );
+    }
+
+    if (error instanceof PwnedPasswordCheckUnavailableError) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: 503, headers: { "Cache-Control": "no-store" } }
+      );
     }
 
     return NextResponse.json(
