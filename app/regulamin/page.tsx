@@ -146,7 +146,34 @@ export default function RegulaminPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="10. Odpowiedzialność">
+      <LegalSection title="10. Zgłaszanie bezprawnych treści i odwołania">
+        <p>
+          Punktem kontaktowym dla Użytkowników, organów oraz zgłoszeń dotyczących
+          bezprawnych treści jest <EmailLink />. Kontakt jest możliwy w języku polskim.
+        </p>
+        <p>Zgłoszenie powinno zawierać:</p>
+        <ul>
+          <li>dokładny adres strony lub inne informacje pozwalające odnaleźć treść;</li>
+          <li>wyjaśnienie, dlaczego zgłaszający uważa treść za bezprawną;</li>
+          <li>imię lub nazwę zgłaszającego oraz adres e-mail, jeżeli prawo nie pozwala na zgłoszenie bez tych danych;</li>
+          <li>oświadczenie o działaniu w dobrej wierze i prawdziwości przekazanych informacji.</li>
+        </ul>
+        <p>
+          Jeżeli Operator zna adres e-mail zgłaszającego, potwierdzi otrzymanie zgłoszenia
+          i poinformuje o podjętej decyzji oraz dostępnej możliwości jej zakwestionowania.
+          Osoba, której treść lub Konto ograniczono, otrzyma – o ile kontakt jest możliwy –
+          uzasadnienie obejmujące podstawę, zakres i czas zastosowanego ograniczenia.
+        </p>
+        <p>
+          Od decyzji moderacyjnej można odwołać się na <EmailLink /> w ciągu 6 miesięcy od
+          jej przekazania. Odwołanie rozpatruje człowiek, bez pobierania opłat. Wielokrotne
+          publikowanie oczywiście bezprawnych treści albo składanie oczywiście bezzasadnych
+          zgłoszeń może, po uprzednim ostrzeżeniu, skutkować czasowym ograniczeniem dostępu
+          do odpowiednich funkcji.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="11. Odpowiedzialność">
         <p>
           Operator odpowiada za prawidłowe udostępnienie funkcji Serwisu w zakresie
           wynikającym z bezwzględnie obowiązujących przepisów. Nie odpowiada za treść Ofert,
@@ -164,7 +191,7 @@ export default function RegulaminPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="11. Zakończenie korzystania i usunięcie Konta">
+      <LegalSection title="12. Zakończenie korzystania i usunięcie Konta">
         <p>
           Użytkownik może w każdej chwili zrezygnować z Serwisu i zażądać usunięcia Konta,
           wysyłając wiadomość z adresu przypisanego do Konta na <EmailLink />.
@@ -177,7 +204,7 @@ export default function RegulaminPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="12. Reklamacje i kontakt">
+      <LegalSection title="13. Reklamacje i kontakt">
         <p>
           Reklamacje dotyczące działania Serwisu można wysyłać na <EmailLink />. Zgłoszenie
           powinno zawierać adres e-mail Konta, opis problemu i – jeżeli to możliwe – numer
@@ -190,14 +217,14 @@ export default function RegulaminPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="13. Dane osobowe">
+      <LegalSection title="14. Dane osobowe">
         <p>
           Zasady przetwarzania danych osobowych, wykorzystywania dostawców technicznych oraz
           realizacji praw użytkowników określa <Link href="/polityka-prywatnosci">Polityka prywatności</Link>.
         </p>
       </LegalSection>
 
-      <LegalSection title="14. Zmiany Regulaminu">
+      <LegalSection title="15. Zmiany Regulaminu">
         <p>
           Regulamin może zostać zmieniony z powodu rozwoju Serwisu, zmian prawa,
           bezpieczeństwa lub sposobu świadczenia usług. O istotnych zmianach zarejestrowani
@@ -206,7 +233,7 @@ export default function RegulaminPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="15. Postanowienia końcowe">
+      <LegalSection title="16. Postanowienia końcowe">
         <p>
           Do Regulaminu stosuje się prawo polskie. Nie narusza to ochrony przyznanej
           konsumentowi przez przepisy, których nie można wyłączyć w drodze umowy. Spory będą
