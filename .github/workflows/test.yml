@@ -2,7 +2,7 @@ name: Application tests
 
 on:
   push:
-    branches: [codex/supabase-rls-hardening]
+    branches: [main, codex/supabase-rls-hardening]
   pull_request:
   workflow_dispatch:
 
