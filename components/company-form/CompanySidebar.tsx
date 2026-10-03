@@ -44,7 +44,7 @@ export default function CompanySidebar({
           <div className="h-2 overflow-hidden rounded-full bg-slate-800">
 
             <div
-              className="h-full bg-orange-500 transition-all duration-300"
+              className="h-full bg-orange-700 transition-all duration-300"
               style={{
                 width: `${progress}%`,
               }}
@@ -52,7 +52,7 @@ export default function CompanySidebar({
 
           </div>
 
-          <div className="mt-2 text-xs text-gray-500">
+          <div className="mt-2 text-xs text-gray-400">
             Krok {currentStep} z {steps.length}
           </div>
 
@@ -98,7 +98,7 @@ export default function CompanySidebar({
                       completed
                         ? "bg-green-600 text-white"
                         : active
-                        ? "bg-orange-500 text-white"
+                        ? "bg-orange-700 text-white"
                         : "bg-slate-800 text-gray-400"
                     }
                   `}
@@ -115,7 +115,7 @@ export default function CompanySidebar({
                         ? "font-medium text-white"
                         : completed
                         ? "text-gray-300"
-                        : "text-gray-500"
+                        : "text-gray-400"
                     }
                   >
                     {step}

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { getRequestStatusLabel, normalizeOfferStatus } from "@/lib/statuses";
@@ -27,6 +28,7 @@ type Offer = {
 };
 
 export default function DashboardRequestsPage() {
+  const router = useRouter();
   const [requests, setRequests] = useState<CustomerRequest[]>([]);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,7 +39,7 @@ export default function DashboardRequestsPage() {
       const { data, error: userError } = await supabase.auth.getUser();
 
       if (userError || !data.user) {
-        window.location.href = "/login";
+        router.replace("/login");
         return;
       }
 
@@ -76,7 +78,7 @@ export default function DashboardRequestsPage() {
     };
 
     loadRequests();
-  }, []);
+  }, [router]);
 
   const offersByRequestId = useMemo(() => {
     return offers.reduce<Record<string, Offer[]>>((acc, offer) => {
@@ -109,14 +111,14 @@ export default function DashboardRequestsPage() {
                 Moje zlecenia
               </h1>
 
-              <p className="mt-1.5 max-w-2xl text-sm text-gray-500">
+              <p className="mt-1.5 max-w-2xl text-sm text-gray-400">
                 Zlecenia dodane z Twojego konta i odpowiedzi wykonawców.
               </p>
             </div>
 
             <Link
               href="/add-request"
-              className="rounded-xl bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-600"
+              className="rounded-xl bg-orange-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-800"
             >
               Dodaj zlecenie
             </Link>
@@ -174,7 +176,7 @@ export default function DashboardRequestsPage() {
                         {getRequestCategoryLabel(request.category)}
                       </div>
 
-                      <div className="mt-1 flex flex-wrap gap-x-2 gap-y-1 text-xs text-gray-500 sm:text-sm">
+                      <div className="mt-1 flex flex-wrap gap-x-2 gap-y-1 text-xs text-gray-400 sm:text-sm">
                         <span>{request.city || "Brak miejscowości"}</span>
                         <span>•</span>
                         <span>{formatDate(request.created_at)}</span>
@@ -200,7 +202,7 @@ export default function DashboardRequestsPage() {
 
               <Link
                 href="/add-request"
-                className="mt-6 inline-flex rounded-xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-600"
+                className="mt-6 inline-flex rounded-xl bg-orange-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-800"
               >
                 Dodaj zlecenie
               </Link>
@@ -227,7 +229,7 @@ function DashboardNavLink({
       className={
         active
           ? "flex shrink-0 items-center gap-2 rounded-xl bg-[#0d1218] px-4 py-2.5 text-sm font-medium text-white"
-          : "flex shrink-0 items-center gap-2 rounded-xl px-4 py-2.5 text-sm text-gray-500 transition hover:bg-[#0d1218] hover:text-white"
+          : "flex shrink-0 items-center gap-2 rounded-xl px-4 py-2.5 text-sm text-gray-400 transition hover:bg-[#0d1218] hover:text-white"
       }
     >
       {label}

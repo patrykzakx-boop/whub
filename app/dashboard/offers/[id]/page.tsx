@@ -95,7 +95,7 @@ export default function DashboardOfferDetailsPage() {
           <p className="mt-3 text-gray-400">{errorMessage}</p>
           <Link
             href="/dashboard/offers"
-            className="mt-6 inline-flex rounded-xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white"
+            className="mt-6 inline-flex rounded-xl bg-orange-700 px-5 py-3 text-sm font-semibold text-white"
           >
             Wróć do odpowiedzi
           </Link>
@@ -113,7 +113,7 @@ export default function DashboardOfferDetailsPage() {
       <div className="mx-auto max-w-5xl space-y-6">
         <Link
           href="/dashboard/offers"
-          className="inline-flex text-sm text-gray-500 transition hover:text-white"
+          className="inline-flex text-sm text-gray-400 transition hover:text-white"
         >
           ← Powrót do odpowiedzi
         </Link>
@@ -213,7 +213,7 @@ function StatusBadge({ label }: { label: string }) {
 function Detail({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-2xl border border-slate-800 bg-[#05070a] p-4">
-      <div className="text-xs uppercase tracking-wide text-gray-600">{label}</div>
+      <div className="text-xs uppercase tracking-wide text-gray-400">{label}</div>
       <div className="mt-1 break-words text-sm text-gray-200">{value}</div>
     </div>
   );
@@ -234,7 +234,7 @@ function ContactLink({
 
   return (
     <div className="rounded-2xl border border-slate-800 bg-[#05070a] p-4">
-      <div className="text-xs uppercase tracking-wide text-gray-600">{label}</div>
+      <div className="text-xs uppercase tracking-wide text-gray-400">{label}</div>
       <a
         href={href}
         className="mt-1 block break-words text-sm font-medium text-orange-400 hover:text-orange-300"

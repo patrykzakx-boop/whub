@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { normalizeContractorRequestStatus } from "@/lib/statuses";
@@ -31,6 +32,7 @@ type RequestItem = {
 };
 
 export default function DashboardMessagesPage() {
+  const router = useRouter();
   const [requests, setRequests] = useState<RequestItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
@@ -54,7 +56,7 @@ export default function DashboardMessagesPage() {
       } = await supabase.auth.getUser();
 
       if (userError || !user) {
-        window.location.href = "/login";
+        router.replace("/login");
         return;
       }
 
@@ -94,7 +96,7 @@ export default function DashboardMessagesPage() {
     };
 
     loadRequests();
-  }, []);
+  }, [router]);
 
   const newRequests = requests.filter(
     (request) => getEffectiveStatus(request) === "new"
@@ -140,7 +142,7 @@ export default function DashboardMessagesPage() {
               Zapytania
             </h1>
 
-            <p className="mt-1.5 max-w-2xl text-sm text-gray-500">
+            <p className="mt-1.5 max-w-2xl text-sm text-gray-400">
               Prywatne zapytania wysłane z profili Twoich firm.
             </p>
           </div>
@@ -213,7 +215,7 @@ export default function DashboardMessagesPage() {
                       {getRequestCategoryLabel(request.category)}
                     </div>
 
-                    <div className="mt-1 flex flex-wrap gap-x-2 gap-y-1 text-xs text-gray-500 sm:text-sm">
+                    <div className="mt-1 flex flex-wrap gap-x-2 gap-y-1 text-xs text-gray-400 sm:text-sm">
                       <span>{request.city || "Brak miejscowości"}</span>
                       <span>•</span>
                       <span>{formatDate(request.created_at)}</span>
@@ -259,7 +261,7 @@ function DashboardNavLink({
       className={
         active
           ? "flex shrink-0 items-center gap-2 rounded-xl bg-[#0d1218] px-4 py-2.5 text-sm font-medium text-white"
-          : "flex shrink-0 items-center gap-2 rounded-xl px-4 py-2.5 text-sm text-gray-500 transition hover:bg-[#0d1218] hover:text-white"
+          : "flex shrink-0 items-center gap-2 rounded-xl px-4 py-2.5 text-sm text-gray-400 transition hover:bg-[#0d1218] hover:text-white"
       }
     >
       {label}
@@ -289,10 +291,10 @@ function FilterButton({
       className={
         active
           ? "shrink-0 rounded-full bg-slate-200 px-4 py-2 text-sm font-medium text-slate-950"
-          : "shrink-0 rounded-full border border-slate-800 px-4 py-2 text-sm text-gray-500 transition hover:border-slate-600 hover:text-white"
+          : "shrink-0 rounded-full border border-slate-800 px-4 py-2 text-sm text-gray-400 transition hover:border-slate-600 hover:text-white"
       }
     >
-      {label} <span className={active ? "text-slate-600" : "text-gray-600"}>{count}</span>
+      {label} <span className={active ? "text-slate-400" : "text-gray-400"}>{count}</span>
     </button>
   );
 }
@@ -300,7 +302,7 @@ function FilterButton({
 function SummaryCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex w-[132px] shrink-0 items-center justify-between gap-3 rounded-xl border border-slate-800 bg-[#0d1218] px-3 py-2.5 sm:w-auto sm:px-4">
-      <div className="truncate text-xs font-medium text-gray-500 sm:text-sm">{label}</div>
+      <div className="truncate text-xs font-medium text-gray-400 sm:text-sm">{label}</div>
       <div className="text-base font-semibold text-white">{value}</div>
     </div>
   );

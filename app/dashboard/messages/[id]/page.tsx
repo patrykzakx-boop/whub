@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { getRequestCategoryLabel } from "@/lib/requestCategories";
@@ -36,6 +37,7 @@ type Props = {
 };
 
 export default function DashboardMessageDetailsPage({ params }: Props) {
+  const router = useRouter();
   const [request, setRequest] = useState<RequestDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
@@ -52,7 +54,7 @@ export default function DashboardMessageDetailsPage({ params }: Props) {
       } = await supabase.auth.getUser();
 
       if (userError || !user) {
-        window.location.href = "/login";
+        router.replace("/login");
         return;
       }
 
@@ -91,7 +93,7 @@ export default function DashboardMessageDetailsPage({ params }: Props) {
     };
 
     loadRequest();
-  }, [params]);
+  }, [params, router]);
 
   const updateContractorStatus = async (contractorStatus: ContractorStatus) => {
     if (!request) return;
@@ -135,7 +137,7 @@ export default function DashboardMessageDetailsPage({ params }: Props) {
           <p className="mt-3 text-sm text-gray-400">{errorMessage || "To zapytanie nie istnieje albo nie należy do Twojej firmy."}</p>
           <Link
             href="/dashboard/messages"
-            className="mt-6 inline-flex rounded-xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-600"
+            className="mt-6 inline-flex rounded-xl bg-orange-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-800"
           >
             Wróć do zapytań
           </Link>
@@ -152,7 +154,7 @@ export default function DashboardMessageDetailsPage({ params }: Props) {
         <section className="border-b border-slate-800 pb-6">
           <Link
             href="/dashboard/messages"
-            className="mb-5 inline-flex text-sm text-gray-500 transition hover:text-white"
+            className="mb-5 inline-flex text-sm text-gray-400 transition hover:text-white"
           >
             ← Powrót do zapytań
           </Link>
@@ -171,7 +173,7 @@ export default function DashboardMessageDetailsPage({ params }: Props) {
               {getRequestCategoryLabel(request.category)}
             </div>
 
-            <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-gray-500">
+            <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-gray-400">
               <span>{request.city || "Brak miejscowości"}</span>
               <span>•</span>
               <span>{formatDate(request.created_at)}</span>
@@ -203,7 +205,7 @@ export default function DashboardMessageDetailsPage({ params }: Props) {
         <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
           <section className="space-y-6">
             <div>
-              <div className="mb-1 text-xs font-medium uppercase tracking-[0.16em] text-gray-600">
+              <div className="mb-1 text-xs font-medium uppercase tracking-[0.16em] text-gray-400">
                 Opis
               </div>
               <p className="whitespace-pre-wrap text-sm leading-7 text-gray-300">
@@ -213,7 +215,7 @@ export default function DashboardMessageDetailsPage({ params }: Props) {
 
             {imageUrls.length > 0 && (
               <div>
-                <div className="mb-3 text-xs font-medium uppercase tracking-[0.16em] text-gray-600">
+                <div className="mb-3 text-xs font-medium uppercase tracking-[0.16em] text-gray-400">
                   Zdjęcia
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
@@ -282,7 +284,7 @@ function ContactValue({
 }) {
   const content = (
     <div className="border-b border-slate-800 py-3 last:border-b-0">
-      <div className="text-xs text-gray-500">
+      <div className="text-xs text-gray-400">
         {label}
       </div>
       <div className="mt-1 break-all text-sm text-white">{value || "Nie podano"}</div>
@@ -301,7 +303,7 @@ function ContactValue({
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-start justify-between gap-4 border-b border-slate-800 py-3 last:border-b-0">
-      <span className="text-gray-500">{label}</span>
+      <span className="text-gray-400">{label}</span>
       <span className="text-right font-medium text-white">{value}</span>
     </div>
   );

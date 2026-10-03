@@ -180,7 +180,7 @@ export default function AdminPage() {
           <div className="flex flex-col gap-3 border-b border-slate-800 px-5 py-4 md:flex-row md:items-center md:justify-between">
             <div>
               <h2 className="text-lg font-semibold">Zarejestrowani użytkownicy</h2>
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-xs text-gray-400">
                 {usersLoading ? "Pobieranie kont…" : `${visibleUsers.length} z ${usersData?.total ?? 0} kont`}
               </p>
             </div>
@@ -191,16 +191,16 @@ export default function AdminPage() {
               value={userQuery}
               onChange={(event) => setUserQuery(event.target.value)}
               placeholder="Szukaj po e-mailu, ID lub firmie"
-              className="w-full rounded-xl border border-slate-700 bg-[#080b0f] px-4 py-2.5 text-sm text-white outline-none placeholder:text-gray-600 focus:border-orange-500 md:max-w-sm"
+              className="w-full rounded-xl border border-slate-700 bg-[#080b0f] px-4 py-2.5 text-sm text-white outline-none placeholder:text-gray-400 focus:border-orange-500 md:max-w-sm"
             />
           </div>
 
           {usersError ? (
             <p className="p-5 text-sm text-red-300">{usersError}</p>
           ) : usersLoading ? (
-            <p className="p-5 text-sm text-gray-500">Ładowanie listy użytkowników…</p>
+            <p className="p-5 text-sm text-gray-400">Ładowanie listy użytkowników…</p>
           ) : !visibleUsers.length ? (
-            <p className="p-5 text-sm text-gray-500">Nie znaleziono użytkowników.</p>
+            <p className="p-5 text-sm text-gray-400">Nie znaleziono użytkowników.</p>
           ) : (
             <div className="divide-y divide-slate-800">
               {visibleUsers.map((user) => {
@@ -294,13 +294,13 @@ export default function AdminPage() {
 }
 
 function Stat({ label, value }: { label: string; value: number }) {
-  return <div className="rounded-2xl border border-slate-800 bg-[#0d1218] p-5"><div className="text-3xl font-bold">{value}</div><div className="mt-1 text-sm text-gray-500">{label}</div></div>;
+  return <div className="rounded-2xl border border-slate-800 bg-[#0d1218] p-5"><div className="text-3xl font-bold">{value}</div><div className="mt-1 text-sm text-gray-400">{label}</div></div>;
 }
 function Section({ title, empty, children }: { title: string; empty: boolean; children: React.ReactNode }) {
-  return <section className="mb-8 overflow-hidden rounded-2xl border border-slate-800 bg-[#0d1218]"><h2 className="border-b border-slate-800 px-5 py-4 text-lg font-semibold">{title}</h2>{empty ? <p className="p-5 text-sm text-gray-500">Brak pozycji.</p> : <div className="divide-y divide-slate-800">{children}</div>}</section>;
+  return <section className="mb-8 overflow-hidden rounded-2xl border border-slate-800 bg-[#0d1218]"><h2 className="border-b border-slate-800 px-5 py-4 text-lg font-semibold">{title}</h2>{empty ? <p className="p-5 text-sm text-gray-400">Brak pozycji.</p> : <div className="divide-y divide-slate-800">{children}</div>}</section>;
 }
 function Row({ title, subtitle, description, children }: { title: string; subtitle: string; description?: string | null; children?: React.ReactNode }) {
-  return <div className="flex flex-col gap-4 p-5 lg:flex-row lg:items-center"><div className="min-w-0 flex-1"><div className="font-medium text-white">{title}</div><div className="mt-1 break-all text-xs text-gray-500">{subtitle}</div>{description && <p className="mt-2 text-sm text-gray-400">{description}</p>}</div>{children && <div className="flex flex-wrap gap-2">{children}</div>}</div>;
+  return <div className="flex flex-col gap-4 p-5 lg:flex-row lg:items-center"><div className="min-w-0 flex-1"><div className="font-medium text-white">{title}</div><div className="mt-1 break-all text-xs text-gray-400">{subtitle}</div>{description && <p className="mt-2 text-sm text-gray-400">{description}</p>}</div>{children && <div className="flex flex-wrap gap-2">{children}</div>}</div>;
 }
 function AdminMessage({ children, error = "" }: { children: React.ReactNode; error?: string }) {
   return <main className="flex min-h-screen items-center justify-center bg-[#05070a] px-4"><div className={`max-w-lg rounded-2xl border p-7 text-center ${error ? "border-red-500/40 bg-red-500/10 text-red-100" : "border-slate-800 bg-[#0d1218] text-gray-300"}`}>{children}</div></main>;

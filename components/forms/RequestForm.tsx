@@ -128,7 +128,7 @@ export default function AddRequestPage() {
               </div>
             </div>
 
-            <button className="w-full rounded-2xl bg-orange-500 py-4 text-lg font-semibold text-white hover:bg-orange-600">
+            <button className="w-full rounded-2xl bg-orange-700 py-4 text-lg font-semibold text-white hover:bg-orange-800">
               Opublikuj zapytanie
             </button>
           </div>

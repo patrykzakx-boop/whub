@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import TurnstileWidget from "@/components/security/TurnstileWidget";
 import { supabase } from "@/lib/supabaseClient";
 import { REQUEST_CATEGORIES } from "@/lib/requestCategories";
@@ -11,6 +12,7 @@ import {
 } from "@/lib/requestImages";
 
 export default function AddRequestPage() {
+  const router = useRouter();
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
@@ -306,7 +308,7 @@ export default function AddRequestPage() {
         }
       }
 
-      window.location.href = nextAccessLink;
+      router.push(nextAccessLink);
     } catch (err) {
       setErrorMessage(err instanceof Error ? err.message : "Wystąpił błąd podczas wysyłania zapytania.");
     } finally {
@@ -376,7 +378,7 @@ export default function AddRequestPage() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Np. Balustrada balkonowa 8m"
-              className="w-full rounded-xl border border-slate-700 bg-[#05070a] p-3 text-white placeholder:text-gray-500 outline-none focus:border-orange-500"
+              className="w-full rounded-xl border border-slate-700 bg-[#05070a] p-3 text-white placeholder:text-gray-400 outline-none focus:border-orange-500"
             />
           </div>
 
@@ -416,7 +418,7 @@ export default function AddRequestPage() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Opisz szczegóły projektu..."
-              className="w-full rounded-2xl border border-slate-700 bg-[#05070a] p-4 text-white placeholder:text-gray-500 outline-none focus:border-orange-500"
+              className="w-full rounded-2xl border border-slate-700 bg-[#05070a] p-4 text-white placeholder:text-gray-400 outline-none focus:border-orange-500"
             />
           </div>
 
@@ -436,13 +438,13 @@ export default function AddRequestPage() {
       inline-flex
       cursor-pointer
       rounded-xl
-      bg-orange-500
+      bg-orange-700
       px-5
       py-3
       font-medium
       text-white
       transition
-      hover:bg-orange-600
+      hover:bg-orange-800
     "
   >
     + Dodaj zdjęcie
@@ -518,7 +520,7 @@ export default function AddRequestPage() {
               value={city}
               onChange={(e) => setCity(e.target.value)}
               placeholder="Np. Kraków"
-              className="w-full rounded-xl border border-slate-700 bg-[#05070a] p-3 text-white placeholder:text-gray-500 outline-none focus:border-orange-500"
+              className="w-full rounded-xl border border-slate-700 bg-[#05070a] p-3 text-white placeholder:text-gray-400 outline-none focus:border-orange-500"
             />
           </div>
 
@@ -535,7 +537,7 @@ export default function AddRequestPage() {
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
                 placeholder="Imię i nazwisko"
-                className="rounded-xl border border-slate-700 bg-[#05070a] p-3 text-white placeholder:text-gray-500 outline-none focus:border-orange-500"
+                className="rounded-xl border border-slate-700 bg-[#05070a] p-3 text-white placeholder:text-gray-400 outline-none focus:border-orange-500"
               />
 
               <div className="grid gap-4 md:grid-cols-2">
@@ -545,7 +547,7 @@ export default function AddRequestPage() {
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value)}
                   placeholder="Telefon"
-                  className="rounded-xl border border-slate-700 bg-[#05070a] p-3 text-white placeholder:text-gray-500 outline-none focus:border-orange-500"
+                  className="rounded-xl border border-slate-700 bg-[#05070a] p-3 text-white placeholder:text-gray-400 outline-none focus:border-orange-500"
                 />
 
                 <input
@@ -553,7 +555,7 @@ export default function AddRequestPage() {
                   value={customerEmail}
                   onChange={(e) => setCustomerEmail(e.target.value)}
                   placeholder="Email"
-                  className="rounded-xl border border-slate-700 bg-[#05070a] p-3 text-white placeholder:text-gray-500 outline-none focus:border-orange-500"
+                  className="rounded-xl border border-slate-700 bg-[#05070a] p-3 text-white placeholder:text-gray-400 outline-none focus:border-orange-500"
                 />
 
               </div>
@@ -626,7 +628,7 @@ export default function AddRequestPage() {
             onClick={handleSubmit}
             disabled={loading || !captchaToken}
             aria-busy={loading}
-            className="w-full rounded-2xl bg-orange-500 py-4 text-lg font-semibold text-white transition hover:bg-orange-600 disabled:opacity-50"
+            className="w-full rounded-2xl bg-orange-700 py-4 text-lg font-semibold text-white transition hover:bg-orange-800 disabled:opacity-50"
           >
             {loading ? "Zapisywanie..." : "Opublikuj zapytanie"}
           </button>

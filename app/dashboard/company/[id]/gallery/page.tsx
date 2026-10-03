@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 
@@ -23,6 +23,7 @@ const STORAGE_BUCKET = "company_images";
 const MAX_IMAGE_SIZE = 8 * 1024 * 1024;
 
 export default function CompanyGalleryPage() {
+  const router = useRouter();
   const params = useParams<{ id: string }>();
 
   const [company, setCompany] = useState<Company | null>(null);
@@ -49,7 +50,7 @@ export default function CompanyGalleryPage() {
       } = await supabase.auth.getUser();
 
       if (userError || !user) {
-        window.location.href = "/login";
+        router.replace("/login");
         return;
       }
 
@@ -89,7 +90,7 @@ export default function CompanyGalleryPage() {
     };
 
     loadGallery();
-  }, [params?.id]);
+  }, [params?.id, router]);
 
   const handleFilesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
@@ -214,7 +215,7 @@ export default function CompanyGalleryPage() {
           <p className="mt-3 text-gray-400">{errorMessage}</p>
           <Link
             href="/dashboard#companies"
-            className="mt-6 inline-flex rounded-xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white"
+            className="mt-6 inline-flex rounded-xl bg-orange-700 px-5 py-3 text-sm font-semibold text-white"
           >
             Wróć do panelu
           </Link>
@@ -229,7 +230,7 @@ export default function CompanyGalleryPage() {
         <div className="mb-5 border-b border-slate-800/80 pb-4">
           <Link
             href="/dashboard#companies"
-            className="mb-4 inline-flex text-sm text-gray-500 transition hover:text-white"
+            className="mb-4 inline-flex text-sm text-gray-400 transition hover:text-white"
           >
             ← Powrót do firm
           </Link>
@@ -244,7 +245,7 @@ export default function CompanyGalleryPage() {
                 {company.name}
               </h1>
 
-              <p className="mt-1.5 max-w-2xl text-sm text-gray-500">
+              <p className="mt-1.5 max-w-2xl text-sm text-gray-400">
                 Dodawaj zdjęcia realizacji widoczne na publicznym profilu.
               </p>
             </div>
@@ -271,7 +272,7 @@ export default function CompanyGalleryPage() {
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <h2 className="text-base font-semibold">Zdjęcia realizacji</h2>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-gray-400">
                 {images.length === 1
                   ? "1 zdjęcie w galerii"
                   : `${images.length} zdjęć w galerii`}
@@ -294,7 +295,7 @@ export default function CompanyGalleryPage() {
                 type="button"
                 onClick={uploadImages}
                 disabled={uploading || selectedFiles.length === 0}
-                className="rounded-xl bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-xl bg-orange-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-800 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {uploading
                   ? "Dodawanie..."

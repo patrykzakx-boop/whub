@@ -14,7 +14,7 @@ export default function HowItWorks() {
     },
     {
       title: "Porównaj oferty",
-      description: "Sprawdź opinie i wybierz wykonawcę.",
+      description: "Porównaj odpowiedzi i wybierz wykonawcę.",
       icon: "/icons/icon3.png",
     },
     {
@@ -28,7 +28,7 @@ export default function HowItWorks() {
     <section className="bg-[#05070a] py-10">
       <div className="mx-auto max-w-7xl px-4">
         <div className="mb-8">
-          <div className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">
+          <div className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
             Proces
           </div>
 

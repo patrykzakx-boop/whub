@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import CompanyWizard from "@/components/company-form/CompanyWizard";
 
 export default function AddCompanyPage() {
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [authorized, setAuthorized] = useState(false);
 
@@ -15,7 +17,7 @@ export default function AddCompanyPage() {
       } = await supabase.auth.getUser();
 
       if (!user) {
-        window.location.href = "/login";
+        router.replace("/login");
         return;
       }
 
@@ -24,7 +26,7 @@ export default function AddCompanyPage() {
     };
 
     checkUser();
-  }, []);
+  }, [router]);
 
   if (loading) {
     return (

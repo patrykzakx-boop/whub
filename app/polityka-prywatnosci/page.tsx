@@ -14,7 +14,7 @@ export default function PrivacyPolicyPage() {
       <article className="mx-auto max-w-4xl">
         <div className="text-xs font-semibold uppercase tracking-[0.18em] text-orange-400">WeldHub · dokumenty prawne</div>
         <h1 className="mt-3 text-3xl font-bold lg:text-5xl">Polityka prywatności</h1>
-        <p className="mt-3 text-sm text-gray-500">Obowiązuje od {LEGAL_EFFECTIVE_DATE}.</p>
+        <p className="mt-3 text-sm text-gray-400">Obowiązuje od {LEGAL_EFFECTIVE_DATE}.</p>
 
         <div className="mt-8 space-y-5">
           <PrivacySection title="1. Administrator danych">

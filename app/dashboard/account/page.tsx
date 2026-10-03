@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 import TurnstileWidget from "@/components/security/TurnstileWidget";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function AccountPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -25,7 +27,7 @@ export default function AccountPage() {
       } = await supabase.auth.getUser();
 
       if (error || !user) {
-        window.location.replace("/login");
+        router.replace("/login");
         return;
       }
 
@@ -34,7 +36,7 @@ export default function AccountPage() {
     };
 
     void loadUser();
-  }, []);
+  }, [router]);
 
   const changePassword = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -103,7 +105,7 @@ export default function AccountPage() {
         <div>
           <Link
             href="/dashboard"
-            className="text-sm text-gray-500 transition hover:text-white"
+            className="text-sm text-gray-400 transition hover:text-white"
           >
             ← Powrót do panelu
           </Link>
@@ -157,7 +159,7 @@ export default function AccountPage() {
               required
               className="w-full rounded-xl border border-slate-700 bg-[#05070a] px-4 py-3 text-white outline-none focus:border-orange-500"
             />
-            <p className="mt-2 text-xs text-gray-500">
+            <p className="mt-2 text-xs text-gray-400">
               Minimum 8 znaków. Użyj unikalnego hasła, którego nie stosujesz w
               innych serwisach.
             </p>
@@ -203,7 +205,7 @@ export default function AccountPage() {
           <button
             type="submit"
             disabled={loading || !captchaToken}
-            className="w-full rounded-xl bg-orange-500 px-5 py-3 font-semibold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60"
+            className="w-full rounded-xl bg-orange-700 px-5 py-3 font-semibold text-white transition hover:bg-orange-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? "Zmienianie hasła…" : "Zmień hasło"}
           </button>

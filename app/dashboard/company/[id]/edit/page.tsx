@@ -135,7 +135,7 @@ export default function EditCompanyPage() {
       } = await supabase.auth.getUser();
 
       if (userError || !user) {
-        window.location.href = "/login";
+        router.replace("/login");
         return;
       }
 
@@ -181,7 +181,7 @@ export default function EditCompanyPage() {
     };
 
     loadCompany();
-  }, [params?.id]);
+  }, [params?.id, router]);
 
   const updateField = <K extends keyof CompanyForm>(
     key: K,
@@ -279,7 +279,7 @@ export default function EditCompanyPage() {
     } = await supabase.auth.getUser();
 
     if (userError || !user) {
-      window.location.href = "/login";
+      router.replace("/login");
       return;
     }
 
@@ -355,7 +355,7 @@ export default function EditCompanyPage() {
           <p className="mt-3 text-gray-400">{errorMessage}</p>
           <Link
             href="/dashboard"
-            className="mt-6 inline-flex rounded-xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white"
+            className="mt-6 inline-flex rounded-xl bg-orange-700 px-5 py-3 text-sm font-semibold text-white"
           >
             Wróć do panelu
           </Link>
@@ -370,7 +370,7 @@ export default function EditCompanyPage() {
         <div className="mb-5 border-b border-slate-800/80 pb-4">
           <Link
             href="/dashboard#companies"
-            className="mb-4 inline-flex text-sm text-gray-500 transition hover:text-white"
+            className="mb-4 inline-flex text-sm text-gray-400 transition hover:text-white"
           >
             ← Powrót do firm
           </Link>
@@ -385,7 +385,7 @@ export default function EditCompanyPage() {
               {form.name || "Firma"}
             </h1>
 
-            <p className="mt-1.5 max-w-2xl text-sm text-gray-500">
+            <p className="mt-1.5 max-w-2xl text-sm text-gray-400">
               Zmień dane profilu, zakres prac, materiały, metody spawania i
               informacje kontaktowe.
             </p>
@@ -421,7 +421,7 @@ export default function EditCompanyPage() {
 
             <div className="mt-4 grid gap-5 md:grid-cols-[150px_1fr]">
               <div>
-                <span className="mb-2 block text-sm text-gray-500">Logo firmy</span>
+                <span className="mb-2 block text-sm text-gray-400">Logo firmy</span>
 
                 <div className="relative flex h-28 w-28 items-center justify-center overflow-hidden rounded-xl border border-slate-800 bg-[#05070a]">
                   {logoPreview ? (
@@ -434,7 +434,7 @@ export default function EditCompanyPage() {
                       className="object-cover"
                     />
                   ) : (
-                    <span className="text-sm text-gray-500">Logo</span>
+                    <span className="text-sm text-gray-400">Logo</span>
                   )}
                 </div>
 
@@ -599,7 +599,7 @@ export default function EditCompanyPage() {
             <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <SectionTitle title="Wizytówka Google" />
-                <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                <p className="mt-1 max-w-2xl text-sm text-gray-400">
                   Wyszukaj firmę w Google i wybierz właściwą wizytówkę. Adres,
                   telefon, ocena, liczba opinii i link do Map uzupełnią się
                   automatycznie.
@@ -611,7 +611,7 @@ export default function EditCompanyPage() {
                   <span className="font-semibold text-white">
                     {form.googleRating}
                   </span>
-                  <span className="ml-1 text-gray-500">
+                  <span className="ml-1 text-gray-400">
                     / 5 z {form.googleReviewsCount} opinii
                   </span>
                 </div>
@@ -628,7 +628,7 @@ export default function EditCompanyPage() {
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               {form.googlePlaceId && (
                 <div className="md:col-span-2 rounded-xl border border-slate-800 bg-[#070b10] p-3 text-sm text-gray-400">
-                  <span className="text-gray-500">Połączono z Google: </span>
+                  <span className="text-gray-400">Połączono z Google: </span>
                   <span className="break-all text-gray-300">
                     {form.googlePlaceId}
                   </span>
@@ -673,7 +673,7 @@ export default function EditCompanyPage() {
             <button
               type="submit"
               disabled={saving}
-              className="rounded-lg bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-lg bg-orange-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-800 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {saving ? "Zapisywanie..." : "Zapisz zmiany"}
             </button>
@@ -705,14 +705,14 @@ function TextField({
 }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-sm text-gray-500">{label}</span>
+      <span className="mb-1.5 block text-sm text-gray-400">{label}</span>
       <input
         type={type}
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
         required={required}
-        className="w-full rounded-lg border border-slate-800 bg-[#05070a] px-3 py-2.5 text-sm text-white outline-none placeholder:text-gray-600 focus:border-slate-500"
+        className="w-full rounded-lg border border-slate-800 bg-[#05070a] px-3 py-2.5 text-sm text-white outline-none placeholder:text-gray-400 focus:border-slate-500"
       />
     </label>
   );
@@ -729,12 +729,12 @@ function TextAreaField({
 }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-sm text-gray-500">{label}</span>
+      <span className="mb-1.5 block text-sm text-gray-400">{label}</span>
       <textarea
         rows={5}
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="w-full rounded-lg border border-slate-800 bg-[#05070a] px-3 py-2.5 text-sm text-white outline-none placeholder:text-gray-600 focus:border-slate-500"
+        className="w-full rounded-lg border border-slate-800 bg-[#05070a] px-3 py-2.5 text-sm text-white outline-none placeholder:text-gray-400 focus:border-slate-500"
       />
     </label>
   );
@@ -753,7 +753,7 @@ function SelectField({
 }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-sm text-gray-500">{label}</span>
+      <span className="mb-1.5 block text-sm text-gray-400">{label}</span>
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
@@ -907,13 +907,13 @@ function GoogleBusinessInput({
         <div ref={containerRef} />
       </div>
 
-      <p className="text-xs leading-5 text-gray-500">
+      <p className="text-xs leading-5 text-gray-400">
         Wpisz nazwę firmy i miasto, np. CZORA Sp. k. Opole, a potem wybierz
         właściwą wizytówkę z listy Google.
       </p>
 
       {value && (
-        <p className="text-xs text-gray-600">
+        <p className="text-xs text-gray-400">
           Aktualny identyfikator Google: {value}
         </p>
       )}
@@ -948,7 +948,7 @@ function OptionGrid({
           >
             <div className="font-medium">{item.title}</div>
             {(item.category || item.code) && (
-              <div className="mt-1 text-xs text-gray-500">
+              <div className="mt-1 text-xs text-gray-400">
                 {item.category || `Kod: ${item.code}`}
               </div>
             )}

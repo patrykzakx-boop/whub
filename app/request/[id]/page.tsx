@@ -85,7 +85,7 @@ export default async function RequestPage({
       <div className="mt-6 grid gap-4 md:grid-cols-4">
 
         <div className="rounded-2xl border border-slate-800 bg-[#05070a] p-4">
-          <div className="mb-1 text-xs uppercase text-gray-500">
+          <div className="mb-1 text-xs uppercase text-gray-400">
             Lokalizacja
           </div>
 
@@ -95,7 +95,7 @@ export default async function RequestPage({
         </div>
 
         <div className="rounded-2xl border border-slate-800 bg-[#05070a] p-4">
-          <div className="mb-1 text-xs uppercase text-gray-500">
+          <div className="mb-1 text-xs uppercase text-gray-400">
             Dodano
           </div>
 
@@ -105,7 +105,7 @@ export default async function RequestPage({
         </div>
 
         <div className="rounded-2xl border border-slate-800 bg-[#05070a] p-4">
-          <div className="mb-1 text-xs uppercase text-gray-500">
+          <div className="mb-1 text-xs uppercase text-gray-400">
             Priorytet
           </div>
 
@@ -115,7 +115,7 @@ export default async function RequestPage({
         </div>
 
         <div className="rounded-2xl border border-slate-800 bg-[#05070a] p-4">
-          <div className="mb-1 text-xs uppercase text-gray-500">
+          <div className="mb-1 text-xs uppercase text-gray-400">
             Status
           </div>
 

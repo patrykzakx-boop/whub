@@ -120,7 +120,7 @@ export default async function CompaniesPage({ searchParams }: Props) {
     <main className="min-h-screen bg-[#05070a] px-4 py-8 text-white lg:py-12">
       <div className="mx-auto max-w-7xl">
         <section className="mb-7">
-          <div className="mb-3 text-sm text-gray-500">
+          <div className="mb-3 text-sm text-gray-400">
             Strona główna › Firmy
           </div>
 
@@ -156,7 +156,7 @@ export default async function CompaniesPage({ searchParams }: Props) {
               aria-label="Szukaj firmy lub usługi"
               defaultValue={getFirstParam(filters.q)}
               placeholder="Szukaj firmy, usługi, miasta..."
-              className="rounded-xl border border-slate-800 bg-[#05070a] px-5 py-3.5 text-sm text-white outline-none placeholder:text-gray-500 focus:border-slate-600"
+              className="rounded-xl border border-slate-800 bg-[#05070a] px-5 py-3.5 text-sm text-white outline-none placeholder:text-gray-400 focus:border-slate-600"
             />
 
             <input
@@ -164,7 +164,7 @@ export default async function CompaniesPage({ searchParams }: Props) {
               aria-label="Lokalizacja firmy"
               defaultValue={getFirstParam(filters.location)}
               placeholder="Lokalizacja"
-              className="rounded-xl border border-slate-800 bg-[#05070a] px-5 py-3.5 text-sm text-white outline-none placeholder:text-gray-500 focus:border-slate-600 lg:max-w-[220px]"
+              className="rounded-xl border border-slate-800 bg-[#05070a] px-5 py-3.5 text-sm text-white outline-none placeholder:text-gray-400 focus:border-slate-600 lg:max-w-[220px]"
             />
 
             <Link
@@ -247,7 +247,7 @@ export default async function CompaniesPage({ searchParams }: Props) {
               Tylko z dojazdem
             </label>
 
-            <button className="rounded-xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-600">
+            <button className="rounded-xl bg-orange-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-800">
               Filtruj
             </button>
           </div>
@@ -283,7 +283,7 @@ export default async function CompaniesPage({ searchParams }: Props) {
                             className="object-cover"
                           />
                         ) : (
-                          <span className="text-sm text-gray-500">Logo</span>
+                          <span className="text-sm text-gray-400">Logo</span>
                         )}
                       </div>
 
@@ -301,7 +301,7 @@ export default async function CompaniesPage({ searchParams }: Props) {
                         </div>
 
                         {(company.city || company.region) && (
-                          <div className="mt-2 text-sm text-gray-500">
+                          <div className="mt-2 text-sm text-gray-400">
                             {[company.city, company.region]
                               .filter(Boolean)
                               .join(", ")}
@@ -325,7 +325,7 @@ export default async function CompaniesPage({ searchParams }: Props) {
                             ))}
 
                             {services.length > 3 && (
-                              <span className="rounded-full border border-slate-800 bg-[#070b10] px-3 py-1 text-xs text-gray-500">
+                              <span className="rounded-full border border-slate-800 bg-[#070b10] px-3 py-1 text-xs text-gray-400">
                                 +{services.length - 3}
                               </span>
                             )}

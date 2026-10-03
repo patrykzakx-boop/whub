@@ -28,7 +28,7 @@ export default function TilesSection() {
             </div>
 <Link
   href="/add-request"
-  className="mt-6 block w-full rounded-xl bg-orange-500 py-3 text-center text-sm font-medium text-white transition hover:bg-orange-600"
+  className="mt-6 block w-full rounded-xl bg-orange-700 py-3 text-center text-sm font-medium text-white transition hover:bg-orange-800"
 >
   Dodaj zlecenie
 </Link>

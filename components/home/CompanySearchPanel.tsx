@@ -64,7 +64,7 @@ export default function CompanySearchPanel() {
           <div className="absolute inset-x-3 top-20 mx-auto max-h-[calc(100vh-7rem)] max-w-5xl overflow-hidden rounded-2xl border border-slate-800 bg-[#0b1016] shadow-2xl shadow-black/70 md:inset-x-6">
             <div className="flex items-start justify-between gap-4 border-b border-slate-800 px-4 py-4 md:px-5">
               <div>
-                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">
+                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
                   Wybierz zakres prac
                 </div>
 
@@ -110,7 +110,7 @@ export default function CompanySearchPanel() {
               <button
                 type="submit"
                 form="company-search-form"
-                className="rounded-xl bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-600"
+                className="rounded-xl bg-orange-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-orange-800"
               >
                 Pokaż firmy
               </button>
@@ -138,23 +138,23 @@ export default function CompanySearchPanel() {
           className="flex h-11 min-w-0 items-center justify-between gap-3 rounded-xl border border-slate-700 bg-[#05070a]/90 px-4 text-left text-sm text-white transition hover:border-slate-500"
           aria-expanded={open}
         >
-          <span className={selectedLabels.length ? "truncate text-white" : "truncate text-gray-500"}>
+          <span className={selectedLabels.length ? "truncate text-white" : "truncate text-gray-400"}>
             {summary}
           </span>
 
-          <span className="shrink-0 text-gray-500">⌄</span>
+          <span className="shrink-0 text-gray-400">⌄</span>
         </button>
 
         <input
           name="location"
           type="text"
           placeholder="Miasto lub województwo"
-          className="h-11 rounded-xl border border-slate-700 bg-[#05070a]/90 px-4 text-sm text-white placeholder:text-gray-500 focus:border-slate-500 focus:outline-none"
+          className="h-11 rounded-xl border border-slate-700 bg-[#05070a]/90 px-4 text-sm text-white placeholder:text-gray-400 focus:border-slate-500 focus:outline-none"
         />
 
         <button
           type="submit"
-          className="h-11 w-full rounded-xl bg-orange-500 px-4 text-sm font-semibold text-white transition hover:bg-orange-600"
+          className="h-11 w-full rounded-xl bg-orange-700 px-4 text-sm font-semibold text-white transition hover:bg-orange-800"
         >
           Szukaj firm
         </button>
@@ -182,7 +182,7 @@ function FilterGroup({
 }) {
   return (
     <section className="border-b border-slate-800 py-4 last:border-b-0">
-      <div className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">
+      <div className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
         {title}
       </div>
 

@@ -61,7 +61,7 @@ export default function ResetPasswordPage() {
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             placeholder="Nowe hasło"
-            className="w-full rounded-xl border border-slate-700 bg-[#05070a] px-4 py-3 text-white outline-none placeholder:text-gray-500 focus:border-orange-500"
+            className="w-full rounded-xl border border-slate-700 bg-[#05070a] px-4 py-3 text-white outline-none placeholder:text-gray-400 focus:border-orange-500"
           />
 
           <input
@@ -71,7 +71,7 @@ export default function ResetPasswordPage() {
             value={repeatPassword}
             onChange={(event) => setRepeatPassword(event.target.value)}
             placeholder="Powtórz nowe hasło"
-            className="w-full rounded-xl border border-slate-700 bg-[#05070a] px-4 py-3 text-white outline-none placeholder:text-gray-500 focus:border-orange-500"
+            className="w-full rounded-xl border border-slate-700 bg-[#05070a] px-4 py-3 text-white outline-none placeholder:text-gray-400 focus:border-orange-500"
           />
 
           {message && (
@@ -89,7 +89,7 @@ export default function ResetPasswordPage() {
           <button
             onClick={updatePassword}
             disabled={loading}
-            className="w-full rounded-xl bg-orange-500 px-5 py-3 font-semibold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60"
+            className="w-full rounded-xl bg-orange-700 px-5 py-3 font-semibold text-white transition hover:bg-orange-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? "Zapisywanie..." : "Zmień hasło"}
           </button>

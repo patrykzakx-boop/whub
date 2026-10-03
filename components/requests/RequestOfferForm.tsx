@@ -224,7 +224,7 @@ export default function RequestOfferForm({ requestId, requestStatus }: Props) {
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
             href="/login"
-            className="rounded-xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-600"
+            className="rounded-xl bg-orange-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-800"
           >
             Zaloguj
           </Link>
@@ -272,7 +272,7 @@ export default function RequestOfferForm({ requestId, requestStatus }: Props) {
 
         <Link
           href="/add-company"
-          className="mt-6 inline-flex rounded-xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-600"
+          className="mt-6 inline-flex rounded-xl bg-orange-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-800"
         >
           Dodaj firmę
         </Link>
@@ -320,7 +320,7 @@ export default function RequestOfferForm({ requestId, requestStatus }: Props) {
                     {offer.companies?.name || "Firma"}
                   </div>
 
-                  <div className="text-xs text-gray-500">
+                  <div className="text-xs text-gray-400">
                     {formatDate(offer.created_at)}
                   </div>
                 </div>
@@ -369,7 +369,7 @@ export default function RequestOfferForm({ requestId, requestStatus }: Props) {
               value={priceEstimate}
               onChange={(event) => setPriceEstimate(event.target.value)}
               placeholder="np. do ustalenia / od 1200 zł"
-              className="w-full rounded-xl border border-slate-800 bg-[#05070a] px-4 py-3 text-sm text-white outline-none placeholder:text-gray-600 transition focus:border-orange-500"
+              className="w-full rounded-xl border border-slate-800 bg-[#05070a] px-4 py-3 text-sm text-white outline-none placeholder:text-gray-400 transition focus:border-orange-500"
             />
           </label>
 
@@ -382,7 +382,7 @@ export default function RequestOfferForm({ requestId, requestStatus }: Props) {
               value={availability}
               onChange={(event) => setAvailability(event.target.value)}
               placeholder="np. w tym tygodniu"
-              className="w-full rounded-xl border border-slate-800 bg-[#05070a] px-4 py-3 text-sm text-white outline-none placeholder:text-gray-600 transition focus:border-orange-500"
+              className="w-full rounded-xl border border-slate-800 bg-[#05070a] px-4 py-3 text-sm text-white outline-none placeholder:text-gray-400 transition focus:border-orange-500"
             />
           </label>
         </div>
@@ -397,7 +397,7 @@ export default function RequestOfferForm({ requestId, requestStatus }: Props) {
             onChange={(event) => setMessage(event.target.value)}
             rows={5}
             placeholder="Napisz krótko, co możesz zaproponować, kiedy możesz zacząć i jak klient ma się z Tobą skontaktować."
-            className="w-full resize-none rounded-xl border border-slate-800 bg-[#05070a] px-4 py-3 text-sm leading-6 text-white outline-none placeholder:text-gray-600 transition focus:border-orange-500"
+            className="w-full resize-none rounded-xl border border-slate-800 bg-[#05070a] px-4 py-3 text-sm leading-6 text-white outline-none placeholder:text-gray-400 transition focus:border-orange-500"
           />
         </label>
 
@@ -422,7 +422,7 @@ export default function RequestOfferForm({ requestId, requestStatus }: Props) {
         <button
           type="submit"
           disabled={submitting || selectedCompanyAlreadyAnswered || !requestOpen}
-          className="rounded-xl bg-orange-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-xl bg-orange-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-orange-800 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {submitting ? "Wysyłanie..." : "Wyślij odpowiedź"}
         </button>

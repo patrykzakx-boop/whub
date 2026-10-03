@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import TurnstileWidget from "@/components/security/TurnstileWidget";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -57,7 +59,7 @@ export default function LoginPage() {
         return;
       }
 
-      window.location.href = "/dashboard";
+      router.replace("/dashboard");
     } catch {
       setErrorMessage("Nie udało się połączyć z serwerem. Spróbuj ponownie.");
     } finally {
@@ -116,7 +118,7 @@ export default function LoginPage() {
           <button
             onClick={handleLogin}
             disabled={loading || !captchaToken}
-            className="w-full rounded-xl bg-orange-500 px-5 py-3 font-semibold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60"
+            className="w-full rounded-xl bg-orange-700 px-5 py-3 font-semibold text-white transition hover:bg-orange-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? "Logowanie..." : "Zaloguj się"}
           </button>

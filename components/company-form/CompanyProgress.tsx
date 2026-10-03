@@ -31,7 +31,7 @@ export default function CompanyProgress({
         <div className="h-2 overflow-hidden rounded-full bg-slate-800">
 
           <div
-            className="h-full bg-orange-500"
+            className="h-full bg-orange-700"
             style={{
               width: `${progress}%`,
             }}

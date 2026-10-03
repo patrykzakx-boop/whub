@@ -41,7 +41,7 @@ export default function ReportButton({ targetType, targetId }: { targetType: Rep
 
   return (
     <div className="mt-6">
-      <button type="button" onClick={() => setOpen(true)} className="inline-flex items-center gap-2 text-sm text-gray-500 transition hover:text-red-300">
+      <button type="button" onClick={() => setOpen(true)} className="inline-flex items-center gap-2 text-sm text-gray-400 transition hover:text-red-300">
         <Flag size={15} /> Zgłoś nadużycie
       </button>
 
@@ -50,7 +50,7 @@ export default function ReportButton({ targetType, targetId }: { targetType: Rep
           <div className="w-full max-w-lg rounded-2xl border border-slate-700 bg-[#0d1218] p-6 shadow-2xl">
             <div className="flex items-center justify-between gap-4">
               <h2 className="text-xl font-semibold text-white">Zgłoś nadużycie</h2>
-              <button type="button" onClick={() => setOpen(false)} aria-label="Zamknij" className="rounded-lg p-2 text-gray-500 hover:bg-white/5 hover:text-white"><X size={18} /></button>
+              <button type="button" onClick={() => setOpen(false)} aria-label="Zamknij" className="rounded-lg p-2 text-gray-400 hover:bg-white/5 hover:text-white"><X size={18} /></button>
             </div>
             <p className="mt-2 text-sm text-gray-400">Zgłoszenie zobaczy wyłącznie administrator WeldHub.</p>
             <label className="mt-5 block text-sm text-gray-300">Powód
@@ -62,7 +62,7 @@ export default function ReportButton({ targetType, targetId }: { targetType: Rep
               <textarea value={details} onChange={(event) => setDetails(event.target.value)} maxLength={2000} rows={4} className="mt-2 w-full resize-none rounded-xl border border-slate-700 bg-[#05070a] px-4 py-3 text-white" />
             </label>
             {message && <p className="mt-4 text-sm text-orange-300">{message}</p>}
-            <button type="button" disabled={working} onClick={() => void submit()} className="mt-5 w-full rounded-xl bg-orange-500 px-5 py-3 font-semibold text-white hover:bg-orange-600 disabled:opacity-50">
+            <button type="button" disabled={working} onClick={() => void submit()} className="mt-5 w-full rounded-xl bg-orange-700 px-5 py-3 font-semibold text-white hover:bg-orange-800 disabled:opacity-50">
               {working ? "Wysyłanie…" : "Wyślij zgłoszenie"}
             </button>
           </div>

@@ -92,14 +92,14 @@ export default function Navbar() {
         <button
           type="button"
           onClick={() => router.back()}
-          className="hidden rounded-lg px-3 py-2 text-sm text-gray-500 transition hover:bg-white/[0.04] hover:text-white lg:inline-flex"
+          className="hidden rounded-lg px-3 py-2 text-sm text-gray-400 transition hover:bg-white/[0.04] hover:text-white lg:inline-flex"
         >
           Powrót
         </button>
 
         <Link href="/" className="flex shrink-0 items-center gap-3">
           <Image
-            src="/images/logo.jpg"
+            src="/images/logo.webp"
             alt="WeldHub Logo"
             width={42}
             height={42}
@@ -138,7 +138,7 @@ export default function Navbar() {
                 onClick={() => setAccountMenuOpen((isOpen) => !isOpen)}
                 aria-expanded={accountMenuOpen}
                 aria-haspopup="menu"
-                className="rounded-lg bg-orange-500 px-3 py-2 text-sm font-semibold text-white transition hover:bg-orange-600 md:hidden"
+                className="rounded-lg bg-orange-700 px-3 py-2 text-sm font-semibold text-white transition hover:bg-orange-800 md:hidden"
               >
                 Konto
               </button>
@@ -152,7 +152,7 @@ export default function Navbar() {
 
               {accountMenuOpen && (
                 <div role="menu" className="absolute right-0 top-full mt-2 w-56 overflow-hidden rounded-xl border border-slate-800 bg-[#0d1218] shadow-2xl shadow-black/40">
-                  <div className="border-b border-slate-800 px-4 py-3 text-xs text-gray-500">
+                  <div className="border-b border-slate-800 px-4 py-3 text-xs text-gray-400">
                     <div className="mb-1 text-gray-400">Zalogowano jako</div>
                     <div className="truncate text-gray-200">{email}</div>
                   </div>
@@ -204,7 +204,7 @@ export default function Navbar() {
 
               <Link
                 href="/register"
-                className="hidden rounded-lg bg-orange-500 px-3 py-2 text-sm font-semibold text-white transition hover:bg-orange-600 sm:inline-flex"
+                className="hidden rounded-lg bg-orange-700 px-3 py-2 text-sm font-semibold text-white transition hover:bg-orange-800 sm:inline-flex"
               >
                 Rejestracja
               </Link>

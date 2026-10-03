@@ -21,7 +21,7 @@ export default function Footer() {
 
           <div className="grid gap-8 sm:grid-cols-2">
             <div>
-              <h4 className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-gray-500">
+              <h4 className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-gray-400">
                 Kontakt
               </h4>
 
@@ -39,7 +39,7 @@ export default function Footer() {
             </div>
 
             <div>
-              <h4 className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-gray-500">
+              <h4 className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-gray-400">
                 Informacje
               </h4>
 
@@ -60,7 +60,7 @@ export default function Footer() {
 
         </div>
 
-        <div className="mt-8 border-t border-slate-800 pt-6 text-sm text-gray-500">
+        <div className="mt-8 border-t border-slate-800 pt-6 text-sm text-gray-400">
           © 2026 WeldHub. Wszelkie prawa zastrzeżone.
         </div>
 

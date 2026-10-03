@@ -170,7 +170,7 @@ export default function SummaryStep({
   <button
     type="button"
     onClick={onPublish}
-    className="w-full rounded-xl bg-orange-500 px-6 py-4 font-semibold text-white transition hover:bg-orange-600"
+    className="w-full rounded-xl bg-orange-700 px-6 py-4 font-semibold text-white transition hover:bg-orange-800"
   >
     Opublikuj firmę
   </button>

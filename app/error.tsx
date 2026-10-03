@@ -13,7 +13,7 @@ export default function ErrorPage({ error, reset }: { error: Error & { digest?: 
         <h1 className="mt-3 text-3xl font-bold">Coś poszło nie tak</h1>
         <p className="mt-3 text-gray-400">Nie udało się wyświetlić tej części WeldHub. Spróbuj ponownie lub wróć na stronę główną.</p>
         <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
-          <button type="button" onClick={reset} className="rounded-xl bg-orange-500 px-5 py-3 font-semibold hover:bg-orange-600">Spróbuj ponownie</button>
+          <button type="button" onClick={reset} className="rounded-xl bg-orange-700 px-5 py-3 font-semibold hover:bg-orange-800">Spróbuj ponownie</button>
           <Link href="/" className="rounded-xl border border-slate-700 px-5 py-3 font-semibold hover:border-slate-500">Strona główna</Link>
         </div>
       </div>

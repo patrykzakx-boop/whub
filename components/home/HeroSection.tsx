@@ -6,10 +6,10 @@ export default function HeroSection() {
   return (
     <section className="relative overflow-hidden bg-[#05070a]">
       <Image
-        src="/images/hero-welding-v2.jpg"
+        src="/images/hero-welding-v2.webp"
         alt=""
         fill
-        priority
+        fetchPriority="high"
         sizes="100vw"
         className="object-cover object-center opacity-70"
       />
@@ -35,7 +35,7 @@ export default function HeroSection() {
             <div className="mt-7 grid gap-3 sm:flex sm:flex-wrap">
               <Link
                 href="/add-request"
-                className="inline-flex h-12 items-center justify-center rounded-xl bg-orange-500 px-6 text-sm font-semibold text-white transition hover:bg-orange-600"
+                className="inline-flex h-12 items-center justify-center rounded-xl bg-orange-700 px-6 text-sm font-semibold text-white transition hover:bg-orange-800"
               >
                 Dodaj zapytanie
               </Link>

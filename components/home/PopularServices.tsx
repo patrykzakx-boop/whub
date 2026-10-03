@@ -47,7 +47,7 @@ export default function PopularServices() {
 
         <div className="mb-7 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
-          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">
+          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
             Popularne usługi
           </div>
 

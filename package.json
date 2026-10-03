@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
+    "test:e2e": "playwright test",
+    "test:e2e:report": "playwright show-report",
     "backup:supabase": "node scripts/backup-supabase.mjs",
     "backup:supabase:data": "node scripts/backup-supabase.mjs --data-only",
     "backup:supabase:storage": "node scripts/backup-supabase.mjs --storage-only"
@@ -24,6 +26,8 @@
     "use-places-autocomplete": "^4.0.1"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

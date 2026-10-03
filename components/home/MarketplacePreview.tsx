@@ -155,7 +155,7 @@ function LatestRequestCard({ request }: { request: RequestItem }) {
             {request.title || "Zapytanie klienta"}
           </h3>
 
-          <span className="shrink-0 text-xs text-gray-500">
+          <span className="shrink-0 text-xs text-gray-400">
             {formatTimeAgo(request.created_at)}
           </span>
         </div>
@@ -194,7 +194,7 @@ function RecommendedCompanyCard({ company }: { company: CompanyItem }) {
             className="object-cover"
           />
         ) : (
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-slate-800 bg-[#05070a] text-lg font-bold text-gray-500">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-slate-800 bg-[#05070a] text-lg font-bold text-gray-400">
             {getInitials(company.name)}
           </div>
         )}
@@ -222,13 +222,13 @@ function RecommendedCompanyCard({ company }: { company: CompanyItem }) {
               </span>
             ))
           ) : (
-            <span className="text-xs text-gray-500">Profil do uzupełnienia</span>
+            <span className="text-xs text-gray-400">Profil do uzupełnienia</span>
           )}
         </div>
 
         <Link
           href={`/company/${company.id}`}
-          className="mt-4 flex h-10 items-center justify-center rounded-xl border border-orange-500/70 text-sm font-semibold text-orange-400 transition hover:bg-orange-500 hover:text-white"
+          className="mt-4 flex h-10 items-center justify-center rounded-xl border border-orange-500/70 text-sm font-semibold text-orange-400 transition hover:bg-orange-700 hover:text-white"
         >
           Zobacz profil
         </Link>
@@ -239,7 +239,7 @@ function RecommendedCompanyCard({ company }: { company: CompanyItem }) {
 
 function EmptyState({ text }: { text: string }) {
   return (
-    <div className="rounded-2xl border border-dashed border-slate-800 bg-[#0b1016] p-6 text-sm text-gray-500">
+    <div className="rounded-2xl border border-dashed border-slate-800 bg-[#0b1016] p-6 text-sm text-gray-400">
       {text}
     </div>
   );
@@ -248,7 +248,7 @@ function EmptyState({ text }: { text: string }) {
 function GoogleRating({ company }: { company: CompanyItem }) {
   if (!company.google_rating || !company.google_reviews_count) {
     return (
-      <div className="mt-2 text-xs font-medium text-gray-500">
+      <div className="mt-2 text-xs font-medium text-gray-400">
         Brak ocen Google
       </div>
     );
@@ -262,7 +262,7 @@ function GoogleRating({ company }: { company: CompanyItem }) {
       <span className="text-gray-400">
         Google
       </span>
-      <span className="text-gray-600">
+      <span className="text-gray-400">
         ({company.google_reviews_count})
       </span>
     </div>

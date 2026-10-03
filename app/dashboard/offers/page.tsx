@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { normalizeOfferStatus } from "@/lib/statuses";
@@ -32,6 +33,7 @@ type Offer = {
 };
 
 export default function DashboardOffersPage() {
+  const router = useRouter();
   const [offers, setOffers] = useState<Offer[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
@@ -41,7 +43,7 @@ export default function DashboardOffersPage() {
       const { data, error: userError } = await supabase.auth.getUser();
 
       if (userError || !data.user) {
-        window.location.href = "/login";
+        router.replace("/login");
         return;
       }
 
@@ -60,7 +62,7 @@ export default function DashboardOffersPage() {
     };
 
     loadOffers();
-  }, []);
+  }, [router]);
 
   if (loading) {
     return (
@@ -83,7 +85,7 @@ export default function DashboardOffersPage() {
               Moje odpowiedzi
             </h1>
 
-            <p className="mt-1.5 max-w-2xl text-sm text-gray-500">
+            <p className="mt-1.5 max-w-2xl text-sm text-gray-400">
               Odpowiedzi wysłane z profili Twoich firm. Zainteresowane i wybrane oferty pokazują kontakt do klienta.
             </p>
           </div>
@@ -135,7 +137,7 @@ export default function DashboardOffersPage() {
                       {getRequestCategoryLabel(offer.request_category)}
                     </div>
 
-                    <div className="mt-1 flex flex-wrap gap-x-2 gap-y-1 text-xs text-gray-500 sm:text-sm">
+                    <div className="mt-1 flex flex-wrap gap-x-2 gap-y-1 text-xs text-gray-400 sm:text-sm">
                       <span>{offer.request_city || "Brak miejscowości"}</span>
                       <span>•</span>
                       <span>{formatDate(offer.created_at)}</span>
@@ -143,7 +145,7 @@ export default function DashboardOffersPage() {
                     </div>
 
                     {contactVisible && (
-                      <div className="mt-1 truncate text-xs text-gray-500">
+                      <div className="mt-1 truncate text-xs text-gray-400">
                         Kontakt klienta dostępny
                       </div>
                     )}
@@ -165,7 +167,7 @@ export default function DashboardOffersPage() {
 
               <Link
                 href="/requests"
-                className="mt-6 inline-flex rounded-xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-600"
+                className="mt-6 inline-flex rounded-xl bg-orange-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-800"
               >
                 Zobacz zlecenia
               </Link>
@@ -192,7 +194,7 @@ function DashboardNavLink({
       className={
         active
           ? "flex shrink-0 items-center gap-2 rounded-xl bg-[#0d1218] px-4 py-2.5 text-sm font-medium text-white"
-          : "flex shrink-0 items-center gap-2 rounded-xl px-4 py-2.5 text-sm text-gray-500 transition hover:bg-[#0d1218] hover:text-white"
+          : "flex shrink-0 items-center gap-2 rounded-xl px-4 py-2.5 text-sm text-gray-400 transition hover:bg-[#0d1218] hover:text-white"
       }
     >
       {label}

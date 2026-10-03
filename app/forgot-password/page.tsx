@@ -81,12 +81,12 @@ export default function ForgotPasswordPage() {
               Prośba została przyjęta. Jeśli konto <span className="font-medium text-gray-200">{email.trim()}</span> istnieje,
               wysłaliśmy na nie link do ustawienia nowego hasła.
             </p>
-            <p className="mt-2 text-xs text-gray-500">Link może dotrzeć w ciągu kilku minut. Sprawdź również folder spam.</p>
+            <p className="mt-2 text-xs text-gray-400">Link może dotrzeć w ciągu kilku minut. Sprawdź również folder spam.</p>
 
             <div className="mt-6 space-y-3">
               <Link
                 href="/login"
-                className="block w-full rounded-xl bg-orange-500 px-5 py-3 font-semibold text-white transition hover:bg-orange-600"
+                className="block w-full rounded-xl bg-orange-700 px-5 py-3 font-semibold text-white transition hover:bg-orange-800"
               >
                 Wróć do logowania
               </Link>
@@ -113,7 +113,7 @@ export default function ForgotPasswordPage() {
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 placeholder="E-mail"
-                className="w-full rounded-xl border border-slate-700 bg-[#05070a] px-4 py-3 text-white outline-none placeholder:text-gray-500 focus:border-orange-500"
+                className="w-full rounded-xl border border-slate-700 bg-[#05070a] px-4 py-3 text-white outline-none placeholder:text-gray-400 focus:border-orange-500"
               />
 
               {errorMessage && (
@@ -131,7 +131,7 @@ export default function ForgotPasswordPage() {
               <button
                 onClick={sendResetLink}
                 disabled={loading || !captchaToken}
-                className="w-full rounded-xl bg-orange-500 px-5 py-3 font-semibold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-60"
+                className="w-full rounded-xl bg-orange-700 px-5 py-3 font-semibold text-white transition hover:bg-orange-800 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {loading ? "Wysyłanie..." : "Wyślij link resetujący"}
               </button>

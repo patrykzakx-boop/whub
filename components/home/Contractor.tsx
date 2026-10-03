@@ -8,7 +8,7 @@ export default function Contractor() {
 
         {/* Background */}
         <Image
-          src="/images/company.jpg"
+          src="/images/company.webp"
           alt=""
           fill
           sizes="(max-width: 1280px) 100vw, 1280px"
@@ -58,7 +58,7 @@ export default function Contractor() {
 
           <Link
             href="/add-company"
-            className="inline-flex items-center justify-center rounded-xl bg-orange-500 px-6 py-3 font-semibold text-white transition hover:bg-orange-600"
+            className="inline-flex items-center justify-center rounded-xl bg-orange-700 px-6 py-3 font-semibold text-white transition hover:bg-orange-800"
           >
             Dodaj firmę
           </Link>

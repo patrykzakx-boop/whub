@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import {
@@ -56,6 +57,7 @@ type DashboardOffer = {
 };
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [mode, setMode] = useState<DashboardMode>("client");
   const [companies, setCompanies] = useState<DashboardCompany[]>([]);
   const [privateRequests, setPrivateRequests] = useState<PrivateRequest[]>([]);
@@ -72,7 +74,7 @@ export default function DashboardPage() {
       const { data, error: userError } = await supabase.auth.getUser();
 
       if (userError || !data.user) {
-        window.location.href = "/login";
+        router.replace("/login");
         return;
       }
 
@@ -162,7 +164,7 @@ export default function DashboardPage() {
     };
 
     loadDashboard();
-  }, []);
+  }, [router]);
 
   const changeMode = (nextMode: DashboardMode) => {
     setMode(nextMode);
@@ -220,7 +222,7 @@ export default function DashboardPage() {
     } = await supabase.auth.getUser();
 
     if (userError || !user) {
-      window.location.href = "/login";
+      router.replace("/login");
       return;
     }
 
@@ -267,7 +269,7 @@ export default function DashboardPage() {
     } = await supabase.auth.getUser();
 
     if (userError || !user) {
-      window.location.href = "/login";
+      router.replace("/login");
       return;
     }
 
@@ -313,7 +315,7 @@ export default function DashboardPage() {
                 {mode === "client" ? "Panel klienta" : "Panel wykonawcy"}
               </h1>
 
-              <p className="mt-1.5 max-w-2xl text-sm text-gray-500">
+              <p className="mt-1.5 max-w-2xl text-sm text-gray-400">
                 {mode === "client"
                   ? "Zarządzaj swoimi zleceniami i odpowiedziami od wykonawców."
                   : "Zarządzaj firmami, zapytaniami i odpowiedziami wysłanymi do klientów."}
@@ -327,8 +329,8 @@ export default function DashboardPage() {
                   onClick={() => changeMode("client")}
                   className={
                     mode === "client"
-                      ? "rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white"
-                      : "rounded-lg px-4 py-2 text-sm text-gray-500 transition hover:text-white"
+                      ? "rounded-lg bg-orange-700 px-4 py-2 text-sm font-semibold text-white"
+                      : "rounded-lg px-4 py-2 text-sm text-gray-400 transition hover:text-white"
                   }
                 >
                   Klient
@@ -339,8 +341,8 @@ export default function DashboardPage() {
                   onClick={() => changeMode("contractor")}
                   className={
                     mode === "contractor"
-                      ? "rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white"
-                      : "rounded-lg px-4 py-2 text-sm text-gray-500 transition hover:text-white"
+                      ? "rounded-lg bg-orange-700 px-4 py-2 text-sm font-semibold text-white"
+                      : "rounded-lg px-4 py-2 text-sm text-gray-400 transition hover:text-white"
                   }
                 >
                   Wykonawca
@@ -436,7 +438,7 @@ function ClientDashboard({
             <h2 className="text-lg font-semibold text-white">
               Moje zlecenia
             </h2>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-gray-400">
               Zlecenia dodane z Twojego konta.
             </p>
           </div>
@@ -477,7 +479,7 @@ function ClientDashboard({
                         {getRequestCategoryLabel(request.category)}
                       </div>
 
-                      <div className="mt-0.5 flex flex-wrap gap-x-2 gap-y-1 text-xs text-gray-500">
+                      <div className="mt-0.5 flex flex-wrap gap-x-2 gap-y-1 text-xs text-gray-400">
                         <span>{request.city || "Brak miejscowości"}</span>
                         <span>{formatDate(request.created_at)}</span>
                         <RequestPriorityMeta type={request.request_type} />
@@ -485,7 +487,7 @@ function ClientDashboard({
                     </div>
 
                     <div className="flex shrink-0 flex-wrap items-center gap-3 text-sm">
-                      <div className="text-gray-500">
+                      <div className="text-gray-400">
                         {requestOffers.length} ofert
                       </div>
 
@@ -511,7 +513,7 @@ function ClientDashboard({
             </p>
             <Link
               href="/add-request"
-              className="mt-6 inline-flex rounded-xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-600"
+              className="mt-6 inline-flex rounded-xl bg-orange-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-800"
             >
               Dodaj zlecenie
             </Link>
@@ -562,7 +564,7 @@ function ContractorDashboard({
               <h2 className="text-lg font-semibold text-white">
                 Moje firmy
               </h2>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-gray-400">
                 Profile wykonawcy przypisane do Twojego konta.
               </p>
             </div>
@@ -587,7 +589,7 @@ function ContractorDashboard({
                             className="object-cover"
                           />
                         ) : (
-                          <span className="text-xs text-gray-500">Logo</span>
+                          <span className="text-xs text-gray-400">Logo</span>
                         )}
                       </div>
 
@@ -599,7 +601,7 @@ function ContractorDashboard({
                           <CompanyStatusBadge status={company.status} moderationStatus={company.moderation_status} />
                         </div>
 
-                        <p className="mt-1 text-sm text-gray-500">
+                        <p className="mt-1 text-sm text-gray-400">
                           {[company.city, company.region].filter(Boolean).join(", ") || "Brak lokalizacji"}
                         </p>
                       </div>
@@ -653,7 +655,7 @@ function ContractorDashboard({
                         type="button"
                         onClick={() => onDeleteCompany(company.id)}
                         disabled={actionLoadingId === company.id}
-                          className="text-gray-600 transition hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-50"
+                          className="text-gray-400 transition hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         Usuń
                       </button>
@@ -672,7 +674,7 @@ function ContractorDashboard({
               </p>
               <Link
                 href="/add-company"
-                className="mt-6 inline-flex rounded-xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-600"
+                className="mt-6 inline-flex rounded-xl bg-orange-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-800"
               >
                 Dodaj firmę
               </Link>
@@ -698,7 +700,7 @@ function ContractorDashboard({
               <h2 className="text-lg font-semibold text-white">
                 Nowe zapytania
               </h2>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-gray-400">
                 Wiadomości wysłane bezpośrednio do Twoich firm.
               </p>
             </div>
@@ -728,10 +730,10 @@ function ContractorDashboard({
                     <div className="truncate text-sm font-semibold text-white">
                       {request.title || "Zapytanie bez tytułu"}
                     </div>
-                    <div className="mt-1 truncate text-xs text-gray-500">
+                    <div className="mt-1 truncate text-xs text-gray-400">
                       {getRequestCategoryLabel(request.category)}
                     </div>
-                    <div className="mt-1 flex flex-wrap gap-x-2 gap-y-1 text-xs text-gray-500">
+                    <div className="mt-1 flex flex-wrap gap-x-2 gap-y-1 text-xs text-gray-400">
                       <span>{request.city || "Brak miejscowości"}</span>
                       <span>{formatDate(request.created_at)}</span>
                       <RequestPriorityMeta type={request.request_type} />
@@ -767,12 +769,12 @@ function DashboardLink({
       className={
         active
           ? "flex shrink-0 items-center gap-2 rounded-xl bg-[#0d1218] px-4 py-2.5 text-sm font-medium text-white"
-          : "flex shrink-0 items-center gap-2 rounded-xl px-4 py-2.5 text-sm text-gray-500 transition hover:bg-[#0d1218] hover:text-white"
+          : "flex shrink-0 items-center gap-2 rounded-xl px-4 py-2.5 text-sm text-gray-400 transition hover:bg-[#0d1218] hover:text-white"
       }
     >
       <span>{label}</span>
       {count > 0 && (
-        <span className="rounded-full bg-orange-500 px-2 py-0.5 text-[11px] font-semibold text-white">
+        <span className="rounded-full bg-orange-700 px-2 py-0.5 text-[11px] font-semibold text-white">
           {count}
         </span>
       )}
@@ -795,7 +797,7 @@ function SummaryPanel({
         {title}
       </h2>
 
-      <p className="mt-1 text-xs leading-5 text-gray-600">
+      <p className="mt-1 text-xs leading-5 text-gray-400">
         {description}
       </p>
 
@@ -805,7 +807,7 @@ function SummaryPanel({
             key={label}
             className="flex items-center justify-between gap-4 py-2.5 first:pt-0 last:pb-0"
           >
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-gray-400">
               {label}
             </span>
 
@@ -849,7 +851,7 @@ function CompanyStatusBadge({ status, moderationStatus }: { status: string | nul
       className={
         published && approved
           ? "inline-flex rounded-full bg-slate-800 px-2.5 py-1 text-xs font-medium text-gray-300"
-          : "inline-flex rounded-full bg-slate-900 px-2.5 py-1 text-xs font-medium text-gray-500"
+          : "inline-flex rounded-full bg-slate-900 px-2.5 py-1 text-xs font-medium text-gray-400"
       }
     >
       {label}

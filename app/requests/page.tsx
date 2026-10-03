@@ -146,7 +146,7 @@ export default async function RequestsPage({ searchParams }: Props) {
             <option value="urgent">Sortuj: pilne najpierw</option>
           </select>
 
-          <button className="rounded-xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-600">
+          <button className="rounded-xl bg-orange-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-800">
             Filtruj
           </button>
 
@@ -174,19 +174,19 @@ export default async function RequestsPage({ searchParams }: Props) {
 
               <div></div>
 
-              <div className="text-xs uppercase tracking-wide text-gray-500">
+              <div className="text-xs uppercase tracking-wide text-gray-400">
                 Zlecenie
               </div>
 
-              <div className="text-xs uppercase tracking-wide text-gray-500">
+              <div className="text-xs uppercase tracking-wide text-gray-400">
                 Kategoria
               </div>
 
-              <div className="text-xs uppercase tracking-wide text-gray-500">
+              <div className="text-xs uppercase tracking-wide text-gray-400">
                 Lokalizacja
               </div>
 
-              <div className="text-xs uppercase tracking-wide text-gray-500">
+              <div className="text-xs uppercase tracking-wide text-gray-400">
                 Dodano
               </div>
 
@@ -225,7 +225,7 @@ export default async function RequestsPage({ searchParams }: Props) {
                     {request.city}
                   </div>
 
-                  <div className="text-sm text-gray-500">
+                  <div className="text-sm text-gray-400">
                     <div>
                       {new Date(
                         request.created_at

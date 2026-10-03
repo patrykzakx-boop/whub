@@ -131,7 +131,7 @@ export default function RegisterPage() {
           <button
             onClick={handleRegister}
             disabled={loading || !captchaToken || !legalAccepted}
-            className="w-full rounded-xl bg-orange-500 px-5 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
+            className="w-full rounded-xl bg-orange-700 px-5 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? "Tworzenie konta…" : "Utwórz konto"}
           </button>

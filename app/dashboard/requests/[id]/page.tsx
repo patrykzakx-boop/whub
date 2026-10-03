@@ -63,7 +63,7 @@ export default function DashboardRequestDetailsPage() {
       const { data, error: userError } = await supabase.auth.getUser();
 
       if (userError || !data.user) {
-        window.location.href = "/login";
+        router.replace("/login");
         return;
       }
 
@@ -100,7 +100,7 @@ export default function DashboardRequestDetailsPage() {
     };
 
     loadRequest();
-  }, [requestId]);
+  }, [requestId, router]);
 
   const updateOfferStatus = async (
     offerId: string | number,
@@ -293,7 +293,7 @@ export default function DashboardRequestDetailsPage() {
               <section className="border-b border-slate-800 pb-6">
                 <Link
                   href="/dashboard/requests"
-                  className="mb-5 inline-flex text-sm text-gray-500 transition hover:text-white"
+                  className="mb-5 inline-flex text-sm text-gray-400 transition hover:text-white"
                 >
                   ← Powrót do zleceń
                 </Link>
@@ -312,7 +312,7 @@ export default function DashboardRequestDetailsPage() {
                       {getRequestCategoryLabel(request.category)}
                     </div>
 
-                    <div className="mt-1 flex flex-wrap gap-x-2 gap-y-1 text-sm text-gray-500">
+                    <div className="mt-1 flex flex-wrap gap-x-2 gap-y-1 text-sm text-gray-400">
                       <span>{request.city || "Brak miejscowości"}</span>
                       <span>•</span>
                       <span>{formatDate(request.created_at)}</span>
@@ -327,7 +327,7 @@ export default function DashboardRequestDetailsPage() {
                         type="button"
                         onClick={completeRequest}
                         disabled={actionLoadingId === "request"}
-                        className="rounded-lg bg-orange-500 px-3 py-2 text-sm font-semibold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="rounded-lg bg-orange-700 px-3 py-2 text-sm font-semibold text-white transition hover:bg-orange-800 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         Zakończ
                       </button>
@@ -345,7 +345,7 @@ export default function DashboardRequestDetailsPage() {
                 </div>
 
                 <div className="mt-5 max-w-3xl">
-                  <div className="mb-1 text-xs font-medium uppercase tracking-[0.16em] text-gray-600">
+                  <div className="mb-1 text-xs font-medium uppercase tracking-[0.16em] text-gray-400">
                     Opis
                   </div>
                   <p className="whitespace-pre-wrap text-sm leading-7 text-gray-300">
@@ -398,7 +398,7 @@ export default function DashboardRequestDetailsPage() {
                                     className="object-cover"
                                   />
                                 ) : (
-                                  <span className="text-[10px] text-gray-500">Logo</span>
+                                  <span className="text-[10px] text-gray-400">Logo</span>
                                 )}
                               </Link>
 
@@ -414,7 +414,7 @@ export default function DashboardRequestDetailsPage() {
                                   <OfferStatusBadge status={offer.status} />
                                 </div>
 
-                                <div className="mt-1 text-xs text-gray-500">
+                                <div className="mt-1 text-xs text-gray-400">
                                   {[offer.companies?.city, offer.companies?.region]
                                     .filter(Boolean)
                                     .join(", ") || "Brak lokalizacji"}
@@ -427,7 +427,7 @@ export default function DashboardRequestDetailsPage() {
                             </p>
 
                             {(offer.price_estimate || offer.availability) && (
-                              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
+                              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-400">
                                 {offer.price_estimate && (
                                   <span>
                                     Cena: {offer.price_estimate}
@@ -465,7 +465,7 @@ export default function DashboardRequestDetailsPage() {
                                 type="button"
                                 onClick={() => updateOfferStatus(offer.id, "interested")}
                                 disabled={actionLoadingId === offer.id + ":interested" || isRequestClosed(request.status) || isRequestActive(request.status)}
-                                className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
+                                className="rounded-lg bg-orange-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-orange-800 disabled:cursor-not-allowed disabled:opacity-50"
                               >
                                 Poproś o kontakt
                               </button>
@@ -482,14 +482,14 @@ export default function DashboardRequestDetailsPage() {
                                 type="button"
                                 onClick={() => updateOfferStatus(offer.id, "chosen")}
                                 disabled={actionLoadingId === offer.id + ":chosen" || isRequestClosed(request.status) || isRequestActive(request.status)}
-                                className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
+                                className="rounded-lg bg-orange-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-orange-800 disabled:cursor-not-allowed disabled:opacity-50"
                               >
                                 Wybrałem tę firmę
                               </button>
                             )}
 
                             {chosen && (
-                              <span className="rounded-lg bg-orange-500 px-4 py-2 text-center text-sm font-semibold text-white">
+                              <span className="rounded-lg bg-orange-700 px-4 py-2 text-center text-sm font-semibold text-white">
                                 Wybrana firma
                               </span>
                             )}

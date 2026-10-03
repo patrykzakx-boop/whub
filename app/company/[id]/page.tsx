@@ -97,7 +97,7 @@ export default async function CompanyPage({ params }: Props) {
                     <div className="text-4xl font-black text-orange-500">
                       WH
                     </div>
-                    <div className="mt-2 text-[10px] uppercase tracking-[0.2em] text-gray-500">
+                    <div className="mt-2 text-[10px] uppercase tracking-[0.2em] text-gray-400">
                       Logo firmy
                     </div>
                   </div>
@@ -105,7 +105,7 @@ export default async function CompanyPage({ params }: Props) {
               </div>
 
               <div className="flex-1 border-l border-slate-700 pl-6">
-                <div className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">
+                <div className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
                   Profil firmy spawalniczej
                 </div>
 
@@ -125,7 +125,7 @@ export default async function CompanyPage({ params }: Props) {
                   mapsUrl={company.google_maps_url}
                 />
 
-                <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm text-gray-500">
+                <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm text-gray-400">
                   {company.service_area && (
                     <span>
                       Obszar:{" "}
@@ -157,7 +157,7 @@ export default async function CompanyPage({ params }: Props) {
                 <div className="mt-7 flex flex-col gap-3 sm:flex-row">
                   <Link
                     href={requestHref}
-                    className="inline-flex justify-center rounded-xl bg-orange-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-orange-600"
+                    className="inline-flex justify-center rounded-xl bg-orange-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-orange-800"
                   >
                     Wyślij zapytanie
                   </Link>
@@ -246,7 +246,7 @@ export default async function CompanyPage({ params }: Props) {
                       ))}
                     </div>
                   ) : (
-                    <div className="rounded-2xl border border-dashed border-slate-700/80 bg-[#070b10]/50 p-8 text-gray-500">
+                    <div className="rounded-2xl border border-dashed border-slate-700/80 bg-[#070b10]/50 p-8 text-gray-400">
                       Firma nie dodała jeszcze realizacji.
                     </div>
                   )}
@@ -264,7 +264,7 @@ export default async function CompanyPage({ params }: Props) {
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">
+    <div className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
       {children}
     </div>
   );
@@ -289,7 +289,7 @@ function GoogleRating({
       <span className="text-gray-300">
         Ocena Google
       </span>
-      <span className="text-gray-500">
+      <span className="text-gray-400">
         ({reviewsCount} opinii)
       </span>
     </div>
@@ -333,7 +333,7 @@ function SimpleList({
           ))}
         </ul>
       ) : (
-        <p className="mt-4 text-sm text-gray-500">{empty}</p>
+        <p className="mt-4 text-sm text-gray-400">{empty}</p>
       )}
     </div>
   );

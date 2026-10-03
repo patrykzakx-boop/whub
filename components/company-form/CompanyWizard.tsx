@@ -204,7 +204,7 @@ export default function CompanyWizard() {
               <button
                 type="button"
                 onClick={nextStep}
-                className="rounded-xl bg-orange-500 px-6 py-3 text-white hover:bg-orange-600"
+                className="rounded-xl bg-orange-700 px-6 py-3 text-white hover:bg-orange-800"
               >
                 Dalej
               </button>
@@ -219,7 +219,7 @@ export default function CompanyWizard() {
                 Podgląd profilu
               </h2>
 
-              <div className="mb-5 flex h-24 w-24 items-center justify-center rounded-2xl border border-slate-700 bg-[#05070a] text-gray-500">
+              <div className="mb-5 flex h-24 w-24 items-center justify-center rounded-2xl border border-slate-700 bg-[#05070a] text-gray-400">
                 Logo
               </div>
 
