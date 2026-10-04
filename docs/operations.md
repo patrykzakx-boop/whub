@@ -32,7 +32,7 @@ Wymagane sekrety repozytorium GitHub:
 
 - `NEXT_PUBLIC_SUPABASE_URL`;
 - `SUPABASE_SERVICE_ROLE_KEY`;
-- `SUPABASE_DB_POOLER_URL` — adres Session pooler Supabase na porcie 5432,
+- `SUPABASE_DB_POOLER_URL_V2` — adres Session pooler Supabase na porcie 5432,
   zapewniający połączenie IPv4 dla runnerów GitHub;
 - `BACKUP_ENCRYPTION_PASSWORD` — długie, unikalne hasło przechowywane również
   poza GitHubem (dla tego projektu: Pęk kluczy macOS, wpis
