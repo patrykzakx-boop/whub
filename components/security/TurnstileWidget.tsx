@@ -1,10 +1,6 @@
 "use client";
 
-import Script from "next/script";
 import { useCallback, useEffect, useRef, useState } from "react";
-
-const TURNSTILE_SCRIPT_URL =
-  "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
 
 type TurnstileApi = {
   render: (
@@ -43,7 +39,6 @@ export default function TurnstileWidget({
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
   const previousResetKeyRef = useRef(resetKey);
-  const [scriptReady, setScriptReady] = useState(false);
   const [status, setStatus] = useState("Ładowanie zabezpieczenia CAPTCHA…");
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
@@ -57,29 +52,58 @@ export default function TurnstileWidget({
       return;
     }
 
-    widgetIdRef.current = window.turnstile.render(containerRef.current, {
-      sitekey: siteKey,
-      action,
-      theme: "dark",
-      size: "flexible",
-      callback: (token) => {
-        setStatus("Weryfikacja CAPTCHA zakończona.");
-        onTokenChange(token);
-      },
-      "expired-callback": () => {
-        setStatus("Weryfikacja CAPTCHA wygasła. Spróbuj ponownie.");
-        onTokenChange("");
-      },
-      "error-callback": () => {
-        setStatus("Nie udało się załadować CAPTCHA. Odśwież stronę.");
-        onTokenChange("");
-      },
-    });
+    try {
+      widgetIdRef.current = window.turnstile.render(containerRef.current, {
+        sitekey: siteKey,
+        action,
+        theme: "dark",
+        size: "flexible",
+        callback: (token) => {
+          setStatus("Weryfikacja CAPTCHA zakończona.");
+          onTokenChange(token);
+        },
+        "expired-callback": () => {
+          setStatus("Weryfikacja CAPTCHA wygasła. Spróbuj ponownie.");
+          onTokenChange("");
+        },
+        "error-callback": () => {
+          setStatus("Nie udało się załadować CAPTCHA. Spróbuj ponownie później.");
+          onTokenChange("");
+        },
+      });
+    } catch (error) {
+      console.error("Nie udało się uruchomić Turnstile", error);
+      setStatus("Nie udało się załadować CAPTCHA. Spróbuj ponownie później.");
+      onTokenChange("");
+    }
   }, [action, onTokenChange, siteKey]);
 
   useEffect(() => {
-    if (scriptReady || window.turnstile) renderWidget();
-  }, [renderWidget, scriptReady]);
+    let attempts = 0;
+
+    const tryRender = () => {
+      if (window.turnstile) {
+        renderWidget();
+        return true;
+      }
+
+      attempts += 1;
+      if (attempts >= 100) {
+        setStatus("Nie udało się załadować CAPTCHA. Spróbuj ponownie później.");
+        return true;
+      }
+
+      return false;
+    };
+
+    if (tryRender()) return;
+
+    const intervalId = window.setInterval(() => {
+      if (tryRender()) window.clearInterval(intervalId);
+    }, 100);
+
+    return () => window.clearInterval(intervalId);
+  }, [renderWidget]);
 
   useEffect(() => {
     if (previousResetKeyRef.current === resetKey) return;
@@ -111,14 +135,6 @@ export default function TurnstileWidget({
 
   return (
     <div className="space-y-2">
-      <Script
-        src={TURNSTILE_SCRIPT_URL}
-        strategy="afterInteractive"
-        onReady={() => setScriptReady(true)}
-        onError={() =>
-          setStatus("Nie udało się załadować CAPTCHA. Odśwież stronę.")
-        }
-      />
       <div ref={containerRef} className="min-h-[65px] w-full" />
       <p className="sr-only" aria-live="polite">
         {status}

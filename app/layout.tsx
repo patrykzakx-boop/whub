@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/siteConfig";
@@ -71,6 +72,13 @@ export default function RootLayout({
         <div id="main-content" tabIndex={-1} className="min-w-0 flex-1 outline-none">
           {children}
         </div>
+        {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ? (
+          <Script
+            id="cloudflare-turnstile"
+            src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+            strategy="afterInteractive"
+          />
+        ) : null}
       </body>
     </html>
   );

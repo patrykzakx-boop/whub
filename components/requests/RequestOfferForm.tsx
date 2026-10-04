@@ -5,10 +5,13 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { getRequestStatusLabel, isRequestOpen } from "@/lib/statuses";
 import { OWN_REQUEST_OFFER_ERROR } from "@/lib/requestOffers";
+import { isCompanyEligibleForOffers } from "@/lib/companies";
 
 type Company = {
   id: string | number;
   name: string;
+  status: string | null;
+  moderation_status: string | null;
 };
 
 type Offer = {
@@ -34,6 +37,7 @@ export default function RequestOfferForm({ requestId, requestStatus }: Props) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isOwnRequest, setIsOwnRequest] = useState(false);
   const [companies, setCompanies] = useState<Company[]>([]);
+  const [hasCompaniesAwaitingApproval, setHasCompaniesAwaitingApproval] = useState(false);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [companyId, setCompanyId] = useState("");
   const [message, setMessage] = useState("");
@@ -84,7 +88,7 @@ export default function RequestOfferForm({ requestId, requestStatus }: Props) {
 
       const { data: companiesData, error: companiesError } = await supabase
         .from("companies")
-        .select("id, name")
+        .select("id, name, status, moderation_status")
         .eq("owner_id", user.id)
         .order("created_at", { ascending: false });
 
@@ -94,7 +98,11 @@ export default function RequestOfferForm({ requestId, requestStatus }: Props) {
         return;
       }
 
-      const userCompanies = companiesData || [];
+      const allUserCompanies = companiesData || [];
+      const userCompanies = allUserCompanies.filter(isCompanyEligibleForOffers);
+      setHasCompaniesAwaitingApproval(
+        allUserCompanies.some((company) => !isCompanyEligibleForOffers(company))
+      );
       setCompanies(userCompanies);
 
       if (userCompanies.length > 0) {
@@ -267,15 +275,23 @@ export default function RequestOfferForm({ requestId, requestStatus }: Props) {
         </h2>
 
         <p className="mt-3 max-w-2xl text-gray-400">
-          Najpierw dodaj profil firmy. Odpowiedzi na zlecenia są wysyłane z konkretnego profilu wykonawcy.
+          {hasCompaniesAwaitingApproval
+            ? "Twój profil firmy czeka na zatwierdzenie. Po akceptacji administratora będzie można wysyłać z niego oferty."
+            : "Najpierw dodaj profil firmy. Odpowiedzi na zlecenia są wysyłane z konkretnego profilu wykonawcy."}
         </p>
 
-        <Link
-          href="/add-company"
-          className="mt-6 inline-flex rounded-xl bg-orange-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-800"
-        >
-          Dodaj firmę
-        </Link>
+        {hasCompaniesAwaitingApproval ? (
+          <Link href="/dashboard" className="mt-6 inline-flex rounded-xl border border-slate-700 px-5 py-3 text-sm font-semibold text-gray-200 transition hover:border-orange-500">
+            Sprawdź status w panelu
+          </Link>
+        ) : (
+          <Link
+            href="/add-company"
+            className="mt-6 inline-flex rounded-xl bg-orange-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-800"
+          >
+            Dodaj firmę
+          </Link>
+        )}
       </section>
     );
   }

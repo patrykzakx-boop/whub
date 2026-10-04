@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import {
   ChevronDown,
   ChevronRight,
@@ -8,7 +8,7 @@ import { SERVICES } from "../constants/services";
 
 type Props = {
   services: string[];
-  setServices: (services: string[]) => void;
+  setServices: Dispatch<SetStateAction<string[]>>;
 };
 
 export default function ServicesStep({
@@ -44,15 +44,11 @@ export default function ServicesStep({
   };
 
   const toggleService = (id: string) => {
-    if (services.includes(id)) {
-      setServices(
-        services.filter(
-          (service) => service !== id
-        )
-      );
-    } else {
-      setServices([...services, id]);
-    }
+    setServices((currentServices) =>
+      currentServices.includes(id)
+        ? currentServices.filter((service) => service !== id)
+        : [...currentServices, id]
+    );
   };
 
   return (
@@ -63,7 +59,7 @@ export default function ServicesStep({
       </h2>
 
       <p className="mb-8 text-gray-400">
-        Wybierz obszary działalności firmy.
+        Rozwiń kategorię i wybierz co najmniej jedną konkretną usługę firmy.
       </p>
 
       <div className="space-y-4">
@@ -136,6 +132,7 @@ export default function ServicesStep({
                       <button
                         key={service.id}
                         type="button"
+                        aria-pressed={services.includes(service.id)}
                         onClick={() =>
                           toggleService(
                             service.id

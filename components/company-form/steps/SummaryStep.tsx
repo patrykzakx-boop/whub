@@ -1,3 +1,5 @@
+import { getCompanyServiceTitle } from "@/lib/companies";
+
 type Props = {
   name: string;
   description: string;
@@ -14,6 +16,8 @@ type Props = {
   serviceArea: string;
   mobileService: boolean;
   onPublish: () => void;
+  publishing: boolean;
+  errorMessage: string;
 };
 
 export default function SummaryStep({
@@ -31,7 +35,9 @@ export default function SummaryStep({
 
   serviceArea,
   mobileService,
-  onPublish
+  onPublish,
+  publishing,
+  errorMessage,
 }: Props) {
   return (
     <div className="rounded-3xl border border-slate-800 bg-[#0d1218] p-8">
@@ -91,7 +97,7 @@ export default function SummaryStep({
               key={service}
               className="rounded-full border border-orange-500/30 bg-orange-500/10 px-3 py-1 text-sm text-orange-300"
             >
-              {service}
+              {getCompanyServiceTitle(service)}
             </span>
           ))}
         </div>
@@ -170,10 +176,16 @@ export default function SummaryStep({
   <button
     type="button"
     onClick={onPublish}
-    className="w-full rounded-xl bg-orange-700 px-6 py-4 font-semibold text-white transition hover:bg-orange-800"
+    disabled={publishing}
+    className="w-full rounded-xl bg-orange-700 px-6 py-4 font-semibold text-white transition hover:bg-orange-800 disabled:cursor-not-allowed disabled:opacity-60"
   >
-    Opublikuj firmę
+    {publishing ? "Zapisywanie firmy…" : "Opublikuj firmę"}
   </button>
+  {errorMessage ? (
+    <p className="mt-4 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200" role="alert">
+      {errorMessage}
+    </p>
+  ) : null}
 </div>
     </div>
   );
