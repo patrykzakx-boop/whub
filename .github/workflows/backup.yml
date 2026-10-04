@@ -21,8 +21,6 @@ jobs:
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
       SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
       BACKUP_ENCRYPTION_PASSWORD: ${{ secrets.BACKUP_ENCRYPTION_PASSWORD }}
-      BACKUP_DATA_ROOT: ${{ runner.temp }}/whub-backup/data
-      BACKUP_STORAGE_ROOT: ${{ runner.temp }}/whub-backup/storage
 
     steps:
       - uses: actions/checkout@v4
@@ -41,6 +39,11 @@ jobs:
           test -n "$SUPABASE_SERVICE_ROLE_KEY"
           test -n "$SUPABASE_DB_URL"
           test -n "$BACKUP_ENCRYPTION_PASSWORD"
+
+      - name: Prepare backup paths
+        run: |
+          echo "BACKUP_DATA_ROOT=$RUNNER_TEMP/whub-backup/data" >> "$GITHUB_ENV"
+          echo "BACKUP_STORAGE_ROOT=$RUNNER_TEMP/whub-backup/storage" >> "$GITHUB_ENV"
 
       - name: Export database, users and Storage
         env:
