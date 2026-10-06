@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Download, FileSpreadsheet, RefreshCw, Upload } from "lucide-react";
+import { ArrowLeft, Download, FileSpreadsheet, Pencil, RefreshCw, Save, Trash2, Upload, X } from "lucide-react";
 
 import { supabase } from "@/lib/supabaseClient";
 
@@ -45,6 +45,7 @@ type Lead = {
   nip: string | null;
   city: string;
   region: string | null;
+  address: string | null;
   phone: string | null;
   email: string | null;
   website: string | null;
@@ -53,11 +54,28 @@ type Lead = {
   services_raw: string[];
   source_url: string;
   source_type: string | null;
+  notes: string | null;
   status: string;
   privacy_notice_sent_at: string | null;
   consent_at: string | null;
   linked_company_id: number | null;
   created_at: string;
+};
+
+type EditDraft = {
+  name: string;
+  nip: string;
+  city: string;
+  region: string;
+  primaryProfile: string;
+  servicesRaw: string;
+  address: string;
+  phone: string;
+  email: string;
+  website: string;
+  sourceUrl: string;
+  sourceType: string;
+  notes: string;
 };
 
 type Batch = {
@@ -86,6 +104,8 @@ export default function ImportCompaniesPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [batches, setBatches] = useState<Batch[]>([]);
   const [ownerEmails, setOwnerEmails] = useState<Record<number, string>>({});
+  const [editingLeadId, setEditingLeadId] = useState<number | null>(null);
+  const [editDraft, setEditDraft] = useState<EditDraft | null>(null);
   const [loading, setLoading] = useState(true);
   const [working, setWorking] = useState("");
   const [error, setError] = useState("");
@@ -196,6 +216,81 @@ export default function ImportCompaniesPage() {
       await loadLeads();
     } catch (convertError) {
       setError(convertError instanceof Error ? convertError.message : "Nie udało się utworzyć profilu.");
+    } finally {
+      setWorking("");
+    }
+  };
+
+  const startEditing = (lead: Lead) => {
+    setEditingLeadId(lead.id);
+    setEditDraft({
+      name: lead.name,
+      nip: lead.nip || "",
+      city: lead.city,
+      region: lead.region || "",
+      primaryProfile: lead.primary_profile || "",
+      servicesRaw: lead.services_raw.join("; "),
+      address: lead.address || "",
+      phone: lead.phone || "",
+      email: lead.email || "",
+      website: lead.website || "",
+      sourceUrl: lead.source_url,
+      sourceType: lead.source_type || "",
+      notes: lead.notes || "",
+    });
+    setError("");
+    setMessage("");
+  };
+
+  const saveLead = async () => {
+    if (!editingLeadId || !editDraft) return;
+    setWorking(`edit:${editingLeadId}`);
+    setError("");
+    setMessage("");
+    try {
+      const response = await authorizedFetch("/api/admin/company-import/leads", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: editingLeadId, ...editDraft }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Nie udało się zapisać firmy.");
+      setEditingLeadId(null);
+      setEditDraft(null);
+      setMessage("Dane firmy zostały zapisane.");
+      await loadLeads();
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : "Nie udało się zapisać firmy.");
+    } finally {
+      setWorking("");
+    }
+  };
+
+  const deleteLead = async (lead: Lead) => {
+    const confirmed = window.confirm(
+      `Usunąć firmę „${lead.name}” z poczekalni? Rekord będzie można ponownie zaimportować z arkusza.`
+    );
+    if (!confirmed) return;
+
+    setWorking(`delete:${lead.id}`);
+    setError("");
+    setMessage("");
+    try {
+      const response = await authorizedFetch("/api/admin/company-import/leads", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: lead.id }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Nie udało się usunąć firmy.");
+      if (editingLeadId === lead.id) {
+        setEditingLeadId(null);
+        setEditDraft(null);
+      }
+      setMessage("Firma została usunięta z poczekalni.");
+      await loadLeads();
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : "Nie udało się usunąć firmy.");
     } finally {
       setWorking("");
     }
@@ -372,9 +467,29 @@ export default function ImportCompaniesPage() {
                             <button onClick={() => void convertLead(lead.id)} disabled={Boolean(working)} className="admin-success whitespace-nowrap">Utwórz profil</button>
                           </div>
                         )}
+                        <div className="flex gap-2">
+                          <button onClick={() => startEditing(lead)} disabled={Boolean(working)} className="admin-secondary inline-flex flex-1 items-center justify-center gap-2">
+                            <Pencil size={15} /> Edytuj
+                          </button>
+                          <button onClick={() => void deleteLead(lead)} disabled={Boolean(working)} className="admin-danger inline-flex flex-1 items-center justify-center gap-2">
+                            <Trash2 size={15} /> Usuń
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>
+                  {editingLeadId === lead.id && editDraft && (
+                    <LeadEditForm
+                      draft={editDraft}
+                      disabled={Boolean(working)}
+                      onChange={(field, value) => setEditDraft((current) => current ? { ...current, [field]: value } : current)}
+                      onSave={() => void saveLead()}
+                      onCancel={() => {
+                        setEditingLeadId(null);
+                        setEditDraft(null);
+                      }}
+                    />
+                  )}
                 </article>
               ))}
             </div>
@@ -402,4 +517,93 @@ export default function ImportCompaniesPage() {
 function ResultText({ tone, text }: { tone: "success" | "warning" | "error"; text: string }) {
   const className = tone === "success" ? "text-emerald-300" : tone === "warning" ? "text-amber-300" : "text-red-300";
   return <div className={`text-xs font-medium ${className}`}>{text}</div>;
+}
+
+const EDIT_INPUT_CLASS = "w-full rounded-xl border border-slate-700 bg-[#080b0f] px-3 py-2.5 text-sm text-white placeholder:text-gray-500 focus:border-orange-500 focus:outline-none";
+
+function LeadEditForm({
+  draft,
+  disabled,
+  onChange,
+  onSave,
+  onCancel,
+}: {
+  draft: EditDraft;
+  disabled: boolean;
+  onChange: (field: keyof EditDraft, value: string) => void;
+  onSave: () => void;
+  onCancel: () => void;
+}) {
+  return (
+    <form
+      className="mt-5 rounded-2xl border border-orange-500/30 bg-black/20 p-4 sm:p-5"
+      onSubmit={(event) => {
+        event.preventDefault();
+        onSave();
+      }}
+    >
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <h4 className="font-semibold">Edycja danych firmy</h4>
+        <button type="button" onClick={onCancel} disabled={disabled} className="rounded-lg p-2 text-gray-400 hover:bg-white/5 hover:text-white" aria-label="Zamknij edycję">
+          <X size={18} />
+        </button>
+      </div>
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <EditField label="Firma" required value={draft.name} onChange={(value) => onChange("name", value)} />
+        <EditField label="NIP" value={draft.nip} onChange={(value) => onChange("nip", value)} />
+        <EditField label="Miasto" required value={draft.city} onChange={(value) => onChange("city", value)} />
+        <EditField label="Województwo" value={draft.region} onChange={(value) => onChange("region", value)} />
+        <EditField label="Profil główny" value={draft.primaryProfile} onChange={(value) => onChange("primaryProfile", value)} />
+        <EditField label="Telefon" value={draft.phone} onChange={(value) => onChange("phone", value)} />
+        <EditField label="E-mail" type="email" value={draft.email} onChange={(value) => onChange("email", value)} />
+        <EditField label="Strona WWW" type="url" value={draft.website} onChange={(value) => onChange("website", value)} />
+        <EditField label="Rodzaj źródła" value={draft.sourceType} onChange={(value) => onChange("sourceType", value)} />
+        <label className="text-sm text-gray-300 md:col-span-2 xl:col-span-3">
+          Zakres usług
+          <textarea value={draft.servicesRaw} onChange={(event) => onChange("servicesRaw", event.target.value)} rows={2} className={`${EDIT_INPUT_CLASS} mt-1.5 resize-y`} />
+        </label>
+        <label className="text-sm text-gray-300 md:col-span-2 xl:col-span-3">
+          Adres
+          <input value={draft.address} onChange={(event) => onChange("address", event.target.value)} className={`${EDIT_INPUT_CLASS} mt-1.5`} />
+        </label>
+        <label className="text-sm text-gray-300 md:col-span-2 xl:col-span-3">
+          Źródło danych
+          <input type="url" value={draft.sourceUrl} onChange={(event) => onChange("sourceUrl", event.target.value)} className={`${EDIT_INPUT_CLASS} mt-1.5`} />
+        </label>
+        <label className="text-sm text-gray-300 md:col-span-2 xl:col-span-3">
+          Uwagi
+          <textarea value={draft.notes} onChange={(event) => onChange("notes", event.target.value)} rows={3} className={`${EDIT_INPUT_CLASS} mt-1.5 resize-y`} />
+        </label>
+      </div>
+      <div className="mt-5 flex flex-wrap justify-end gap-2">
+        <button type="button" onClick={onCancel} disabled={disabled} className="admin-secondary inline-flex items-center gap-2">
+          <X size={16} /> Anuluj
+        </button>
+        <button type="submit" disabled={disabled} className="admin-success inline-flex items-center gap-2">
+          <Save size={16} /> {disabled ? "Zapisywanie…" : "Zapisz zmiany"}
+        </button>
+      </div>
+    </form>
+  );
+}
+
+function EditField({
+  label,
+  value,
+  onChange,
+  type = "text",
+  required = false,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  type?: "text" | "email" | "url";
+  required?: boolean;
+}) {
+  return (
+    <label className="text-sm text-gray-300">
+      {label}
+      <input type={type} required={required} value={value} onChange={(event) => onChange(event.target.value)} className={`${EDIT_INPUT_CLASS} mt-1.5`} />
+    </label>
+  );
 }

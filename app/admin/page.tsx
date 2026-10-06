@@ -319,5 +319,5 @@ function pluralize(value: number, singular: string, few: string, many: string) {
   return many;
 }
 function actionLabel(action: string) {
-  return ({ approve_company: "Zatwierdzono firmę", reject_company: "Odrzucono firmę", hide_request: "Ukryto zlecenie", restore_request: "Przywrócono zlecenie", block_user: "Zablokowano konto", unblock_user: "Odblokowano konto", resolve_report: "Rozpatrzono zgłoszenie", dismiss_report: "Odrzucono zgłoszenie", import_company_leads: "Zaimportowano katalog firm", update_company_lead: "Zmieniono status firmy z katalogu", convert_company_lead: "Utworzono profil firmy z katalogu" } as Record<string, string>)[action] || action;
+  return ({ approve_company: "Zatwierdzono firmę", reject_company: "Odrzucono firmę", hide_request: "Ukryto zlecenie", restore_request: "Przywrócono zlecenie", block_user: "Zablokowano konto", unblock_user: "Odblokowano konto", resolve_report: "Rozpatrzono zgłoszenie", dismiss_report: "Odrzucono zgłoszenie", import_company_leads: "Zaimportowano katalog firm", update_company_lead: "Zmieniono status firmy z katalogu", edit_company_lead: "Edytowano firmę z katalogu", delete_company_lead: "Usunięto firmę z katalogu", convert_company_lead: "Utworzono profil firmy z katalogu" } as Record<string, string>)[action] || action;
 }

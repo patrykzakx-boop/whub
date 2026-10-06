@@ -338,7 +338,7 @@ function mapOptions(values: string[], map: Map<string, string>) {
 function splitList(value: CompanyImportValue | undefined) {
   return cellText(value)
     .split(/[;,|\n]/)
-    .map((item) => item.trim())
+    .map((item) => item.trim().slice(0, 160))
     .filter(Boolean)
     .slice(0, 30);
 }

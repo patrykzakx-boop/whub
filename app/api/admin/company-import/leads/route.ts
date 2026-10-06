@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { authenticateAdmin } from "@/lib/adminAuth";
+import { parseCompanyImportRows } from "@/lib/companyImport";
 import { createSupabaseAdmin } from "@/lib/supabaseAdmin";
 
 const NO_STORE = { "Cache-Control": "no-store" };
@@ -155,10 +156,137 @@ export async function POST(request: Request) {
   }
 }
 
+export async function PUT(request: Request) {
+  const admin = await authenticateAdmin(request);
+  if (!admin) return forbidden();
+
+  try {
+    const body = await request.json();
+    const id = Number(body.id);
+    if (!Number.isInteger(id) || id <= 0) throw new Error("Nieprawidłowa firma.");
+
+    const parsed = parseCompanyImportRows([
+      [
+        "Firma",
+        "NIP",
+        "Miasto",
+        "Województwo",
+        "Profil główny",
+        "Zakres usług",
+        "Adres",
+        "Telefon",
+        "E-mail",
+        "Strona_www",
+        "Źródło danych",
+        "Rodzaj źródła",
+        "Uwagi",
+      ],
+      [
+        body.name,
+        body.nip,
+        body.city,
+        body.region,
+        body.primaryProfile,
+        body.servicesRaw,
+        body.address,
+        body.phone,
+        body.email,
+        body.website,
+        body.sourceUrl,
+        body.sourceType,
+        body.notes,
+      ],
+    ]);
+    const row = parsed.rows[0];
+    const validationErrors = [...parsed.errors, ...(row?.errors || [])];
+    if (!row || validationErrors.length > 0) {
+      throw new Error(validationErrors.join(" ") || "Dane firmy są nieprawidłowe.");
+    }
+
+    const supabase = createSupabaseAdmin();
+    const { data, error } = await supabase
+      .from("company_leads")
+      .update({
+        name: row.data.name,
+        nip: row.data.nip,
+        city: row.data.city,
+        region: row.data.region,
+        primary_profile: row.data.primaryProfile,
+        services: row.data.services,
+        services_raw: row.data.servicesRaw,
+        address: row.data.address,
+        phone: row.data.phone,
+        email: row.data.email,
+        website: row.data.website,
+        source_url: row.data.sourceUrl,
+        source_type: row.data.sourceType,
+        notes: row.data.notes,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", id)
+      .neq("status", "converted")
+      .select("id, name")
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!data) throw new Error("Nie znaleziono firmy albo profil został już utworzony.");
+
+    await supabase.from("moderation_audit_log").insert({
+      admin_id: admin.id,
+      action: "edit_company_lead",
+      target_type: "company_lead",
+      target_id: String(id),
+      note: `Zaktualizowano dane firmy: ${data.name}.`,
+    });
+
+    return NextResponse.json({ ok: true }, { headers: NO_STORE });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Nie udało się zapisać firmy." },
+      { status: 400, headers: NO_STORE }
+    );
+  }
+}
+
+export async function DELETE(request: Request) {
+  const admin = await authenticateAdmin(request);
+  if (!admin) return forbidden();
+
+  try {
+    const body = await request.json();
+    const id = Number(body.id);
+    if (!Number.isInteger(id) || id <= 0) throw new Error("Nieprawidłowa firma.");
+
+    const supabase = createSupabaseAdmin();
+    const { data, error } = await supabase
+      .from("company_leads")
+      .delete()
+      .eq("id", id)
+      .neq("status", "converted")
+      .select("id, name")
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!data) throw new Error("Nie znaleziono firmy albo profil został już utworzony.");
+
+    await supabase.from("moderation_audit_log").insert({
+      admin_id: admin.id,
+      action: "delete_company_lead",
+      target_type: "company_lead",
+      target_id: String(id),
+      note: `Usunięto firmę z poczekalni: ${data.name}.`,
+    });
+
+    return NextResponse.json({ ok: true }, { headers: NO_STORE });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Nie udało się usunąć firmy." },
+      { status: 400, headers: NO_STORE }
+    );
+  }
+}
+
 function forbidden() {
   return NextResponse.json(
     { error: "Brak uprawnień administratora." },
     { status: 403, headers: NO_STORE }
   );
 }
-
