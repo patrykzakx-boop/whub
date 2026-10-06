@@ -23,6 +23,7 @@ create table if not exists public.company_leads (
   phone text check (phone is null or char_length(phone) <= 40),
   email text check (email is null or char_length(email) <= 254),
   website text check (website is null or char_length(website) <= 500),
+  primary_profile text check (primary_profile is null or char_length(primary_profile) <= 120),
   services text[] not null default '{}',
   services_raw text[] not null default '{}',
   materials text[] not null default '{}',
@@ -30,6 +31,7 @@ create table if not exists public.company_leads (
   service_area text check (service_area is null or char_length(service_area) <= 120),
   mobile_service boolean not null default false,
   source_url text not null check (char_length(source_url) between 8 and 500),
+  source_type text check (source_type is null or char_length(source_type) <= 120),
   notes text check (notes is null or char_length(notes) <= 1000),
   status text not null default 'new'
     check (status in (
@@ -61,4 +63,3 @@ alter table public.company_leads enable row level security;
 revoke all on table public.company_import_batches from anon, authenticated;
 revoke all on table public.company_leads from anon, authenticated;
 revoke all on sequence public.company_leads_id_seq from anon, authenticated;
-

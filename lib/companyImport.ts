@@ -17,6 +17,7 @@ export type CompanyLeadInput = {
   phone: string | null;
   email: string | null;
   website: string | null;
+  primaryProfile: string | null;
   services: string[];
   servicesRaw: string[];
   materials: string[];
@@ -24,6 +25,7 @@ export type CompanyLeadInput = {
   serviceArea: string | null;
   mobileService: boolean;
   sourceUrl: string;
+  sourceType: string | null;
   notes: string | null;
 };
 
@@ -67,7 +69,9 @@ const HEADER_ALIASES: Record<string, FieldName> = {
   strona_www: "website",
   www: "website",
   website: "website",
+  profil_glowny: "primaryProfile",
   uslugi: "services",
+  zakres_uslug: "services",
   services: "services",
   materialy: "materials",
   materials: "materials",
@@ -80,8 +84,10 @@ const HEADER_ALIASES: Record<string, FieldName> = {
   mobilnie: "mobileService",
   mobile_service: "mobileService",
   zrodlo: "sourceUrl",
+  zrodlo_danych: "sourceUrl",
   zrodlo_url: "sourceUrl",
   source_url: "sourceUrl",
+  rodzaj_zrodla: "sourceType",
   uwagi: "notes",
   notatki: "notes",
   notes: "notes",
@@ -90,19 +96,32 @@ const HEADER_ALIASES: Record<string, FieldName> = {
 const serviceMap = createOptionMap(SERVICES);
 const materialMap = createOptionMap(MATERIALS);
 const methodMap = createOptionMap(METHODS);
+const REPEATABLE_FIELDS = new Set<FieldName>([
+  "services",
+  "materials",
+  "weldingMethods",
+]);
 
 export function parseCompanyImportRows(
   rawRows: CompanyImportValue[][]
 ): CompanyImportResult {
-  const nonEmptyRows = rawRows.filter((row) =>
-    row.some((value) => cellText(value).length > 0)
-  );
-
-  if (nonEmptyRows.length === 0) {
-    return { rows: [], ignoredHeaders: [], errors: ["Plik jest pusty."] };
+  const headerRowIndex = findHeaderRowIndex(rawRows);
+  if (headerRowIndex === -1) {
+    const hasContent = rawRows.some((row) =>
+      row.some((value) => cellText(value).length > 0)
+    );
+    return {
+      rows: [],
+      ignoredHeaders: [],
+      errors: [
+        hasContent
+          ? "Nie znaleziono wiersza z nagłówkami firm."
+          : "Plik jest pusty.",
+      ],
+    };
   }
 
-  const headers = nonEmptyRows[0].map((value) => cellText(value));
+  const headers = rawRows[headerRowIndex].map((value) => cellText(value));
   const mapping = new Map<number, FieldName>();
   const usedFields = new Set<FieldName>();
   const ignoredHeaders: string[] = [];
@@ -114,7 +133,7 @@ export function parseCompanyImportRows(
       if (header) ignoredHeaders.push(header);
       return;
     }
-    if (usedFields.has(field)) {
+    if (usedFields.has(field) && !REPEATABLE_FIELDS.has(field)) {
       errors.push(`Kolumna „${header}” powtarza pole ${field}.`);
       return;
     }
@@ -130,7 +149,10 @@ export function parseCompanyImportRows(
 
   if (errors.length > 0) return { rows: [], ignoredHeaders, errors };
 
-  const dataRows = nonEmptyRows.slice(1);
+  const dataRows = rawRows
+    .slice(headerRowIndex + 1)
+    .map((row, index) => ({ row, sourceRow: headerRowIndex + index + 2 }))
+    .filter(({ row }) => row.some((value) => cellText(value).length > 0));
   if (dataRows.length > MAX_COMPANY_IMPORT_ROWS) {
     return {
       rows: [],
@@ -139,8 +161,8 @@ export function parseCompanyImportRows(
     };
   }
 
-  const rows = dataRows.map((row, index) =>
-    parseRow(row, index + 2, mapping)
+  const rows = dataRows.map(({ row, sourceRow }) =>
+    parseRow(row, sourceRow, mapping)
   );
   markDuplicatesWithinFile(rows);
 
@@ -152,28 +174,30 @@ function parseRow(
   sourceRow: number,
   mapping: Map<number, FieldName>
 ): CompanyImportRow {
-  const values = new Map<FieldName, CompanyImportValue>();
+  const values = new Map<FieldName, CompanyImportValue[]>();
   for (const [columnIndex, field] of mapping) {
-    values.set(field, rawRow[columnIndex] ?? null);
+    const fieldValues = values.get(field) || [];
+    fieldValues.push(rawRow[columnIndex] ?? null);
+    values.set(field, fieldValues);
   }
 
   const errors: string[] = [];
   const warnings: string[] = [];
-  const name = limitedText(values.get("name"), 160);
-  const city = limitedText(values.get("city"), 120);
-  const nipRaw = cellText(values.get("nip")).replace(/\D/g, "");
-  const email = limitedText(values.get("email"), 254).toLowerCase() || null;
-  const website = normalizeUrl(limitedText(values.get("website"), 500));
+  const name = limitedText(firstValue(values, "name"), 160);
+  const city = limitedText(firstValue(values, "city"), 120);
+  const nipRaw = cellText(firstValue(values, "nip")).replace(/\D/g, "");
+  const email = limitedText(firstValue(values, "email"), 254).toLowerCase() || null;
+  const website = normalizeUrl(limitedText(firstValue(values, "website"), 500));
   const sourceUrl =
-    normalizeUrl(limitedText(values.get("sourceUrl"), 500)) || website || "";
-  const rawServices = splitList(values.get("services"));
+    normalizeUrl(limitedText(firstValue(values, "sourceUrl"), 500)) || website || "";
+  const rawServices = splitLists(values.get("services"));
   const services = mapOptions(rawServices, serviceMap);
   const unknownServices = rawServices.filter(
-    (service) => !serviceMap.has(normalizeLabel(service))
+    (service) => mapOptions([service], serviceMap).length === 0
   );
-  const materials = mapOptions(splitList(values.get("materials")), materialMap);
+  const materials = mapOptions(splitLists(values.get("materials")), materialMap);
   const weldingMethods = mapOptions(
-    splitList(values.get("weldingMethods")),
+    splitLists(values.get("weldingMethods")),
     methodMap
   );
 
@@ -184,10 +208,10 @@ function parseRow(
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     errors.push("Adres e-mail jest nieprawidłowy.");
   }
-  if (limitedText(values.get("website"), 500) && !website) {
+  if (limitedText(firstValue(values, "website"), 500) && !website) {
     errors.push("Adres strony WWW jest nieprawidłowy.");
   }
-  if (limitedText(values.get("sourceUrl"), 500) && !normalizeUrl(limitedText(values.get("sourceUrl"), 500))) {
+  if (limitedText(firstValue(values, "sourceUrl"), 500) && !normalizeUrl(limitedText(firstValue(values, "sourceUrl"), 500))) {
     errors.push("Adres źródła jest nieprawidłowy.");
   }
   if (unknownServices.length > 0) {
@@ -202,19 +226,21 @@ function parseRow(
       name,
       nip: nipRaw || null,
       city,
-      region: limitedText(values.get("region"), 120) || null,
-      address: limitedText(values.get("address"), 240) || null,
-      phone: limitedText(values.get("phone"), 40) || null,
+      region: limitedText(firstValue(values, "region"), 120) || null,
+      address: limitedText(firstValue(values, "address"), 240) || null,
+      phone: limitedText(firstValue(values, "phone"), 40) || null,
       email,
       website,
+      primaryProfile: limitedText(firstValue(values, "primaryProfile"), 120) || null,
       services,
       servicesRaw: rawServices,
       materials,
       weldingMethods,
-      serviceArea: limitedText(values.get("serviceArea"), 120) || null,
-      mobileService: parseBoolean(values.get("mobileService")),
+      serviceArea: limitedText(firstValue(values, "serviceArea"), 120) || null,
+      mobileService: parseBoolean(firstValue(values, "mobileService")),
       sourceUrl,
-      notes: limitedText(values.get("notes"), 1000) || null,
+      sourceType: limitedText(firstValue(values, "sourceType"), 120) || null,
+      notes: limitedText(firstValue(values, "notes"), 1000) || null,
     },
     errors,
     warnings,
@@ -295,13 +321,18 @@ function createOptionMap(options: Array<{ id: string; title: string }>) {
 }
 
 function mapOptions(values: string[], map: Map<string, string>) {
-  return [
-    ...new Set(
-      values
-        .map((value) => map.get(normalizeLabel(value)))
-        .filter((value): value is string => Boolean(value))
-    ),
-  ];
+  const matches = new Set<string>();
+  for (const value of values) {
+    const normalized = normalizeLabel(value);
+    const exact = map.get(normalized);
+    if (exact) matches.add(exact);
+    for (const [label, id] of map) {
+      if (label.length >= 4 && containsNormalizedPhrase(normalized, label)) {
+        matches.add(id);
+      }
+    }
+  }
+  return [...matches];
 }
 
 function splitList(value: CompanyImportValue | undefined) {
@@ -310,6 +341,38 @@ function splitList(value: CompanyImportValue | undefined) {
     .map((item) => item.trim())
     .filter(Boolean)
     .slice(0, 30);
+}
+
+function splitLists(values: CompanyImportValue[] | undefined) {
+  return (values || []).flatMap((value) => splitList(value)).slice(0, 30);
+}
+
+function firstValue(values: Map<FieldName, CompanyImportValue[]>, field: FieldName) {
+  return values.get(field)?.find((value) => cellText(value).length > 0);
+}
+
+function containsNormalizedPhrase(value: string, phrase: string) {
+  return `_${value}_`.includes(`_${phrase}_`);
+}
+
+function findHeaderRowIndex(rows: CompanyImportValue[][]) {
+  let bestIndex = -1;
+  let bestScore = 0;
+
+  rows.forEach((row, index) => {
+    const fields = new Set(
+      row
+        .map((value) => HEADER_ALIASES[normalizeLabel(cellText(value))])
+        .filter((field): field is FieldName => Boolean(field))
+    );
+    const score = fields.size;
+    if (fields.has("name") && score >= 2 && score > bestScore) {
+      bestIndex = index;
+      bestScore = score;
+    }
+  });
+
+  return bestIndex;
 }
 
 function parseBoolean(value: CompanyImportValue | undefined) {

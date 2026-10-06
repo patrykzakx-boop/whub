@@ -1,21 +1,23 @@
 import { authenticateAdmin } from "@/lib/adminAuth";
 
 const HEADERS = [
-  "nazwa",
-  "nip",
-  "miasto",
-  "wojewodztwo",
-  "adres",
-  "telefon_firmowy",
-  "email_firmowy",
-  "strona_www",
-  "uslugi",
-  "materialy",
-  "metody_spawania",
-  "obszar_dzialania",
-  "uslugi_mobilne",
-  "zrodlo_url",
-  "uwagi",
+  "Firma",
+  "NIP",
+  "Miasto",
+  "Województwo",
+  "Profil główny",
+  "Zakres usług",
+  "Adres",
+  "Telefon",
+  "E-mail",
+  "Strona_www",
+  "Źródło danych",
+  "Rodzaj źródła",
+  "Materiały",
+  "Metody spawania",
+  "Obszar działania",
+  "Usługi mobilne",
+  "Uwagi",
 ];
 
 export async function GET(request: Request) {
@@ -30,4 +32,3 @@ export async function GET(request: Request) {
     },
   });
 }
-

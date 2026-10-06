@@ -24,6 +24,9 @@ jobs:
           psql "$SUPABASE_DB_URL" \
             --set ON_ERROR_STOP=1 \
             --file supabase/migrations/20261006090000_company_import_leads.sql
+          psql "$SUPABASE_DB_URL" \
+            --set ON_ERROR_STOP=1 \
+            --file supabase/migrations/20261006093000_company_import_source_columns.sql
 
       - name: Verify RLS
         run: |
@@ -36,3 +39,12 @@ jobs:
               and c.relrowsecurity;
           ")"
           test "$result" = "2"
+
+          columns="$(psql "$SUPABASE_DB_URL" --tuples-only --no-align --command "
+            select count(*)
+            from information_schema.columns
+            where table_schema = 'public'
+              and table_name = 'company_leads'
+              and column_name in ('primary_profile', 'source_type');
+          ")"
+          test "$columns" = "2"

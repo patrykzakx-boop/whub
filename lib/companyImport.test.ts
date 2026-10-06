@@ -55,6 +55,85 @@ describe("company import", () => {
     });
   });
 
+  it("finds the header row and maps the uploaded Opole directory layout", () => {
+    const result = parseCompanyImportRows([
+      [],
+      ["100 firm metalowych z woj. opolskiego"],
+      ["Spawalnictwo, ślusarstwo, obróbka CNC i powłoki antykorozyjne."],
+      ["Źródła sprawdzono 05.10.2026."],
+      ["Puste pola oznaczają brak odczytanych danych."],
+      [],
+      [
+        "Lp.",
+        "Firma",
+        "Miasto",
+        "Profil główny",
+        "Zakres usług",
+        "Adres",
+        "Telefon",
+        "E-mail",
+        "Strona_www",
+        "Źródło danych",
+        "Rodzaj źródła",
+        "Uwagi",
+      ],
+      [
+        1,
+        "Test Stal",
+        "Brzeg",
+        "Spawalnictwo",
+        "Usługi spawalnicze, bramy i ogrodzenia",
+        "ul. Testowa 1",
+        "500 600 700",
+        "biuro@test-stal.pl",
+        "https://test-stal.pl",
+        "https://katalog.example/test-stal",
+        "Katalog branżowy",
+        null,
+      ],
+      [
+        2,
+        "Pusta Firma",
+        "Opole",
+        "Obróbka CNC",
+        "Frezowanie CNC, toczenie CNC",
+        null,
+        null,
+        null,
+        "https://pusta-firma.pl",
+        "https://pusta-firma.pl",
+        "Strona firmy",
+        null,
+      ],
+    ]);
+
+    expect(result.errors).toEqual([]);
+    expect(result.ignoredHeaders).toEqual(["Lp."]);
+    expect(result.rows).toHaveLength(2);
+    expect(result.rows[0]).toMatchObject({
+      sourceRow: 8,
+      data: {
+        name: "Test Stal",
+        primaryProfile: "Spawalnictwo",
+        services: ["bramy"],
+        sourceType: "Katalog branżowy",
+      },
+    });
+    expect(result.rows[1]).toMatchObject({
+      sourceRow: 9,
+      data: {
+        address: null,
+        phone: null,
+        email: null,
+        primaryProfile: "Obróbka CNC",
+        services: ["frezowanie", "toczenie"],
+        sourceType: "Strona firmy",
+        notes: null,
+      },
+    });
+    expect(result.rows[1].errors).toEqual([]);
+  });
+
   it("rejects missing required headers", () => {
     const result = parseCompanyImportRows([
       ["Firma", "Telefon"],
@@ -109,4 +188,3 @@ describe("company import", () => {
     ).toBe("Ta sama nazwa i miasto");
   });
 });
-

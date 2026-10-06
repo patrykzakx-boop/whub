@@ -16,9 +16,11 @@ type PreviewRow = {
     phone: string | null;
     email: string | null;
     website: string | null;
+    primaryProfile: string | null;
     services: string[];
     servicesRaw: string[];
     sourceUrl: string;
+    sourceType: string | null;
   };
   errors: string[];
   warnings: string[];
@@ -46,9 +48,11 @@ type Lead = {
   phone: string | null;
   email: string | null;
   website: string | null;
+  primary_profile: string | null;
   services: string[];
   services_raw: string[];
   source_url: string;
+  source_type: string | null;
   status: string;
   privacy_notice_sent_at: string | null;
   consent_at: string | null;
@@ -251,7 +255,9 @@ export default function ImportCompaniesPage() {
 
         <section className="mb-8 rounded-2xl border border-slate-800 bg-[#0d1218] p-5 sm:p-6">
           <h2 className="text-lg font-semibold">1. Wybierz i sprawdź plik</h2>
-          <p className="mt-2 text-sm text-gray-400">Obsługiwane formaty: XLSX i CSV. Maksymalnie 2 MB oraz 500 firm w jednym pliku.</p>
+          <p className="mt-2 text-sm text-gray-400">
+            Obsługiwane formaty: XLSX i CSV. Plik z Numbers wyeksportuj jako Excel (.xlsx). Maksymalnie 2 MB oraz 500 firm w jednym pliku.
+          </p>
           <div className="mt-5 flex flex-col gap-3 lg:flex-row lg:items-center">
             <input
               id="company-import-file"
@@ -293,7 +299,7 @@ export default function ImportCompaniesPage() {
                   {preview.rows.map((row) => (
                     <tr key={row.sourceRow} className="align-top">
                       <td className="px-4 py-4 text-gray-500">{row.sourceRow}</td>
-                      <td className="px-4 py-4"><div className="font-medium">{row.data.name || "Brak nazwy"}</div><div className="mt-1 text-xs text-gray-500">{row.data.nip ? `NIP ${row.data.nip}` : "bez NIP"}</div></td>
+                      <td className="px-4 py-4"><div className="font-medium">{row.data.name || "Brak nazwy"}</div><div className="mt-1 text-xs text-gray-500">{row.data.primaryProfile || (row.data.nip ? `NIP ${row.data.nip}` : "bez NIP")}</div></td>
                       <td className="px-4 py-4 text-gray-300">{[row.data.city, row.data.region].filter(Boolean).join(", ") || "—"}</td>
                       <td className="px-4 py-4 text-xs text-gray-400">{row.data.email || row.data.phone || row.data.website || "—"}</td>
                       <td className="px-4 py-4">
@@ -326,6 +332,9 @@ export default function ImportCompaniesPage() {
                         <span className="rounded-md border border-slate-700 px-2 py-1 text-xs text-gray-400">#{lead.id}</span>
                       </div>
                       <p className="mt-1 text-sm text-gray-400">{lead.city}{lead.region ? `, ${lead.region}` : ""} · {lead.email || lead.phone || "brak kontaktu"}</p>
+                      {(lead.primary_profile || lead.source_type) && (
+                        <p className="mt-1 text-xs text-gray-500">{[lead.primary_profile, lead.source_type].filter(Boolean).join(" · ")}</p>
+                      )}
                       <div className="mt-2 flex flex-wrap gap-2 text-xs text-gray-500">
                         {lead.services_raw.slice(0, 5).map((service) => <span key={service} className="rounded-md bg-black/30 px-2 py-1">{service}</span>)}
                       </div>
@@ -376,4 +385,3 @@ function ResultText({ tone, text }: { tone: "success" | "warning" | "error"; tex
   const className = tone === "success" ? "text-emerald-300" : tone === "warning" ? "text-amber-300" : "text-red-300";
   return <div className={`text-xs font-medium ${className}`}>{text}</div>;
 }
-

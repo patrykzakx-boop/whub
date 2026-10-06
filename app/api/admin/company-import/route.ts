@@ -23,7 +23,7 @@ export async function GET(request: Request) {
     supabase
       .from("company_leads")
       .select(
-        "id, source_row, name, nip, city, region, phone, email, website, services, services_raw, source_url, status, privacy_notice_sent_at, consent_at, linked_company_id, created_at, updated_at"
+        "id, source_row, name, nip, city, region, phone, email, website, primary_profile, services, services_raw, source_url, source_type, status, privacy_notice_sent_at, consent_at, linked_company_id, created_at, updated_at"
       )
       .order("created_at", { ascending: false })
       .limit(300),
@@ -120,6 +120,7 @@ export async function POST(request: Request) {
         phone: row.data.phone,
         email: row.data.email,
         website: row.data.website,
+        primary_profile: row.data.primaryProfile,
         services: row.data.services,
         services_raw: row.data.servicesRaw,
         materials: row.data.materials,
@@ -127,6 +128,7 @@ export async function POST(request: Request) {
         service_area: row.data.serviceArea,
         mobile_service: row.data.mobileService,
         source_url: row.data.sourceUrl,
+        source_type: row.data.sourceType,
         notes: row.data.notes,
         created_by: admin.id,
       }))
