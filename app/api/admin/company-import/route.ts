@@ -62,6 +62,7 @@ export async function POST(request: Request) {
 
     const formData = await request.formData();
     const mode = String(formData.get("mode") || "preview");
+    const includeDuplicates = String(formData.get("includeDuplicates") || "false") === "true";
     const file = formData.get("file");
 
     if (!(file instanceof File)) throw new Error("Wybierz plik do importu.");
@@ -88,7 +89,8 @@ export async function POST(request: Request) {
     }
 
     const importableRows = rows.filter(
-      (row) => row.errors.length === 0 && !row.duplicateReason
+      (row) =>
+        row.errors.length === 0 && (includeDuplicates || !row.duplicateReason)
     );
     if (importableRows.length === 0) {
       throw new Error("Plik nie zawiera nowych, poprawnych firm do zaimportowania.");
@@ -140,7 +142,7 @@ export async function POST(request: Request) {
       action: "import_company_leads",
       target_type: "company_import_batch",
       target_id: batch.id,
-      note: `Plik ${file.name}: zaimportowano ${importableRows.length} firm.`,
+      note: `Plik ${file.name}: zaimportowano ${importableRows.length} firm${includeDuplicates ? " (wraz z zaakceptowanymi potencjalnymi duplikatami)" : ""}.`,
     });
 
     return NextResponse.json(

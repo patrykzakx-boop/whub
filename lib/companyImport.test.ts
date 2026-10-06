@@ -168,11 +168,22 @@ describe("company import", () => {
     const result = parseCompanyImportRows([
       ["nazwa", "miasto", "strona_www"],
       ["Test Stal", "Nysa", "https://test-stal.pl"],
-      ["Inna nazwa", "Opole", "https://www.test-stal.pl/oferta"],
+      ["Inna nazwa", "Opole", "https://www.test-stal.pl/"],
     ]);
 
     expect(result.rows[0].duplicateReason).toBeNull();
-    expect(result.rows[1].duplicateReason).toContain("Ta sama domena");
+    expect(result.rows[1].duplicateReason).toContain("Ten sam adres strony");
+  });
+
+  it("does not treat different profiles on one directory as duplicates", () => {
+    const result = parseCompanyImportRows([
+      ["nazwa", "miasto", "strona_www"],
+      ["Firma A", "Nysa", "https://panoramafirm.pl/firma-a.html"],
+      ["Firma B", "Opole", "https://panoramafirm.pl/firma-b.html"],
+    ]);
+
+    expect(result.rows[0].duplicateReason).toBeNull();
+    expect(result.rows[1].duplicateReason).toBeNull();
   });
 
   it("detects a duplicate against an existing company", () => {

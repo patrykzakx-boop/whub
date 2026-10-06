@@ -82,6 +82,7 @@ const STATUS_OPTIONS = [
 export default function ImportCompaniesPage() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<PreviewData | null>(null);
+  const [includeDuplicates, setIncludeDuplicates] = useState(false);
   const [leads, setLeads] = useState<Lead[]>([]);
   const [batches, setBatches] = useState<Batch[]>([]);
   const [ownerEmails, setOwnerEmails] = useState<Record<number, string>>({});
@@ -133,6 +134,7 @@ export default function ImportCompaniesPage() {
       const formData = new FormData();
       formData.set("mode", mode);
       formData.set("file", file);
+      formData.set("includeDuplicates", String(includeDuplicates));
       const response = await authorizedFetch("/api/admin/company-import", {
         method: "POST",
         body: formData,
@@ -146,6 +148,7 @@ export default function ImportCompaniesPage() {
       } else {
         setMessage(`Zaimportowano ${result.imported} firm do prywatnej poczekalni.`);
         setPreview(null);
+        setIncludeDuplicates(false);
         setFile(null);
         const input = document.getElementById("company-import-file") as HTMLInputElement | null;
         if (input) input.value = "";
@@ -222,6 +225,9 @@ export default function ImportCompaniesPage() {
     () => leads.filter((lead) => lead.status !== "archived"),
     [leads]
   );
+  const importCount = preview
+    ? preview.summary.valid + (includeDuplicates ? preview.summary.duplicate : 0)
+    : 0;
 
   return (
     <main className="min-h-screen bg-[#05070a] px-4 py-8 text-white">
@@ -266,6 +272,7 @@ export default function ImportCompaniesPage() {
               onChange={(event) => {
                 setFile(event.target.files?.[0] || null);
                 setPreview(null);
+                setIncludeDuplicates(false);
                 setMessage("");
               }}
               className="min-w-0 flex-1 rounded-xl border border-slate-700 bg-[#080b0f] px-4 py-3 text-sm text-gray-300 file:mr-4 file:rounded-lg file:border-0 file:bg-orange-700 file:px-4 file:py-2 file:font-semibold file:text-white"
@@ -282,9 +289,20 @@ export default function ImportCompaniesPage() {
               <div>
                 <h2 className="text-lg font-semibold">2. Podgląd importu</h2>
                 <p className="mt-1 text-sm text-gray-400">Nowe: {preview.summary.valid} · Duplikaty: {preview.summary.duplicate} · Błędy: {preview.summary.invalid}</p>
+                {preview.summary.duplicate > 0 && (
+                  <label className="mt-3 flex cursor-pointer items-start gap-2 text-sm text-amber-200">
+                    <input
+                      type="checkbox"
+                      checked={includeDuplicates}
+                      onChange={(event) => setIncludeDuplicates(event.target.checked)}
+                      className="mt-0.5 h-4 w-4 accent-orange-600"
+                    />
+                    <span>Dołącz także {preview.summary.duplicate} rekordów oznaczonych jako potencjalne duplikaty.</span>
+                  </label>
+                )}
               </div>
-              <button onClick={() => void submitFile("import")} disabled={preview.summary.valid === 0 || Boolean(working)} className="rounded-xl bg-emerald-700 px-5 py-3 text-sm font-semibold hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-50">
-                {working === "import" ? "Importowanie…" : `Importuj ${preview.summary.valid} firm`}
+              <button onClick={() => void submitFile("import")} disabled={importCount === 0 || Boolean(working)} className="rounded-xl bg-emerald-700 px-5 py-3 text-sm font-semibold hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-50">
+                {working === "import" ? "Importowanie…" : `Importuj ${importCount} firm`}
               </button>
             </div>
             {preview.ignoredHeaders.length > 0 && (

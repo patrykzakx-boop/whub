@@ -286,7 +286,7 @@ function duplicateKeys(item: Partial<CompanyLeadInput>) {
   const nip = (item.nip || "").replace(/\D/g, "");
   const email = (item.email || "").trim().toLowerCase();
   const phone = (item.phone || "").replace(/\D/g, "");
-  const website = websiteHost(item.website || "");
+  const website = websiteIdentity(item.website || "");
   const nameCity = `${normalizeLabel(item.name || "")}|${normalizeLabel(item.city || "")}`;
   if (nip) keys.set("nip", nip);
   if (website) keys.set("website", website);
@@ -300,7 +300,7 @@ function duplicateLabel(kind: string) {
   return (
     {
       nip: "Ten sam NIP",
-      website: "Ta sama domena",
+      website: "Ten sam adres strony",
       email: "Ten sam e-mail",
       phone: "Ten sam telefon",
       nameCity: "Ta sama nazwa i miasto",
@@ -415,10 +415,13 @@ function normalizeUrl(value: string) {
   }
 }
 
-function websiteHost(value: string) {
+function websiteIdentity(value: string) {
   const normalized = normalizeUrl(value);
   if (!normalized) return "";
-  return new URL(normalized).hostname.replace(/^www\./, "").toLowerCase();
+  const url = new URL(normalized);
+  const host = url.hostname.replace(/^www\./, "").toLowerCase();
+  const path = url.pathname.replace(/\/+$/, "") || "/";
+  return `${host}${path}`.toLowerCase();
 }
 
 function isValidPolishNip(value: string) {
