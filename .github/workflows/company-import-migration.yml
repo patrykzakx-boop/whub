@@ -1,0 +1,38 @@
+name: Apply company import migration
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_POOLER_URL_V3 }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Verify database secret
+        run: test -n "$SUPABASE_DB_URL"
+
+      - name: Apply migration
+        run: |
+          psql "$SUPABASE_DB_URL" \
+            --set ON_ERROR_STOP=1 \
+            --file supabase/migrations/20261006090000_company_import_leads.sql
+
+      - name: Verify RLS
+        run: |
+          result="$(psql "$SUPABASE_DB_URL" --tuples-only --no-align --command "
+            select count(*)
+            from pg_class c
+            join pg_namespace n on n.oid = c.relnamespace
+            where n.nspname = 'public'
+              and c.relname in ('company_import_batches', 'company_leads')
+              and c.relrowsecurity;
+          ")"
+          test "$result" = "2"

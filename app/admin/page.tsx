@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { ShieldCheck } from "lucide-react";
+import { FileSpreadsheet, ShieldCheck } from "lucide-react";
 import { supabase } from "@/lib/supabaseClient";
 
 type CompanyItem = {
@@ -161,9 +161,14 @@ export default function AdminPage() {
             <h1 className="mt-2 text-3xl font-bold sm:text-4xl">Centrum moderacji</h1>
             <p className="mt-2 text-sm text-gray-400">Zalogowano jako {data.admin.email}</p>
           </div>
-          <button onClick={() => void Promise.all([loadData(), loadUsers()])} className="rounded-xl border border-slate-700 px-4 py-2 text-sm hover:border-orange-500">
-            Odśwież dane
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <Link href="/admin/import-companies" className="inline-flex items-center gap-2 rounded-xl border border-slate-700 px-4 py-2 text-sm hover:border-orange-500">
+              <FileSpreadsheet size={16} /> Import firm
+            </Link>
+            <button onClick={() => void Promise.all([loadData(), loadUsers()])} className="rounded-xl border border-slate-700 px-4 py-2 text-sm hover:border-orange-500">
+              Odśwież dane
+            </button>
+          </div>
         </div>
 
         {error && <div className="mb-6 rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-sm text-red-200">{error}</div>}
@@ -314,5 +319,5 @@ function pluralize(value: number, singular: string, few: string, many: string) {
   return many;
 }
 function actionLabel(action: string) {
-  return ({ approve_company: "Zatwierdzono firmę", reject_company: "Odrzucono firmę", hide_request: "Ukryto zlecenie", restore_request: "Przywrócono zlecenie", block_user: "Zablokowano konto", unblock_user: "Odblokowano konto", resolve_report: "Rozpatrzono zgłoszenie", dismiss_report: "Odrzucono zgłoszenie" } as Record<string, string>)[action] || action;
+  return ({ approve_company: "Zatwierdzono firmę", reject_company: "Odrzucono firmę", hide_request: "Ukryto zlecenie", restore_request: "Przywrócono zlecenie", block_user: "Zablokowano konto", unblock_user: "Odblokowano konto", resolve_report: "Rozpatrzono zgłoszenie", dismiss_report: "Odrzucono zgłoszenie", import_company_leads: "Zaimportowano katalog firm", update_company_lead: "Zmieniono status firmy z katalogu", convert_company_lead: "Utworzono profil firmy z katalogu" } as Record<string, string>)[action] || action;
 }
