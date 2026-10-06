@@ -51,3 +51,28 @@ test("cała publiczna nawigacja działa klawiaturą", async ({ page }) => {
   await page.keyboard.press("Enter");
   await expect(page.locator("#main-content")).toBeFocused();
 });
+
+test("menu mobilne udostępnia wszystkie główne sekcje", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+
+  const menuButton = page.getByRole("button", { name: /Menu/ });
+  await expect(menuButton).toBeVisible();
+  await menuButton.click();
+
+  const mobileNavigation = page.getByRole("navigation", {
+    name: "Nawigacja mobilna",
+  });
+  await expect(mobileNavigation.getByRole("link", { name: "Firmy" })).toBeVisible();
+  await expect(mobileNavigation.getByRole("link", { name: "Zlecenia" })).toBeVisible();
+  await expect(
+    mobileNavigation.getByRole("link", { name: "Dodaj zlecenie" })
+  ).toBeVisible();
+  await expect(
+    mobileNavigation.getByRole("link", { name: "Rejestracja" })
+  ).toBeVisible();
+
+  await mobileNavigation.getByRole("link", { name: "Firmy" }).click();
+  await expect(page).toHaveURL(/\/companies$/);
+  await expect(mobileNavigation).toBeHidden();
+});

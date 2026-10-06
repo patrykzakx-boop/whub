@@ -12,8 +12,10 @@ export default function Navbar() {
   const [email, setEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const accountMenuRef = useRef<HTMLDivElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -74,6 +76,31 @@ export default function Navbar() {
     };
   }, [accountMenuOpen]);
 
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const closeOnOutsideClick = (event: PointerEvent) => {
+      if (
+        event.target instanceof Node &&
+        !mobileMenuRef.current?.contains(event.target)
+      ) {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMobileMenuOpen(false);
+    };
+
+    document.addEventListener("pointerdown", closeOnOutsideClick);
+    document.addEventListener("keydown", closeOnEscape);
+
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsideClick);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [mobileMenuOpen]);
+
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
     return pathname.startsWith(href);
@@ -82,6 +109,7 @@ export default function Navbar() {
   const logout = async () => {
     await supabase.auth.signOut();
     setAccountMenuOpen(false);
+    setMobileMenuOpen(false);
     setIsAdmin(false);
     router.push("/");
   };
@@ -112,14 +140,14 @@ export default function Navbar() {
           </div>
         </Link>
 
-        <nav className="ml-1 flex min-w-0 flex-1 gap-1 overflow-x-auto px-1 text-sm text-gray-400 sm:ml-4">
+        <nav className="ml-4 hidden min-w-0 flex-1 gap-1 overflow-x-auto px-1 text-sm text-gray-400 md:flex">
           <NavLink href="/" label="Strona główna" active={isActive("/")} />
           <NavLink href="/companies" label="Firmy" active={isActive("/companies")} />
           <NavLink href="/requests" label="Zlecenia" active={isActive("/requests") || isActive("/request")} />
           <NavLink href="/add-request" label="Dodaj zlecenie" active={isActive("/add-request")} accent />
         </nav>
 
-        <div ref={accountMenuRef} className="relative ml-auto flex shrink-0 items-center gap-2">
+        <div ref={accountMenuRef} className="relative ml-auto hidden shrink-0 items-center gap-2 md:flex">
           {!loading && email ? (
             <>
               <button
@@ -127,25 +155,15 @@ export default function Navbar() {
                 onClick={() => setAccountMenuOpen((isOpen) => !isOpen)}
                 aria-expanded={accountMenuOpen}
                 aria-haspopup="menu"
-                className="hidden max-w-[180px] truncate rounded-lg px-3 py-2 text-sm text-gray-300 transition hover:bg-[#0d1218] hover:text-white md:block"
+                className="max-w-[180px] truncate rounded-lg px-3 py-2 text-sm text-gray-300 transition hover:bg-[#0d1218] hover:text-white"
                 title={email}
               >
                 {email}
               </button>
 
-              <button
-                type="button"
-                onClick={() => setAccountMenuOpen((isOpen) => !isOpen)}
-                aria-expanded={accountMenuOpen}
-                aria-haspopup="menu"
-                className="rounded-lg bg-orange-700 px-3 py-2 text-sm font-semibold text-white transition hover:bg-orange-800 md:hidden"
-              >
-                Konto
-              </button>
-
               <Link
                 href="/dashboard"
-                className="hidden rounded-lg border border-slate-700 px-3 py-2 text-sm font-semibold text-white transition hover:border-orange-500 md:inline-flex"
+                className="inline-flex rounded-lg border border-slate-700 px-3 py-2 text-sm font-semibold text-white transition hover:border-orange-500"
               >
                 Panel
               </Link>
@@ -211,6 +229,86 @@ export default function Navbar() {
             </>
           )}
         </div>
+
+        <div ref={mobileMenuRef} className="relative ml-auto md:hidden">
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen((isOpen) => !isOpen)}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-navigation"
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-sm font-semibold text-white transition hover:border-orange-500 hover:bg-white/[0.04]"
+          >
+            <span>{mobileMenuOpen ? "Zamknij" : "Menu"}</span>
+            <span aria-hidden="true" className="text-lg leading-none">
+              {mobileMenuOpen ? "×" : "☰"}
+            </span>
+          </button>
+
+          {mobileMenuOpen && (
+            <div
+              id="mobile-navigation"
+              className="absolute right-0 top-full mt-2 w-[min(20rem,calc(100vw-2rem))] overflow-hidden rounded-xl border border-slate-800 bg-[#0d1218] shadow-2xl shadow-black/50"
+            >
+              {!loading && email && (
+                <div className="border-b border-slate-800 px-4 py-3 text-xs text-gray-400">
+                  <div className="mb-1">Zalogowano jako</div>
+                  <div className="truncate text-gray-200">{email}</div>
+                </div>
+              )}
+
+              <nav
+                aria-label="Nawigacja mobilna"
+                className="p-2"
+                onClick={(event) => {
+                  if (
+                    event.target instanceof Element &&
+                    event.target.closest("a")
+                  ) {
+                    setMobileMenuOpen(false);
+                  }
+                }}
+              >
+                <MobileNavLink href="/" label="Strona główna" active={isActive("/")} />
+                <MobileNavLink href="/companies" label="Firmy" active={isActive("/companies")} />
+                <MobileNavLink
+                  href="/requests"
+                  label="Zlecenia"
+                  active={isActive("/requests") || isActive("/request")}
+                />
+                <MobileNavLink
+                  href="/add-request"
+                  label="Dodaj zlecenie"
+                  active={isActive("/add-request")}
+                  accent
+                />
+
+                {!loading && email ? (
+                  <>
+                    <div className="my-2 border-t border-slate-800" />
+                    <MobileNavLink href="/dashboard" label="Panel klienta" active={pathname === "/dashboard"} />
+                    <MobileNavLink href="/dashboard/account" label="Konto i hasło" active={isActive("/dashboard/account")} />
+                    {isAdmin && (
+                      <MobileNavLink href="/admin" label="Panel administratora" active={isActive("/admin")} accent />
+                    )}
+                    <button
+                      type="button"
+                      onClick={logout}
+                      className="block w-full rounded-lg px-3 py-3 text-left text-sm text-gray-300 transition hover:bg-[#070b10] hover:text-white"
+                    >
+                      Wyloguj
+                    </button>
+                  </>
+                ) : !loading ? (
+                  <>
+                    <div className="my-2 border-t border-slate-800" />
+                    <MobileNavLink href="/login" label="Logowanie" active={isActive("/login")} />
+                    <MobileNavLink href="/register" label="Rejestracja" active={isActive("/register")} accent />
+                  </>
+                ) : null}
+              </nav>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );
@@ -250,6 +348,34 @@ function NavLink({
           : accent
             ? "shrink-0 rounded-lg px-3 py-2 font-medium text-orange-400 transition hover:bg-white/[0.04] hover:text-orange-300"
             : "shrink-0 rounded-lg px-3 py-2 transition hover:bg-white/[0.04] hover:text-white"
+      }
+    >
+      {label}
+    </Link>
+  );
+}
+
+function MobileNavLink({
+  href,
+  label,
+  active,
+  accent = false,
+}: {
+  href: string;
+  label: string;
+  active: boolean;
+  accent?: boolean;
+}) {
+  return (
+    <Link
+      href={href}
+      aria-current={active ? "page" : undefined}
+      className={
+        active
+          ? "block rounded-lg bg-white/[0.06] px-3 py-3 text-sm font-medium text-white"
+          : accent
+            ? "block rounded-lg px-3 py-3 text-sm font-medium text-orange-400 transition hover:bg-[#070b10] hover:text-orange-300"
+            : "block rounded-lg px-3 py-3 text-sm text-gray-300 transition hover:bg-[#070b10] hover:text-white"
       }
     >
       {label}
