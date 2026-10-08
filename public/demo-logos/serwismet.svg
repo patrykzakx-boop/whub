@@ -1,0 +1,3 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="SerwisMet Demo">
+  <rect width="256" height="256" rx="48" fill="#0b1118"/><path d="M128 43 151 61l29-2 8 28 24 17-13 26 4 29-27 11-14 26-28-7-25 15-21-20-30 1-5-29-21-20 16-24-1-30 28-8 17-24 27 11z" fill="#334155" stroke="#f97316" stroke-width="10"/><circle cx="128" cy="124" r="39" fill="#0b1118" stroke="#e2e8f0" stroke-width="12"/><path d="m111 129 12 12 25-31" fill="none" stroke="#f97316" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><text x="128" y="228" text-anchor="middle" fill="#e2e8f0" font-family="Arial,sans-serif" font-size="18" font-weight="700" letter-spacing="3">SERWISMET</text>
+</svg>
