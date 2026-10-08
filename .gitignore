@@ -39,6 +39,7 @@ yarn-error.log*
 # generated local artifacts
 /output/
 /tmp/
+/.local-backups/
 
 # vercel
 .vercel
