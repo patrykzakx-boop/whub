@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { getRequestStatusLabel, isRequestOpen } from "@/lib/statuses";
 import { OWN_REQUEST_OFFER_ERROR } from "@/lib/requestOffers";
 import { isCompanyEligibleForOffers } from "@/lib/companies";
+import { formatOfferPrice } from "@/lib/offerPricing";
 
 type Company = {
   id: string | number;
@@ -19,6 +20,8 @@ type Offer = {
   company_id: string | number;
   message: string | null;
   price_estimate: string | null;
+  price_amount: number | string | null;
+  price_description: string | null;
   availability: string | null;
   created_at: string | null;
   companies?: {
@@ -41,7 +44,8 @@ export default function RequestOfferForm({ requestId, requestStatus }: Props) {
   const [offers, setOffers] = useState<Offer[]>([]);
   const [companyId, setCompanyId] = useState("");
   const [message, setMessage] = useState("");
-  const [priceEstimate, setPriceEstimate] = useState("");
+  const [priceAmount, setPriceAmount] = useState("");
+  const [priceDescription, setPriceDescription] = useState("");
   const [availability, setAvailability] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -151,6 +155,11 @@ export default function RequestOfferForm({ requestId, requestStatus }: Props) {
       return;
     }
 
+    if (!priceAmount || Number(priceAmount) <= 0) {
+      setErrorMessage("Podaj prawidłową cenę oferty w PLN.");
+      return;
+    }
+
     if (selectedCompanyAlreadyAnswered) {
       setErrorMessage("Ta firma już odpowiedziała na to zlecenie.");
       return;
@@ -180,7 +189,8 @@ export default function RequestOfferForm({ requestId, requestStatus }: Props) {
           requestId,
           companyId,
           message: message.trim(),
-          priceEstimate: priceEstimate.trim(),
+          priceAmount,
+          priceDescription: priceDescription.trim(),
           availability: availability.trim(),
         }),
       });
@@ -194,7 +204,8 @@ export default function RequestOfferForm({ requestId, requestStatus }: Props) {
 
       setOffers((currentOffers) => [data.offer, ...currentOffers]);
       setMessage("");
-      setPriceEstimate("");
+      setPriceAmount("");
+      setPriceDescription("");
       setAvailability("");
       setSuccessMessage(
         data.mailWarning
@@ -344,6 +355,13 @@ export default function RequestOfferForm({ requestId, requestStatus }: Props) {
                 <p className="mt-2 line-clamp-2 text-sm leading-6 text-gray-400">
                   {offer.message}
                 </p>
+
+                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-400">
+                  <span className="font-medium text-gray-200">
+                    {formatOfferPrice(offer.price_amount, offer.price_estimate)}
+                  </span>
+                  {offer.availability && <span>Termin: {offer.availability}</span>}
+                </div>
               </div>
             ))}
           </div>
@@ -357,7 +375,7 @@ export default function RequestOfferForm({ requestId, requestStatus }: Props) {
       )}
 
       <form onSubmit={submitOffer} className="mt-6 space-y-4">
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <label className="block md:col-span-1">
             <span className="mb-2 block text-sm text-gray-400">
               Firma
@@ -378,13 +396,33 @@ export default function RequestOfferForm({ requestId, requestStatus }: Props) {
 
           <label className="block md:col-span-1">
             <span className="mb-2 block text-sm text-gray-400">
-              Orientacyjna cena
+              Cena orientacyjna (PLN)
             </span>
 
             <input
-              value={priceEstimate}
-              onChange={(event) => setPriceEstimate(event.target.value)}
-              placeholder="np. do ustalenia / od 1200 zł"
+              type="number"
+              min="1"
+              max="100000000"
+              step="0.01"
+              inputMode="decimal"
+              required
+              value={priceAmount}
+              onChange={(event) => setPriceAmount(event.target.value)}
+              placeholder="np. 4500"
+              className="w-full rounded-xl border border-slate-800 bg-[#05070a] px-4 py-3 text-sm text-white outline-none placeholder:text-gray-400 transition focus:border-orange-500"
+            />
+          </label>
+
+          <label className="block md:col-span-1">
+            <span className="mb-2 block text-sm text-gray-400">
+              Opis ceny <span className="text-gray-500">(opcjonalnie)</span>
+            </span>
+
+            <input
+              value={priceDescription}
+              onChange={(event) => setPriceDescription(event.target.value)}
+              maxLength={160}
+              placeholder="np. brutto, z materiałem"
               className="w-full rounded-xl border border-slate-800 bg-[#05070a] px-4 py-3 text-sm text-white outline-none placeholder:text-gray-400 transition focus:border-orange-500"
             />
           </label>

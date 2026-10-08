@@ -1,11 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
-  getOfferStatusLabel,
   getRequestStatusLabel,
   isRequestActive,
   isRequestClosed,
@@ -13,6 +11,9 @@ import {
   normalizeOfferStatus,
 } from "@/lib/statuses";
 import { getRequestCategoryLabel } from "@/lib/requestCategories";
+import OfferComparison, {
+  type ComparableOffer,
+} from "@/components/requests/OfferComparison";
 
 type RequestData = {
   id: string | number;
@@ -30,32 +31,12 @@ type RequestData = {
 
 type OfferAction = "interested" | "chosen" | "rejected";
 
-type Offer = {
-  id: string | number;
-  request_id: string | number;
-  company_id: string | number;
-  message: string | null;
-  price_estimate: string | null;
-  availability: string | null;
-  status: string | null;
-  created_at: string | null;
-  companies?: {
-    id: string | number;
-    name: string | null;
-    city: string | null;
-    region: string | null;
-    phone: string | null;
-    email: string | null;
-    logo_url: string | null;
-  } | null;
-};
-
 export default function RequestAccessPage() {
   const params = useParams<{ token: string }>();
   const token = params.token;
 
   const [request, setRequest] = useState<RequestData | null>(null);
-  const [offers, setOffers] = useState<Offer[]>([]);
+  const [offers, setOffers] = useState<ComparableOffer[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoadingId, setActionLoadingId] = useState<string | number | null>(null);
   const [message, setMessage] = useState("");
@@ -346,149 +327,13 @@ export default function RequestAccessPage() {
             </Link>
           </div>
 
-          {offers.length > 0 ? (
-            <div className="overflow-hidden rounded-2xl border border-slate-800 bg-[#0d1218]">
-              {offers.map((offer) => {
-                const offerStatus = normalizeOfferStatus(offer.status);
-                const interested = offerStatus === "interested";
-                const chosen = offerStatus === "chosen";
-                const rejected = offerStatus === "rejected";
-                const profileHref = "/company/" + offer.company_id;
-
-                return (
-                  <article key={offer.id} className="border-b border-slate-800 px-4 py-4 last:border-b-0">
-                    <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-start gap-3">
-                          <Link
-                            href={profileHref}
-                            className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-slate-800 bg-black transition hover:border-orange-500"
-                            aria-label={"Profil firmy " + (offer.companies?.name || "")}
-                          >
-                            {offer.companies?.logo_url ? (
-                              <Image
-                                src={offer.companies.logo_url}
-                                alt={offer.companies.name || "Firma"}
-                                fill
-                                sizes="40px"
-                                className="object-cover"
-                              />
-                            ) : (
-                              <span className="text-[10px] text-gray-400">Logo</span>
-                            )}
-                          </Link>
-
-                          <div className="min-w-0">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <Link
-                                href={profileHref}
-                                className="font-semibold text-white transition hover:text-orange-400"
-                              >
-                                {offer.companies?.name || "Firma"}
-                              </Link>
-                              <OfferStatusBadge status={offer.status} />
-                            </div>
-
-                            <div className="mt-1 text-xs text-gray-400">
-                              {[offer.companies?.city, offer.companies?.region]
-                                .filter(Boolean)
-                                .join(", ") || "Brak lokalizacji"}
-                            </div>
-                          </div>
-                        </div>
-
-                        <p className="mt-3 line-clamp-2 whitespace-pre-wrap text-sm leading-6 text-gray-400">
-                          {offer.message}
-                        </p>
-
-                        {(offer.price_estimate || offer.availability) && (
-                          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-400">
-                            {offer.price_estimate && (
-                              <span>
-                                Cena: {offer.price_estimate}
-                              </span>
-                            )}
-                            {offer.availability && (
-                              <span>
-                                Termin: {offer.availability}
-                              </span>
-                            )}
-                          </div>
-                        )}
-
-                        {(interested || chosen) && (offer.companies?.phone || offer.companies?.email) && (
-                          <div className="mt-2 flex flex-wrap gap-3 text-xs text-gray-400">
-                              {offer.companies.phone && (
-                                <a href={"tel:" + offer.companies.phone} className="hover:text-white">
-                                  {offer.companies.phone}
-                                </a>
-                              )}
-                              {offer.companies.email && (
-                                <a href={"mailto:" + offer.companies.email} className="hover:text-white">
-                                  {offer.companies.email}
-                                </a>
-                              )}
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="flex shrink-0 flex-wrap gap-2 lg:justify-end">
-
-                        {!interested && !chosen && !rejected && (
-                          <button
-                            type="button"
-                            onClick={() => updateOfferStatus(offer.id, "interested")}
-                            disabled={!canManageOffers || actionLoadingId === offer.id + ":interested"}
-                            className="rounded-lg bg-orange-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-orange-800 disabled:cursor-not-allowed disabled:opacity-50"
-                          >
-                            Poproś o kontakt
-                          </button>
-                        )}
-
-                        {interested && (
-                          <span className="rounded-lg border border-slate-700 px-4 py-2 text-sm text-gray-300">
-                            Kontakt wysłany
-                          </span>
-                        )}
-
-                        {interested && (
-                          <button
-                            type="button"
-                            onClick={() => updateOfferStatus(offer.id, "chosen")}
-                            disabled={!canManageOffers || actionLoadingId === offer.id + ":chosen"}
-                            className="rounded-lg bg-orange-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-orange-800 disabled:cursor-not-allowed disabled:opacity-50"
-                          >
-                            Wybrałem tę firmę
-                          </button>
-                        )}
-
-                        {chosen && (
-                          <span className="rounded-lg bg-orange-700 px-4 py-2 text-sm font-semibold text-white">
-                            Wybrana firma
-                          </span>
-                        )}
-
-                        {!chosen && !rejected && (
-                          <button
-                            type="button"
-                            onClick={() => updateOfferStatus(offer.id, "rejected")}
-                            disabled={!canManageOffers || actionLoadingId === offer.id + ":rejected"}
-                            className="rounded-lg px-4 py-2 text-sm text-gray-300 transition hover:bg-[#070b10] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
-                          >
-                            Odrzuć
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="rounded-2xl border border-dashed border-slate-700 bg-[#0d1218] p-8 text-center text-gray-400">
-              Nie ma jeszcze odpowiedzi firm. Gdy wykonawca odpowie, zobaczysz ofertę tutaj.
-            </div>
-          )}
+          <OfferComparison
+            offers={offers}
+            canManageOffers={canManageOffers}
+            actionLoadingId={actionLoadingId}
+            onAction={updateOfferStatus}
+            emptyMessage="Nie ma jeszcze odpowiedzi firm. Gdy wykonawca odpowie, zobaczysz ofertę tutaj."
+          />
         </section>
       </div>
     </main>
@@ -499,14 +344,6 @@ function StatusBadge({ status }: { status: string | null }) {
   return (
     <span className="rounded-full bg-slate-800 px-2.5 py-1 text-xs font-medium text-gray-300">
       {getRequestStatusLabel(status)}
-    </span>
-  );
-}
-
-function OfferStatusBadge({ status }: { status: string | null }) {
-  return (
-    <span className="rounded-full bg-slate-800 px-2.5 py-1 text-xs font-medium text-gray-300">
-      {getOfferStatusLabel(status)}
     </span>
   );
 }

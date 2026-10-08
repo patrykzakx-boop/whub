@@ -11,12 +11,14 @@ import {
   OWN_REQUEST_OFFER_ERROR,
 } from "@/lib/requestOffers";
 import { isBlockedUser } from "@/lib/adminAuth";
+import { parseOfferPrice } from "@/lib/offerPricing";
 
 type RequestBody = {
   requestId?: string | number;
   companyId?: string | number;
   message?: string;
-  priceEstimate?: string;
+  priceAmount?: string | number;
+  priceDescription?: string;
   availability?: string;
 };
 
@@ -38,12 +40,20 @@ export async function POST(request: Request) {
     const requestId = parsePositiveId(body.requestId);
     const companyId = parsePositiveId(body.companyId);
     const message = cleanText(body.message, 5_000);
-    const priceEstimate = cleanText(body.priceEstimate, 120) || null;
+    const priceAmount = parseOfferPrice(body.priceAmount);
+    const priceDescription = cleanText(body.priceDescription, 160) || null;
     const availability = cleanText(body.availability, 160) || null;
 
     if (!requestId || !companyId || !message) {
       return NextResponse.json(
         { error: "Brakuje zlecenia, firmy albo wiadomości." },
+        { status: 400 }
+      );
+    }
+
+    if (priceAmount === null) {
+      return NextResponse.json(
+        { error: "Podaj prawidłową cenę oferty w PLN." },
         { status: 400 }
       );
     }
@@ -156,7 +166,8 @@ export async function POST(request: Request) {
         company_id: companyId,
         owner_id: userData.user.id,
         message,
-        price_estimate: priceEstimate,
+        price_amount: priceAmount,
+        price_description: priceDescription,
         availability,
         status: "sent",
       })

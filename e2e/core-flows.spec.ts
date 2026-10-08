@@ -72,6 +72,8 @@ test("klient wybiera ofertę przez prywatny link", async ({ page }) => {
             company_id: 12,
             message: "Możemy wykonać schody.",
             price_estimate: "5000 zł",
+            price_amount: 5000,
+            price_description: "Brutto, z materiałem",
             availability: "2 tygodnie",
             status: "interested",
             created_at: new Date().toISOString(),
@@ -96,8 +98,8 @@ test("klient wybiera ofertę przez prywatny link", async ({ page }) => {
   );
 
   await page.goto("/request-access/e2e-client-token");
-  await page.getByRole("button", { name: "Wybrałem tę firmę" }).click();
-  await expect(page.getByText("Wybrana firma")).toBeVisible();
+  await page.getByRole("button", { name: "Wybierz firmę" }).click();
+  await expect(page.getByRole("table").getByText("Wybrana firma")).toBeVisible();
   await expect(page.getByText(/Firma została oznaczona/)).toBeVisible();
 });
 

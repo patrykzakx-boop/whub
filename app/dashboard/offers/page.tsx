@@ -9,6 +9,7 @@ import RequestCategoryImage from "@/components/requests/RequestCategoryImage";
 import { RequestPriorityMeta, isUrgentRequest } from "@/lib/requestPriority";
 import { getRequestCategoryLabel } from "@/lib/requestCategories";
 import { getDashboardOfferHref } from "@/lib/requestOffers";
+import { formatOfferPrice } from "@/lib/offerPricing";
 
 type Offer = {
   id: string | number;
@@ -16,6 +17,8 @@ type Offer = {
   company_id: string | number;
   message: string | null;
   price_estimate: string | null;
+  price_amount: number | string | null;
+  price_description: string | null;
   availability: string | null;
   status: string | null;
   created_at: string | null;
@@ -142,6 +145,13 @@ export default function DashboardOffersPage() {
                       <span>•</span>
                       <span>{formatDate(offer.created_at)}</span>
                       <RequestPriorityMeta type={offer.request_type} />
+                    </div>
+
+                    <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-300">
+                      <span className="font-medium text-white">
+                        {formatOfferPrice(offer.price_amount, offer.price_estimate)}
+                      </span>
+                      {offer.availability && <span>Termin: {offer.availability}</span>}
                     </div>
 
                     {contactVisible && (

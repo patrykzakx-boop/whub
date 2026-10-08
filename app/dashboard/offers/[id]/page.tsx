@@ -7,6 +7,7 @@ import RequestCategoryImage from "@/components/requests/RequestCategoryImage";
 import { getRequestCategoryLabel } from "@/lib/requestCategories";
 import { supabase } from "@/lib/supabaseClient";
 import { getOfferStatusLabel, getRequestStatusLabel } from "@/lib/statuses";
+import { formatOfferPrice } from "@/lib/offerPricing";
 
 type OfferDetails = {
   id: string | number;
@@ -14,6 +15,8 @@ type OfferDetails = {
   company_id: string | number;
   message: string | null;
   price_estimate: string | null;
+  price_amount: number | string | null;
+  price_description: string | null;
   availability: string | null;
   status: string | null;
   created_at: string | null;
@@ -160,9 +163,22 @@ export default function DashboardOfferDetailsPage() {
               {offer.message || "Brak wiadomości."}
             </p>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              <Detail label="Cena" value={offer.price_estimate || "Nie podano"} />
+              <Detail
+                label="Cena"
+                value={formatOfferPrice(offer.price_amount, offer.price_estimate)}
+              />
               <Detail label="Termin" value={offer.availability || "Nie podano"} />
             </div>
+            {offer.price_description && (
+              <div className="mt-3 rounded-2xl border border-slate-800 bg-[#05070a] p-4">
+                <div className="text-xs uppercase tracking-wide text-gray-400">
+                  Zakres ceny
+                </div>
+                <div className="mt-1 text-sm text-gray-200">
+                  {offer.price_description}
+                </div>
+              </div>
+            )}
             <Link
               href={`/company/${offer.company_id}`}
               className="mt-5 inline-flex text-sm font-medium text-orange-400 hover:text-orange-300"
